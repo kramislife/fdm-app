@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../lib/generated/prisma"
@@ -11,4 +8,345 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ============================================================
+// [1] LOOKUP / REFERENCE TABLES
+// ============================================================
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique @db.VarChar(50)
+  scope String @db.VarChar(20)
+
+  user_roles UserRole[]
+
+  @@map("roles")
+}
+
+model MinistryType {
+  id          Int    @id @default(autoincrement())
+  name        String @unique @db.VarChar(50)
+  description String @db.VarChar(255)
+
+  ministries Ministry[]
+
+  @@map("ministry_types")
+}
+
+model EventType {
+  id          Int    @id @default(autoincrement())
+  name        String @unique @db.VarChar(50)
+  description String @db.VarChar(255)
+
+  events Event[]
+
+  @@map("event_types")
+}
+
+model Area {
+  id         Int    @id @default(autoincrement())
+  name       String @db.VarChar(100)
+  chapter_id Int
+
+  chapter  Chapter   @relation(fields: [chapter_id], references: [id])
+  clusters Cluster[]
+
+  @@unique([name, chapter_id])
+  @@map("areas")  
+}
+
+// ============================================================
+// [2] CORE ENTITY TABLES
+// ============================================================
+
+model User {
+  id             Int       @id @default(autoincrement())
+  first_name     String    @db.VarChar(100)
+  last_name      String    @db.VarChar(100)
+  email          String    @unique @db.VarChar(255)
+  contact_number String    @unique @db.VarChar(20)
+  password       String?   @db.VarChar(255)
+  status         String    @default("guest") @db.VarChar(20)
+  birthday       DateTime? @db.Date
+  address        String?
+  photo_url      String?   @db.VarChar(500)
+  member_qr      String?   @db.VarChar(500)
+
+  is_temp_password         Boolean   @default(false)
+  account_expires_at       DateTime?
+  created_by_admin         Int?
+  activation_email_sent_at DateTime?
+  activation_email_resent  Int       @default(0)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  created_by_admin_user User?  @relation("AdminCreated", fields: [created_by_admin], references: [id])
+  provisioned_users     User[] @relation("AdminCreated")
+
+  user_roles       UserRole[]       @relation("UserRoles")
+  assigned_roles   UserRole[]       @relation("AssignedBy")
+  user_chapters    UserChapter[]
+  ministry_members MinistryMember[]
+  cluster_members  ClusterMember[]
+
+  attendance         Attendance[]
+  events_created     Event[]
+  guest_logs_encoded GuestLog[]   @relation("EncodedBy")
+  guest_logs_linked  GuestLog[]   @relation("LinkedUser")
+
+  enthronements_contact   EnthronementRecord[] @relation("ContactMember")
+  enthronements_performed EnthronementRecord[] @relation("EnthronedBy")
+  enthronements_recorded  EnthronementRecord[] @relation("RecordedBy")
+
+  finance_records FinanceRecord[]
+  announcements   Announcement[]
+
+  @@map("users")
+}
+
+model Chapter {
+  id             Int      @id @default(autoincrement())
+  name           String   @unique @db.VarChar(100)
+  location       String   @db.VarChar(255)
+  fellowship_day String?  @db.VarChar(20)
+  is_active      Boolean  @default(true)
+  created_at     DateTime @default(now())
+
+  areas           Area[]
+  ministries      Ministry[]
+  clusters        Cluster[]
+  user_roles      UserRole[]
+  user_chapters   UserChapter[]
+  events          Event[]
+  guest_logs      GuestLog[]
+  finance_records FinanceRecord[]
+  announcements   Announcement[]
+
+  @@map("chapters")
+}
+
+model Ministry {
+  id               Int      @id @default(autoincrement())
+  chapter_id       Int
+  ministry_type_id Int
+  created_at       DateTime @default(now())
+
+  chapter          Chapter          @relation(fields: [chapter_id], references: [id])
+  ministry_type    MinistryType     @relation(fields: [ministry_type_id], references: [id])
+  user_roles       UserRole[]
+  ministry_members MinistryMember[]
+
+  @@unique([chapter_id, ministry_type_id])
+  @@map("ministries")
+}
+
+model Cluster {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(100)
+  area_id    Int
+  chapter_id Int
+  created_at DateTime @default(now())
+
+  area            Area                 @relation(fields: [area_id], references: [id])
+  chapter         Chapter              @relation(fields: [chapter_id], references: [id])
+  user_roles      UserRole[]
+  cluster_members ClusterMember[]
+  enthronements   EnthronementRecord[]
+
+  @@unique([name, chapter_id])
+  @@map("clusters")
+}
+
+model Event {
+  id            Int      @id @default(autoincrement())
+  name          String   @db.VarChar(255)
+  chapter_id    Int?
+  event_type_id Int
+  event_date    DateTime @db.Date
+  event_time    DateTime @db.Time
+
+  qr_token      String?   @db.VarChar(500)
+  qr_expires_at DateTime?
+  qr_interval   Int       @default(15)
+
+  is_raffle_event Boolean  @default(false)
+  created_by      Int
+  created_at      DateTime @default(now())
+
+  chapter    Chapter?  @relation(fields: [chapter_id], references: [id])
+  event_type EventType @relation(fields: [event_type_id], references: [id])
+  creator    User      @relation(fields: [created_by], references: [id])
+
+  attendance Attendance[]
+  guest_logs GuestLog[]
+
+  @@map("events")
+}
+
+// ============================================================
+// [3] RELATIONSHIP / JUNCTION TABLES
+// ============================================================
+
+model UserRole {
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  role_id     Int
+  chapter_id  Int?
+  ministry_id Int?
+  cluster_id  Int?
+  assigned_by Int
+  assigned_at DateTime @default(now())
+  is_active   Boolean  @default(true)
+
+  user     User      @relation("UserRoles", fields: [user_id], references: [id])
+  role     Role      @relation(fields: [role_id], references: [id])
+  chapter  Chapter?  @relation(fields: [chapter_id], references: [id])
+  ministry Ministry? @relation(fields: [ministry_id], references: [id])
+  cluster  Cluster?  @relation(fields: [cluster_id], references: [id])
+  assigner User      @relation("AssignedBy", fields: [assigned_by], references: [id])
+
+  @@unique([user_id, role_id, chapter_id, ministry_id, cluster_id])
+  @@map("user_roles")
+}
+
+model MinistryMember {
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  ministry_id Int
+  joined_at   DateTime @default(now())
+
+  user     User     @relation(fields: [user_id], references: [id])
+  ministry Ministry @relation(fields: [ministry_id], references: [id])
+
+  @@unique([user_id, ministry_id])
+  @@map("ministry_members")
+}
+
+model ClusterMember {
+  id             Int      @id @default(autoincrement())
+  user_id        Int
+  cluster_id     Int
+  household_name String?  @db.VarChar(255)
+  address        String?
+  joined_at      DateTime @default(now())
+
+  user    User    @relation(fields: [user_id], references: [id])
+  cluster Cluster @relation(fields: [cluster_id], references: [id])
+
+  @@unique([user_id, cluster_id])
+  @@map("cluster_members")
+}
+
+model UserChapter {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  chapter_id Int
+  is_primary Boolean  @default(true)
+  joined_at  DateTime @default(now())
+
+  user    User    @relation(fields: [user_id], references: [id])
+  chapter Chapter @relation(fields: [chapter_id], references: [id])
+
+  @@unique([user_id, chapter_id])
+  @@map("user_chapters")
+}
+
+// ============================================================
+// [4] TRANSACTION / LOG TABLES
+// ============================================================
+
+model Attendance {
+  id            Int      @id @default(autoincrement())
+  user_id       Int?
+  event_id      Int
+  method        String   @db.VarChar(20)
+  checked_in_at DateTime @default(now())
+
+  user       User?      @relation(fields: [user_id], references: [id])
+  event      Event      @relation(fields: [event_id], references: [id])
+  guest_logs GuestLog[]
+
+  @@unique([user_id, event_id])
+  @@map("attendance")
+}
+
+model GuestLog {
+  id               Int      @id @default(autoincrement())
+  first_name       String   @db.VarChar(100)
+  last_name        String   @db.VarChar(100)
+  email            String   @db.VarChar(255)
+  contact_number   String   @db.VarChar(20)
+  chapter_id       Int?
+  encoded_by       Int
+  event_id         Int
+  attendance_id    Int
+  linked_user_id   Int?
+  follow_up_status String   @default("pending") @db.VarChar(30)
+  created_at       DateTime @default(now())
+
+  chapter     Chapter?   @relation(fields: [chapter_id], references: [id])
+  encoder     User       @relation("EncodedBy", fields: [encoded_by], references: [id])
+  event       Event      @relation(fields: [event_id], references: [id])
+  attendance  Attendance @relation(fields: [attendance_id], references: [id])
+  linked_user User?      @relation("LinkedUser", fields: [linked_user_id], references: [id])
+
+  @@map("guest_logs")
+}
+
+model EnthronementRecord {
+  id                     Int      @id @default(autoincrement())
+  cluster_id             Int
+  household_name         String   @db.VarChar(255)
+  address                String
+  contact_member_id      Int
+  enthroned_at           DateTime
+  enthroned_by           Int
+  has_divine_mercy_image Boolean  @default(false)
+  donation_amount        Decimal? @db.Decimal(10, 2)
+  notes                  String?
+  recorded_by            Int
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+
+  cluster           Cluster @relation(fields: [cluster_id], references: [id])
+  contact_member    User    @relation("ContactMember", fields: [contact_member_id], references: [id])
+  enthroned_by_user User    @relation("EnthronedBy", fields: [enthroned_by], references: [id])
+  recorder          User    @relation("RecordedBy", fields: [recorded_by], references: [id])
+
+  @@map("enthronement_records")
+}
+
+model FinanceRecord {
+  id               Int      @id @default(autoincrement())
+  chapter_id       Int
+  recorded_by      Int
+  type             String   @db.VarChar(10)
+  amount           Decimal  @db.Decimal(12, 2)
+  description      String
+  transaction_date DateTime @db.Date
+  created_at       DateTime @default(now())
+
+  chapter  Chapter @relation(fields: [chapter_id], references: [id])
+  recorder User    @relation(fields: [recorded_by], references: [id])
+
+  @@map("finance_records")
+}
+
+model Announcement {
+  id           Int       @id @default(autoincrement())
+  title        String    @db.VarChar(255)
+  content      String
+  posted_by    Int
+  chapter_id   Int?
+  type         String    @db.VarChar(20)
+  is_published Boolean   @default(false)
+  published_at DateTime?
+  created_at   DateTime  @default(now())
+
+  poster  User     @relation(fields: [posted_by], references: [id])
+  chapter Chapter? @relation(fields: [chapter_id], references: [id])
+
+  @@map("announcements")
 }
