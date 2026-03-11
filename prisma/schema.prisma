@@ -1,6 +1,11 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// ============================================================
+// FDM — Friends of the Divine Mercy
+// Community Management System — Prisma Schema v6
+// ============================================================
+
 generator client {
   provider = "prisma-client"
   output   = "../lib/generated/prisma"
@@ -16,7 +21,8 @@ datasource db {
 
 model Role {
   id    Int    @id @default(autoincrement())
-  name  String @unique @db.VarChar(50)
+  key   String @unique @db.VarChar(50)
+  name  String @db.VarChar(100)
   scope String @db.VarChar(20)
 
   user_roles UserRole[]
@@ -25,9 +31,10 @@ model Role {
 }
 
 model MinistryType {
-  id          Int    @id @default(autoincrement())
-  name        String @unique @db.VarChar(50)
-  description String @db.VarChar(255)
+  id          Int     @id @default(autoincrement())
+  key         String  @unique @db.VarChar(50)
+  name        String  @db.VarChar(100)
+  description String? @db.VarChar(255)
 
   ministries Ministry[]
 
@@ -35,9 +42,10 @@ model MinistryType {
 }
 
 model EventType {
-  id          Int    @id @default(autoincrement())
-  name        String @unique @db.VarChar(50)
-  description String @db.VarChar(255)
+  id          Int     @id @default(autoincrement())
+  key         String  @unique @db.VarChar(50)
+  name        String  @db.VarChar(100)
+  description String? @db.VarChar(255)
 
   events Event[]
 
@@ -53,7 +61,7 @@ model Area {
   clusters Cluster[]
 
   @@unique([name, chapter_id])
-  @@map("areas")  
+  @@map("areas")
 }
 
 // ============================================================
@@ -62,17 +70,18 @@ model Area {
 
 model User {
   id             Int       @id @default(autoincrement())
+  auth_id        String?   @unique @db.VarChar(255)
   first_name     String    @db.VarChar(100)
   last_name      String    @db.VarChar(100)
   email          String    @unique @db.VarChar(255)
   contact_number String    @unique @db.VarChar(20)
-  password       String?   @db.VarChar(255)
   status         String    @default("guest") @db.VarChar(20)
   birthday       DateTime? @db.Date
   address        String?
   photo_url      String?   @db.VarChar(500)
   member_qr      String?   @db.VarChar(500)
 
+  // Admin-provisioned account fields
   is_temp_password         Boolean   @default(false)
   account_expires_at       DateTime?
   created_by_admin         Int?
@@ -82,6 +91,7 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  // Relations
   created_by_admin_user User?  @relation("AdminCreated", fields: [created_by_admin], references: [id])
   provisioned_users     User[] @relation("AdminCreated")
 
@@ -133,8 +143,9 @@ model Ministry {
   ministry_type_id Int
   created_at       DateTime @default(now())
 
-  chapter          Chapter          @relation(fields: [chapter_id], references: [id])
-  ministry_type    MinistryType     @relation(fields: [ministry_type_id], references: [id])
+  chapter       Chapter      @relation(fields: [chapter_id], references: [id])
+  ministry_type MinistryType @relation(fields: [ministry_type_id], references: [id])
+
   user_roles       UserRole[]
   ministry_members MinistryMember[]
 
@@ -149,8 +160,9 @@ model Cluster {
   chapter_id Int
   created_at DateTime @default(now())
 
-  area            Area                 @relation(fields: [area_id], references: [id])
-  chapter         Chapter              @relation(fields: [chapter_id], references: [id])
+  area    Area    @relation(fields: [area_id], references: [id])
+  chapter Chapter @relation(fields: [chapter_id], references: [id])
+
   user_roles      UserRole[]
   cluster_members ClusterMember[]
   enthronements   EnthronementRecord[]
@@ -167,6 +179,7 @@ model Event {
   event_date    DateTime @db.Date
   event_time    DateTime @db.Time
 
+  // QR fields
   qr_token      String?   @db.VarChar(500)
   qr_expires_at DateTime?
   qr_interval   Int       @default(15)
