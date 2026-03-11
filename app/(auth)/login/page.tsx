@@ -16,33 +16,46 @@ export default function LoginPage() {
 
   return (
     <AuthFormCard
-      title="Sign In"
+      title="Welcome back."
+      description="Sign in to your community account."
       formAction={formAction}
       isPending={isPending}
       error={state.error}
       submitLabel="Sign In"
       pendingLabel="Signing in…"
+      footer={
+        <div className="space-y-2">
+          <p>First time logging in?</p>
+          <p>Check your email for your invitation.</p>
+        </div>
+      }
     >
       <div className="flex flex-col gap-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email" className="text-xs font-bold tracking-wider uppercase text-muted-foreground">
+          Email address
+        </Label>
         <Input
           id="email"
           name="email"
           type="email"
           autoComplete="email"
           required
-          placeholder="you@example.com"
+          placeholder="you@fdm.org"
+          className="h-12"
         />
       </div>
       <div className="flex flex-col gap-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password" className="text-xs font-bold tracking-wider uppercase text-muted-foreground">
+          Password
+        </Label>
         <Input
           id="password"
           name="password"
           type="password"
           autoComplete="current-password"
           required
-          placeholder="Enter your password"
+          placeholder="Please Enter your Password"
+          className="h-12"
         />
       </div>
     </AuthFormCard>

@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Inter, Abhaya_Libre } from "next/font/google";
 import "@/app/assets/styles/globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
-const poppins = Poppins({
+const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
   variable: "--font-sans",
+});
+
+const abhayaLibre = Abhaya_Libre({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-serif",
 });
 
 export const metadata: Metadata = {
@@ -22,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${poppins.variable} font-sans antialiased`}
+        className={`${inter.variable} ${abhayaLibre.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         {children}

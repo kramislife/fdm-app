@@ -3,33 +3,31 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Loading } from "@/components/ui/loading";
 
 interface AuthFormCardProps {
   title: string;
   description?: string;
+  subtitle?: string;
   formAction: (formData: FormData) => void;
   isPending: boolean;
   error: string | null;
   submitLabel: string;
   pendingLabel: string;
+  footer?: React.ReactNode;
   children: React.ReactNode;
 }
 
 export function AuthFormCard({
   title,
   description,
+  subtitle = "MEMBER'S PORTAL",
   formAction,
   isPending,
   error,
   submitLabel,
   pendingLabel,
+  footer,
   children,
 }: AuthFormCardProps) {
   useEffect(() => {
@@ -37,29 +35,43 @@ export function AuthFormCard({
   }, [error]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base md:text-lg lg:text-xl">
-          {title}
-        </CardTitle>
+    <div className="flex flex-col">
+      <div className="mb-10 flex flex-col gap-2">
+        <p className="text-xs font-bold tracking-wide text-primary uppercase">
+          {subtitle}
+        </p>
+        <h2 className="font-serif text-5xl font-extrabold">{title}</h2>
         {description && (
-          <CardDescription className="text-xs md:text-sm">
+          <p className="max-w-md text-sm text-muted-foreground leading-relaxed">
             {description}
-          </CardDescription>
+          </p>
         )}
-      </CardHeader>
-      <CardContent>
-        <form action={formAction} className="flex flex-col gap-3">
-          {children}
-          <Button
-            type="submit"
-            disabled={isPending}
-            className="cursor-pointer"
-          >
-            {isPending ? pendingLabel : submitLabel}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+      </div>
+
+      <form action={formAction} className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5">{children}</div>
+
+        <Button
+          type="submit"
+          disabled={isPending}
+          className="h-12 cursor-pointer"
+        >
+          {isPending ? (
+            <span className="flex items-center gap-2">
+              <Loading size="sm" variant="white" />
+              {pendingLabel}
+            </span>
+          ) : (
+            submitLabel
+          )}
+        </Button>
+      </form>
+
+      {footer && (
+        <div className="mt-3 text-center text-xs text-muted-foreground leading-relaxed italic">
+          {footer}
+        </div>
+      )}
+    </div>
   );
 }
