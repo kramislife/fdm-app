@@ -18,6 +18,10 @@ const abhayaLibre = Abhaya_Libre({
 export const metadata: Metadata = {
   title: "Friends of the Divine Mercy",
   description: "This App is for FDM Community",
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({

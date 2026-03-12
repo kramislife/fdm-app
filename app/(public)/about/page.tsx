@@ -27,8 +27,14 @@ import {
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 
 export default function AboutPage() {
-  const { fadeIn, fadeInUp, fadeInLeft, staggerContainer, getAnimationProps } =
-    useScrollAnimation();
+  const {
+    fadeIn,
+    fadeInUp,
+    fadeInLeft,
+    fadeInRight,
+    staggerContainer,
+    getAnimationProps,
+  } = useScrollAnimation();
 
   return (
     <main className="overflow-x-hidden">
@@ -61,7 +67,7 @@ export default function AboutPage() {
           {/* Right Image with Stylized Shape */}
           <motion.div
             className="relative hidden w-full flex-1 lg:block"
-            {...getAnimationProps(fadeIn)}
+            {...getAnimationProps(fadeInRight)}
             animate="whileInView" // Trigger immediately on load for Hero
           >
             <div className="relative aspect-video overflow-hidden rounded-bl-[50px] rounded-br-[100px] rounded-tl-[200px] rounded-tr-3xl shadow-2xl transition-transform duration-500 hover:scale-105">

@@ -10,6 +10,11 @@ export const fadeInLeft: Variants = {
   whileInView: { opacity: 1, x: 0 },
 };
 
+export const fadeInRight: Variants = {
+  initial: { opacity: 0, x: 30 },
+  whileInView: { opacity: 1, x: 0 },
+};
+
 export const fadeIn: Variants = {
   initial: { opacity: 0 },
   whileInView: { opacity: 1 },
@@ -43,6 +48,7 @@ export function useScrollAnimation() {
     fadeIn,
     fadeInUp,
     fadeInLeft,
+    fadeInRight,
     staggerContainer,
     commonTransition,
     commonViewport,
