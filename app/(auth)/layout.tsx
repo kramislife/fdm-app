@@ -15,8 +15,8 @@ export default function AuthLayout({
           src={divineMercy}
           alt="Divine Mercy"
           fill
+          sizes="(max-width: 1024px) 1px, 60vw"
           className="object-contain"
-          priority
         />
         <div className="absolute inset-0 bg-primary/60 mix-blend-multiply" />
         <div className="absolute inset-0 bg-linear-to-t from-primary/70 via-primary/20 to-transparent" />
@@ -42,7 +42,9 @@ export default function AuthLayout({
 
             <div className="mt-20 space-y-1 border-l border-white/30 pl-5 italic opacity-80">
               <p className="text-sm">"Jesus, I trust in You."</p>
-              <p className="text-[10px] not-italic pl-5">— St. Faustina Kowalska</p>
+              <p className="text-[10px] not-italic pl-5">
+                — St. Faustina Kowalska
+              </p>
             </div>
           </div>
         </div>
@@ -50,9 +52,7 @@ export default function AuthLayout({
 
       {/* Form Pane */}
       <div className="flex w-full flex-col justify-center px-5 lg:w-[40%]">
-        <div className="mx-auto w-full max-w-lg">
-          {children}
-        </div>
+        <div className="mx-auto w-full max-w-lg">{children}</div>
       </div>
     </div>
   );

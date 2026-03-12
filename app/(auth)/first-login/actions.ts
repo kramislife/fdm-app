@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
+import crypto from "node:crypto";
 
 export type SetPasswordState = {
   error: string | null;
@@ -38,51 +39,69 @@ export async function setPasswordAction(
   });
 
   if (updateError) {
-    return { error: "Failed to update password. Please try again." };
+    console.error("Supabase password update error:", updateError);
+    return {
+      error:
+        updateError.message || "Failed to update password. Please try again.",
+    };
   }
 
-  const dbUser = await prisma.user.findUnique({
-    where: { auth_id: user.id },
-  });
+  try {
+    const dbUser = await prisma.user.findUnique({
+      where: { auth_id: user.id },
+    });
 
-  if (!dbUser) {
-    return { error: "User profile not found. Please contact an administrator." };
-  }
+    if (!dbUser) {
+      console.error("User profile not found for auth_id:", user.id);
+      return {
+        error: "User profile not found. Please contact an administrator.",
+      };
+    }
 
-  await prisma.user.update({
-    where: { id: dbUser.id },
-    data: {
-      auth_id: user.id,
-      status: "registered",
-      is_temp_password: false,
-      account_expires_at: null,
-      member_qr: crypto.randomUUID(),
-    },
-  });
+    await prisma.user.update({
+      where: { id: dbUser.id },
+      data: {
+        auth_id: user.id,
+        status: "registered",
+        is_temp_password: false,
+        account_expires_at: null,
+        member_qr: crypto.randomUUID(),
+      },
+    });
 
-  // Backfill attendance: link guest logs by email
-  const unlinkedGuestLogs = await prisma.guestLog.findMany({
-    where: {
-      email: dbUser.email,
-      linked_user_id: null,
-    },
-    select: { id: true, attendance_id: true },
-  });
+    // Backfill attendance: link guest logs by email
+    const unlinkedGuestLogs = await prisma.guestLog.findMany({
+      where: {
+        email: dbUser.email,
+        linked_user_id: null,
+      },
+      select: { id: true, attendance_id: true },
+    });
 
-  if (unlinkedGuestLogs.length > 0) {
-    const attendanceIds = unlinkedGuestLogs.map((gl: { id: number; attendance_id: number }) => gl.attendance_id);
-    const guestLogIds = unlinkedGuestLogs.map((gl: { id: number; attendance_id: number }) => gl.id);
+    if (unlinkedGuestLogs.length > 0) {
+      const attendanceIds = unlinkedGuestLogs.map(
+        (gl: { id: number; attendance_id: number }) => gl.attendance_id,
+      );
+      const guestLogIds = unlinkedGuestLogs.map(
+        (gl: { id: number; attendance_id: number }) => gl.id,
+      );
 
-    await prisma.$transaction([
-      prisma.attendance.updateMany({
-        where: { id: { in: attendanceIds }, user_id: null },
-        data: { user_id: dbUser.id },
-      }),
-      prisma.guestLog.updateMany({
-        where: { id: { in: guestLogIds } },
-        data: { linked_user_id: dbUser.id },
-      }),
-    ]);
+      await prisma.$transaction([
+        prisma.attendance.updateMany({
+          where: { id: { in: attendanceIds }, user_id: null },
+          data: { user_id: dbUser.id },
+        }),
+        prisma.guestLog.updateMany({
+          where: { id: { in: guestLogIds } },
+          data: { linked_user_id: dbUser.id },
+        }),
+      ]);
+    }
+  } catch (error) {
+    console.error("First login data update error:", error);
+    return {
+      error: "Failed to finalize account setup. Please try again.",
+    };
   }
 
   redirect("/dashboard");

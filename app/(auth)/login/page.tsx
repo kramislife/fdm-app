@@ -25,13 +25,15 @@ export default function LoginPage() {
       pendingLabel="Signing in…"
       footer={
         <div className="space-y-2">
-          <p>First time logging in?</p>
-          <p>Check your email for your invitation.</p>
+          <p>First time logging in? Check your email for your invitation.</p>
         </div>
       }
     >
       <div className="flex flex-col gap-2">
-        <Label htmlFor="email" className="text-xs font-bold tracking-wider uppercase text-muted-foreground">
+        <Label
+          htmlFor="email"
+          className="text-xs font-bold tracking-wider uppercase text-muted-foreground"
+        >
           Email address
         </Label>
         <Input
@@ -40,12 +42,15 @@ export default function LoginPage() {
           type="email"
           autoComplete="email"
           required
-          placeholder="you@fdm.org"
+          placeholder="you@gmail.com"
           className="h-12"
         />
       </div>
       <div className="flex flex-col gap-2">
-        <Label htmlFor="password" className="text-xs font-bold tracking-wider uppercase text-muted-foreground">
+        <Label
+          htmlFor="password"
+          className="text-xs font-bold tracking-wider uppercase text-muted-foreground"
+        >
           Password
         </Label>
         <Input
@@ -54,7 +59,7 @@ export default function LoginPage() {
           type="password"
           autoComplete="current-password"
           required
-          placeholder="Please Enter your Password"
+          placeholder="••••••••"
           className="h-12"
         />
       </div>

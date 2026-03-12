@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const fs=require\\('fs'\\);console.log\\(fs.readFileSync\\('D:/Brick Extreme/FDM/fdm-app/tasks/todo.md','utf16le'\\)\\)\")",
+      "Bash(cd \"D:/Brick Extreme/FDM/fdm-app\" && npx tsc --noEmit 2>&1)",
+      "Bash(rm -rf \"D:/Brick Extreme/FDM/fdm-app/.next\" && cd \"D:/Brick Extreme/FDM/fdm-app\" && npx tsc --noEmit 2>&1)"
+    ]
+  }
+}

@@ -52,12 +52,22 @@ Community Management System
 
 ## Task Management
 
-1. **Plan First:** Write plan to `tasks/todo.md` with checkable items
-2. **Verify Plan:** Check in before starting implementation
-3. **Track Progress:** Mark items complete as you go
-4. **Explain Changes:** High-level summary at each step
-5. **Document Results:** Add review section to `tasks/todo.md`
-6. **Capture Lessons:** Update `tasks/lessons.md` after corrections
+Three-file system — always keep these in sync:
+
+| File                 | Purpose                                                |
+| -------------------- | ------------------------------------------------------ |
+| `tasks/todo.md`      | Active phase only — current tasks with checkboxes      |
+| `tasks/checking.md`  | Developer QA checklist — verify before approving phase |
+| `tasks/completed.md` | Permanent log of finished phases + their checklists    |
+
+### Workflow per phase
+
+1. Build tasks from `tasks/todo.md`
+2. Run `npx tsc --noEmit` — zero errors required
+3. Update `tasks/checking.md` with that phase's checklist
+4. Once ALL checklist items pass → move phase to `tasks/completed.md`
+5. Update `tasks/checking.md` with the NEXT phase's checklist
+6. Capture any lessons in `tasks/lessons.md`
 
 ---
 
@@ -110,8 +120,11 @@ npx prisma studio                # browse database
 ```
 app/                  # Next.js App Router pages and layouts
 components/           # shared UI components
+config/               # app-wide config data (navigation, constants)
 tasks/
-  todo.md             # active task plan with checkboxes
+  todo.md             # active phase — current tasks only
+  checking.md         # developer QA checklist for current phase
+  completed.md        # log of finished phases with checklists
   lessons.md          # lessons learned — updated after every correction
   FDM_REQUIREMENTS.md # full product requirements document
   FDM_TECHSTACK.md    # tech stack setup guide and code templates
@@ -129,36 +142,6 @@ prisma/
   schema.prisma       # database schema
   seed.ts             # seed data
 ```
-
----
-
-## Database — Key Rules
-
-- `public.users` = profile data (Prisma). `auth.users` = credentials (Supabase Auth).
-- Link them via `users.auth_id` (Supabase Auth UUID). Null until user activates account.
-- Always import `prisma` from `lib/prisma.ts` — never instantiate PrismaClient directly.
-- Lookup tables use `key` (snake_case machine key) + `name` (human-readable UI label).
-
----
-
-## Roles (11 total)
-
-`spiritual_director` > `elder` > `head_servant` > `asst_head_servant` > `ministry_coordinator` > `builder` > `cluster_head` > `finance` > `ministry_head` > `member` > guest (no login)
-
-## Chapters (6)
-
-Quezon City (Sat) · Bataan (Sat) · Cavite (Fri) · Pasay (Thu) · Pasig (Sat) · Tala (Wed)
-Pasig has two areas: Sta. Clara and Sta. Martha — they are areas, NOT separate chapters.
-
-## Event Types
-
-`rays_of_mercy` · `clse` · `biyayang_bigas` · `youth` · `special`
-Believers Fellowship is NOT an event — it is the regular weekly chapter gathering.
-
----
-
-## Brand Colors (`#a92227`)
-
 ---
 
 ## Responsive Typography & Spacing
@@ -175,22 +158,6 @@ Always use responsive text sizes — never a single fixed size. Follow this scal
 | Table cell      | `text-xs`   | `text-sm`    | `text-sm`     |
 | Button          | `text-sm`   | `text-sm`    | `text-base`   |
 
-Example:
-
-```tsx
-<h1 className="text-xl md:text-2xl lg:text-3xl font-bold">Members</h1>
-<p className="text-sm md:text-base">Chapter details here</p>
-```
-
-**Spacing** — always responsive:
-
-```tsx
-<div className="p-4 md:p-6 lg:p-8">                      {/* page container */}
-<div className="p-3 md:p-4 lg:p-6">                      {/* card */}
-<div className="flex flex-col gap-3 md:gap-4 lg:gap-6">  {/* section gap */}
-```
-
-**Breakpoints:** `sm` 640px · `md` 768px · `lg` 1024px · `xl` 1280px
 
 **Rules:**
 
@@ -209,20 +176,6 @@ Example:
 - Prefer `async/await` over `.then()` chains
 - All API routes go in `app/api/`
 - Always handle loading and error states in UI
-
----
-
-## Auth Flow (to be built)
-
-1. Admin creates account from guest log → Supabase Auth invite email sent
-2. Member clicks link → first-login page → sets password → `auth_id` saved to `public.users`
-3. Session managed via Supabase SSR (`lib/supabase/server.ts`)
-4. Route protection via middleware checking Supabase session
-
-## QR Attendance
-
-- Rotating signed JWT per event, 15-min rotation, validated server-side
-- Two modes: tablet scanner (Secretariat scans member QR) and self check-in (member scans event QR)
 
 ---
 

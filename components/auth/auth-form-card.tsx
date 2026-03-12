@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Loading } from "@/components/ui/loading";
+import { Logo } from "@/components/ui/logo";
 
 interface AuthFormCardProps {
   title: string;
@@ -37,6 +38,11 @@ export function AuthFormCard({
   return (
     <div className="flex flex-col">
       <div className="mb-10 flex flex-col gap-2">
+        <Logo
+          size="w-48"
+          className="mb-5 self-center"
+          title="Navigate to Homepage"
+        />
         <p className="text-xs font-bold tracking-wide text-primary uppercase">
           {subtitle}
         </p>
