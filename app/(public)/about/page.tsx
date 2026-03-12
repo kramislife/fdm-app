@@ -206,7 +206,7 @@ export default function AboutPage() {
         </motion.div>
       </section>
 
-      {/*  ---------------------- Gallery/Community Section --------------------- */}
+      {/*  ---------------------- Our Community Section --------------------- */}
       <motion.section
         className="relative overflow-hidden aspect-4/5 md:aspect-16/7"
         {...getAnimationProps(fadeIn)}
@@ -229,7 +229,7 @@ export default function AboutPage() {
             <p className="text-xs font-bold uppercase tracking-widest text-white">
               {communityGallery.eyebrow}
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-white">
+            <h2 className="font-serif text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight text-white">
               {communityGallery.title}
             </h2>
             <div className="h-1 w-12 bg-primary" />
@@ -291,7 +291,7 @@ export default function AboutPage() {
             <p className="text-xs font-bold uppercase tracking-widest text-primary">
               {story.eyebrow}
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-white">
+            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight text-white">
               {story.title}
             </h2>
             <div className="h-1 w-12 bg-primary" />

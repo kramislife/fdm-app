@@ -1,7 +1,7 @@
 import type { StaticImageData } from "next/image";
 import { Heart, Users, Plus, type LucideIcon } from "lucide-react";
 
-import heroImage from "@/app/assets/media/gods_mercy.jpg";
+import heroImage from "@/app/assets/media/god-mercy.jpg";
 
 import qcImage from "@/app/assets/media/chapters/qc.png";
 import bataanImage from "@/app/assets/media/chapters/bataan.png";
@@ -10,8 +10,8 @@ import pasayImage from "@/app/assets/media/chapters/pasay.png";
 import pasigImage from "@/app/assets/media/chapters/pasig.png";
 import talaImage from "@/app/assets/media/chapters/tala.png";
 
-import communityImage from "@/app/assets/media/faces_of_faith.jpg";
-import storyImage from "@/app/assets/media/story_of_mercy.jpg";
+import communityImage from "@/app/assets/media/faces-of-faith.jpg";
+import storyImage from "@/app/assets/media/story-of-mercy.jpg";
 
 // ---------------------------- Base Interfaces ----------------------------
 

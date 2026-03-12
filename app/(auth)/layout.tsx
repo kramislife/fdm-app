@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Plus } from "lucide-react";
-import divineMercy from "@/app/assets/media/divine_mercy.png";
+import divineMercy from "@/app/assets/media/divine-mercy.png";
 import { motion } from "framer-motion";
 
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
