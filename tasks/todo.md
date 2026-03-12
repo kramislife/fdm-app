@@ -35,14 +35,26 @@
 > Goal: About FDM page live, all sections, data-driven from config, using real assets.
 
 ### Design
+
 - [x] `design/about.pen` — Full About page designed (9 sections)
 
 ### Config & Data
+
 - [x] `config/about.ts` — chapters, pillars, communityStats, heroStats
 
 ### Implementation
+
 - [x] `app/(public)/about/page.tsx` — Hero, Mission, Pillars, Chapters, Gallery, Stats, Our Story, CTA, Footer
 - [x] Verify all 6 chapter images load (qc, bataan, cavite, pasau, pasig, tala)
 - [x] `npx tsc --noEmit` — zero errors
 
 ---
+
+## Phase 4: Public Pages — Chapters
+
+> Goal: Comprehensive list of all FDM chapters with locations and schedules.
+
+- [ ] `app/(public)/chapters/page.tsx` — Grid layout of all 6 chapters
+- [ ] Integration with `config/about.ts` (or move to `config/chapters.ts`)
+- [ ] Responsive design & visual consistency with About page
+- [ ] `npx tsc --noEmit` — zero errors
