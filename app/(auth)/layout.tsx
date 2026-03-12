@@ -17,6 +17,7 @@ export default function AuthLayout({
           fill
           sizes="(max-width: 1024px) 1px, 60vw"
           className="object-contain"
+          loading="eager"
         />
         <div className="absolute inset-0 bg-primary/60 mix-blend-multiply" />
         <div className="absolute inset-0 bg-linear-to-t from-primary/70 via-primary/20 to-transparent" />
