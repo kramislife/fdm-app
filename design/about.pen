@@ -1,0 +1,2054 @@
+{
+  "version": "2.8",
+  "children": [
+    {
+      "type": "frame",
+      "id": "w8tdO",
+      "x": 0,
+      "y": 0,
+      "name": "FDM About Page",
+      "width": 1440,
+      "fill": "#FFFFFF",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "CW4UD",
+          "name": "Nav",
+          "width": "fill_container",
+          "height": 72,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "align": "inside",
+            "thickness": {
+              "bottom": 1
+            },
+            "fill": "#E8E8E8"
+          },
+          "padding": [
+            0,
+            80
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "Efywm",
+              "fill": "#a92227",
+              "content": "✛ FDM",
+              "fontFamily": "Cormorant Garamond",
+              "fontSize": 24,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "h4Ywt",
+              "name": "navLinks",
+              "gap": 40,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "PQlxW",
+                  "fill": "#7A7A7A",
+                  "content": "Home",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "p3fMU",
+                  "fill": "#0D0D0D",
+                  "content": "About",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "56YMh",
+                  "fill": "#7A7A7A",
+                  "content": "Chapters",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "LRwiH",
+              "name": "navBtn",
+              "fill": "#a92227",
+              "padding": [
+                11,
+                28
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "TE9mV",
+                  "fill": "#FFFFFF",
+                  "content": "Sign In",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "vFFA4",
+          "name": "Hero",
+          "width": "fill_container",
+          "height": 700,
+          "children": [
+            {
+              "type": "frame",
+              "id": "sWxbi",
+              "name": "Hero Left",
+              "width": 760,
+              "height": "fill_container",
+              "fill": "#FFFFFF",
+              "layout": "vertical",
+              "gap": 28,
+              "padding": [
+                80,
+                120
+              ],
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "MSBs4",
+                  "name": "heroBadge",
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#a92227"
+                  },
+                  "gap": 8,
+                  "padding": [
+                    6,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "C1Kdb",
+                      "fill": "#a92227",
+                      "width": 6,
+                      "height": 6
+                    },
+                    {
+                      "type": "text",
+                      "id": "uaoNr",
+                      "fill": "#a92227",
+                      "content": "FRIENDS OF THE DIVINE MERCY",
+                      "fontFamily": "Inter",
+                      "fontSize": 10,
+                      "fontWeight": "600",
+                      "letterSpacing": 1.5
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "S950C",
+                  "fill": "#0D0D0D",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Bearing Witness\nto God's Mercy",
+                  "lineHeight": 1,
+                  "fontFamily": "Cormorant Garamond",
+                  "fontSize": 80,
+                  "fontWeight": "500",
+                  "letterSpacing": -2
+                },
+                {
+                  "type": "text",
+                  "id": "UKepa",
+                  "fill": "#7A7A7A",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "A faith community of six chapters across Metro Manila and nearby provinces, united in prayer, service, and the mission of spreading Divine Mercy.",
+                  "lineHeight": 1.6,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "UpJLG",
+                  "name": "heroCTAs",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "RjEIX",
+                      "name": "cta1",
+                      "fill": "#a92227",
+                      "padding": [
+                        14,
+                        32
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "LAOqX",
+                          "fill": "#FFFFFF",
+                          "content": "Join Our Community",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "wxh5O",
+                      "name": "cta2",
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#0D0D0D"
+                      },
+                      "padding": [
+                        13,
+                        31
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "DH1Q1",
+                          "fill": "#0D0D0D",
+                          "content": "Learn More",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "fKKU8",
+                  "name": "heroStatsRow",
+                  "width": "fill_container",
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": {
+                      "top": 1
+                    },
+                    "fill": "#E8E8E8"
+                  },
+                  "gap": 40,
+                  "padding": [
+                    20,
+                    0,
+                    0,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "K0bYw",
+                      "fill": "#a92227",
+                      "content": "248 Members",
+                      "fontFamily": "Cormorant Garamond",
+                      "fontSize": 22,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "kZ538",
+                      "fill": "#a92227",
+                      "content": "6 Chapters",
+                      "fontFamily": "Cormorant Garamond",
+                      "fontSize": 22,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "LDtwu",
+                      "fill": "#a92227",
+                      "content": "14 Ministries",
+                      "fontFamily": "Cormorant Garamond",
+                      "fontSize": 22,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "V693D",
+              "name": "Hero Image",
+              "metadata": {
+                "type": "unsplash",
+                "username": "shaikhulud",
+                "link": "https://unsplash.com/@shaikhulud",
+                "author": "Maxim Tolchinskiy"
+              },
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1687384402892-f54f35e7cd45?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzMyOTUxMzJ8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "8FTj3",
+          "name": "Mission",
+          "width": "fill_container",
+          "fill": "#F9F5F2",
+          "layout": "vertical",
+          "gap": 36,
+          "padding": [
+            100,
+            240
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "CPLkL",
+              "fill": "#a92227",
+              "content": "OUR MISSION",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600",
+              "letterSpacing": 2
+            },
+            {
+              "type": "text",
+              "id": "B1Fs5",
+              "fill": "#0D0D0D",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Bearing witness to God's mercy through faith, service, and community — one chapter at a time.",
+              "lineHeight": 1.1,
+              "textAlign": "center",
+              "fontFamily": "Cormorant Garamond",
+              "fontSize": 52,
+              "fontWeight": "500",
+              "letterSpacing": -1
+            },
+            {
+              "type": "text",
+              "id": "Sz9cF",
+              "fill": "#7A7A7A",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Founded on the spirituality of Saint Faustina Kowalska and the message of Divine Mercy, FDM gathers faithful from across Metro Manila and nearby provinces every week for prayer, formation, and service.",
+              "lineHeight": 1.7,
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 15,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "dFdRh",
+              "name": "quoteBox",
+              "fill": "#f9f5f2",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "left": 3
+                },
+                "fill": "#a92227"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": [
+                28,
+                48
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "lt0Lr",
+                  "fill": "#0D0D0D",
+                  "content": "\"Jesus, I trust in You.\"",
+                  "fontFamily": "Cormorant Garamond",
+                  "fontSize": 28,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "qUVQC",
+                  "fill": "#7A7A7A",
+                  "content": "— St. Faustina Kowalska",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "RbHkI",
+          "name": "Pillars",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "layout": "vertical",
+          "gap": 52,
+          "padding": [
+            80,
+            120
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "wCiix",
+              "name": "pillarsHeader",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "YD4MX",
+                  "fill": "#a92227",
+                  "content": "WHAT DRIVES US",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600",
+                  "letterSpacing": 2
+                },
+                {
+                  "type": "text",
+                  "id": "aeKaz",
+                  "fill": "#0D0D0D",
+                  "content": "Built on three foundations",
+                  "fontFamily": "Cormorant Garamond",
+                  "fontSize": 48,
+                  "fontWeight": "500",
+                  "letterSpacing": -1
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "eiD3D",
+              "name": "pillarsRow",
+              "width": "fill_container",
+              "gap": 32,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "IOXpa",
+                  "name": "pillar1",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": {
+                      "top": 3,
+                      "right": 1,
+                      "bottom": 1,
+                      "left": 1
+                    },
+                    "fill": "#a92227"
+                  },
+                  "layout": "vertical",
+                  "gap": 20,
+                  "padding": 40,
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "my0Ii",
+                      "width": 28,
+                      "height": 28,
+                      "iconFontName": "sun",
+                      "iconFontFamily": "lucide",
+                      "fill": "#a92227"
+                    },
+                    {
+                      "type": "text",
+                      "id": "U1IHC",
+                      "fill": "#0D0D0D",
+                      "content": "Faith",
+                      "fontFamily": "Cormorant Garamond",
+                      "fontSize": 32,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "JeHGV",
+                      "fill": "#7A7A7A",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Rooted in the Divine Mercy of Jesus Christ, we live our faith through weekly prayer gatherings, the sacraments, and personal devotion.",
+                      "lineHeight": 1.7,
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "OTktd",
+                  "name": "pillar2",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": {
+                      "top": 3,
+                      "right": 1,
+                      "bottom": 1,
+                      "left": 1
+                    },
+                    "fill": "#E8E8E8"
+                  },
+                  "layout": "vertical",
+                  "gap": 20,
+                  "padding": 40,
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "ZNJcJ",
+                      "width": 28,
+                      "height": 28,
+                      "iconFontName": "heart",
+                      "iconFontFamily": "lucide",
+                      "fill": "#a92227"
+                    },
+                    {
+                      "type": "text",
+                      "id": "0aBuM",
+                      "fill": "#0D0D0D",
+                      "content": "Service",
+                      "fontFamily": "Cormorant Garamond",
+                      "fontSize": 32,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "YKJhC",
+                      "fill": "#7A7A7A",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "We serve our community through outreach, Biyayang Bigas distributions, enthronements of the Divine Mercy image, and acts of charity.",
+                      "lineHeight": 1.7,
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "NNKLf",
+                  "name": "pillar3",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": {
+                      "top": 3,
+                      "right": 1,
+                      "bottom": 1,
+                      "left": 1
+                    },
+                    "fill": "#E8E8E8"
+                  },
+                  "layout": "vertical",
+                  "gap": 20,
+                  "padding": 40,
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "V3Hwk",
+                      "width": 28,
+                      "height": 28,
+                      "iconFontName": "users",
+                      "iconFontFamily": "lucide",
+                      "fill": "#a92227"
+                    },
+                    {
+                      "type": "text",
+                      "id": "05xQH",
+                      "fill": "#0D0D0D",
+                      "content": "Community",
+                      "fontFamily": "Cormorant Garamond",
+                      "fontSize": 32,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "EJqIg",
+                      "fill": "#7A7A7A",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Six chapters, one heart. We build authentic relationships through regular gatherings, ministries, and shared formation across Metro Manila.",
+                      "lineHeight": 1.7,
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "76mKi",
+          "name": "Chapters Section",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "layout": "vertical",
+          "gap": 52,
+          "padding": [
+            80,
+            120
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "AYnQ5",
+              "name": "Chapters Header",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "9gVXG",
+                  "name": "chapLabel",
+                  "fill": "#a92227",
+                  "content": "THE CHAPTERS",
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "700",
+                  "letterSpacing": 3
+                },
+                {
+                  "type": "text",
+                  "id": "IEOlz",
+                  "name": "chapTitle",
+                  "fill": "#1a1a1a",
+                  "content": "Six Communities, One Mission",
+                  "textAlign": "center",
+                  "fontFamily": "Cormorant Garamond",
+                  "fontSize": 42,
+                  "fontWeight": "600",
+                  "letterSpacing": -1
+                },
+                {
+                  "type": "text",
+                  "id": "eNTAj",
+                  "name": "chapSubtitle",
+                  "fill": "#666666",
+                  "content": "Each chapter gathers weekly for the Believers Fellowship — a time of prayer, worship, and formation. Together we carry the message of Divine Mercy.",
+                  "lineHeight": 1.7,
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "duzAM",
+              "name": "Chapters Grid",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "t7yI1",
+                  "name": "Row 1",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ZrLtS",
+                      "name": "QC Card",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 10,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#EEEEEE"
+                      },
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ihnRb",
+                          "name": "Card Image",
+                          "metadata": {
+                            "type": "unsplash",
+                            "username": "richmondtieng",
+                            "link": "https://unsplash.com/@richmondtieng",
+                            "author": "Jan Richmond Tieng"
+                          },
+                          "width": "fill_container",
+                          "height": 180,
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "https://images.unsplash.com/photo-1709194099515-d13902dece08?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzMyOTU5MDd8&ixlib=rb-4.1.0&q=80&w=1080",
+                            "mode": "fill"
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "RaeIm",
+                          "name": "Card Body",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": [
+                            24,
+                            24,
+                            28,
+                            24
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "QPHzX",
+                              "name": "qcAccent",
+                              "width": 36,
+                              "height": 3,
+                              "fill": "#a92227",
+                              "cornerRadius": 2
+                            },
+                            {
+                              "type": "text",
+                              "id": "jE4mO",
+                              "name": "qcDay",
+                              "fill": "#a92227",
+                              "content": "SATURDAY",
+                              "fontFamily": "Inter",
+                              "fontSize": 10,
+                              "fontWeight": "700",
+                              "letterSpacing": 2.5
+                            },
+                            {
+                              "type": "text",
+                              "id": "VjJ2m",
+                              "name": "qcName",
+                              "fill": "#0D0D0D",
+                              "content": "Quezon City",
+                              "fontFamily": "Cormorant Garamond",
+                              "fontSize": 26,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "7KH1G",
+                              "name": "qcLoc",
+                              "fill": "#999999",
+                              "content": "Metro Manila",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "4FwM8",
+                              "name": "qcDiv",
+                              "width": "fill_container",
+                              "height": 1,
+                              "fill": "#F0F0F0"
+                            },
+                            {
+                              "type": "text",
+                              "id": "zsTdi",
+                              "name": "qcDesc",
+                              "fill": "#555555",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "One of FDM's founding chapters. Gathers every Saturday for the Believers Fellowship — prayer, formation, and community in the heart of QC.",
+                              "lineHeight": 1.65,
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "sPBiR",
+                      "name": "Bataan Card",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 10,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#EEEEEE"
+                      },
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "pagMb",
+                          "name": "Card Image",
+                          "metadata": {
+                            "type": "unsplash",
+                            "username": "hdbernd",
+                            "link": "https://unsplash.com/@hdbernd",
+                            "author": "Bernd 📷 Dittrich"
+                          },
+                          "width": "fill_container",
+                          "height": 180,
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "https://images.unsplash.com/photo-1759860002245-bb9eb3229cb3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzMyOTU5MzB8&ixlib=rb-4.1.0&q=80&w=1080",
+                            "mode": "fill"
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "gEBaC",
+                          "name": "Card Body",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": [
+                            24,
+                            24,
+                            28,
+                            24
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "41lhK",
+                              "name": "btAcc",
+                              "width": 36,
+                              "height": 3,
+                              "fill": "#DDDDDD",
+                              "cornerRadius": 2
+                            },
+                            {
+                              "type": "text",
+                              "id": "ikRGC",
+                              "name": "btDay",
+                              "fill": "#888888",
+                              "content": "SATURDAY",
+                              "fontFamily": "Inter",
+                              "fontSize": 10,
+                              "fontWeight": "700",
+                              "letterSpacing": 2.5
+                            },
+                            {
+                              "type": "text",
+                              "id": "Zh559",
+                              "name": "btName",
+                              "fill": "#0D0D0D",
+                              "content": "Bataan",
+                              "fontFamily": "Cormorant Garamond",
+                              "fontSize": 26,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "97kAa",
+                              "name": "btLoc",
+                              "fill": "#999999",
+                              "content": "Luzon Province",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "JhKgN",
+                              "name": "btDivLine",
+                              "width": "fill_container",
+                              "height": 1,
+                              "fill": "#F0F0F0"
+                            },
+                            {
+                              "type": "text",
+                              "id": "yFEhL",
+                              "name": "btDesc",
+                              "fill": "#555555",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Bringing Divine Mercy to the province of Bataan. Members gather every Saturday for fellowship, sharing faith across the historic province.",
+                              "lineHeight": 1.65,
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "VCk2B",
+                      "name": "Cavite Card",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 10,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#EEEEEE"
+                      },
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "3XbqJ",
+                          "name": "Card Image",
+                          "metadata": {
+                            "type": "unsplash",
+                            "username": "alien_sam",
+                            "link": "https://unsplash.com/@alien_sam",
+                            "author": "Aliya Sam"
+                          },
+                          "width": "fill_container",
+                          "height": 180,
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "https://images.unsplash.com/photo-1736862499767-765c0bcd3ec1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzMyOTU5NDZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                            "mode": "fill"
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "3VvyN",
+                          "name": "Card Body",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": [
+                            24,
+                            24,
+                            28,
+                            24
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "YcXVw",
+                              "name": "cvAcc",
+                              "width": 36,
+                              "height": 3,
+                              "fill": "#DDDDDD",
+                              "cornerRadius": 2
+                            },
+                            {
+                              "type": "text",
+                              "id": "loMoK",
+                              "name": "cvDay",
+                              "fill": "#888888",
+                              "content": "FRIDAY",
+                              "fontFamily": "Inter",
+                              "fontSize": 10,
+                              "fontWeight": "700",
+                              "letterSpacing": 2.5
+                            },
+                            {
+                              "type": "text",
+                              "id": "0MhTC",
+                              "name": "cvName",
+                              "fill": "#0D0D0D",
+                              "content": "Cavite",
+                              "fontFamily": "Cormorant Garamond",
+                              "fontSize": 26,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "9AISj",
+                              "name": "cvLoc",
+                              "fill": "#999999",
+                              "content": "Cavite Province",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Gtg4E",
+                              "name": "cvDivLine",
+                              "width": "fill_container",
+                              "height": 1,
+                              "fill": "#F0F0F0"
+                            },
+                            {
+                              "type": "text",
+                              "id": "ImfrW",
+                              "name": "cvDesc",
+                              "fill": "#555555",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "A Friday chapter rooted in service and prayer. The Cavite community gathers weekly, bringing the message of mercy to their province.",
+                              "lineHeight": 1.65,
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "CJlFq",
+                  "name": "Row 2",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ThYvz",
+                      "name": "Pasay Card",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 10,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#EEEEEE"
+                      },
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "lh2tC",
+                          "name": "Card Image",
+                          "metadata": {
+                            "type": "unsplash",
+                            "username": "fhdigital",
+                            "link": "https://unsplash.com/@fhdigital",
+                            "author": "Hannah Fleming-Hlll"
+                          },
+                          "width": "fill_container",
+                          "height": 180,
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "https://images.unsplash.com/photo-1739116602091-3dffb4f237f9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzMyOTU5NjF8&ixlib=rb-4.1.0&q=80&w=1080",
+                            "mode": "fill"
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "XiqAk",
+                          "name": "Card Body",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": [
+                            24,
+                            24,
+                            28,
+                            24
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "Xdvy2",
+                              "name": "psyAcc",
+                              "width": 36,
+                              "height": 3,
+                              "fill": "#DDDDDD",
+                              "cornerRadius": 2
+                            },
+                            {
+                              "type": "text",
+                              "id": "CSuqf",
+                              "name": "psyDay",
+                              "fill": "#888888",
+                              "content": "THURSDAY",
+                              "fontFamily": "Inter",
+                              "fontSize": 10,
+                              "fontWeight": "700",
+                              "letterSpacing": 2.5
+                            },
+                            {
+                              "type": "text",
+                              "id": "cAwx0",
+                              "name": "psyName",
+                              "fill": "#0D0D0D",
+                              "content": "Pasay",
+                              "fontFamily": "Cormorant Garamond",
+                              "fontSize": 26,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "V7dm0",
+                              "name": "psyLoc",
+                              "fill": "#999999",
+                              "content": "Metro Manila",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "6lvDy",
+                              "name": "psyDL",
+                              "width": "fill_container",
+                              "height": 1,
+                              "fill": "#F0F0F0"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Sj6Vw",
+                              "name": "psyDesc",
+                              "fill": "#555555",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Every Thursday, the Pasay chapter gathers in the heart of Metro Manila — a community anchored in mercy, fellowship, and service.",
+                              "lineHeight": 1.65,
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "IWOOe",
+                      "name": "Pasig Card",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 10,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#EEEEEE"
+                      },
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "lhXdl",
+                          "name": "Card Image",
+                          "metadata": {
+                            "type": "unsplash",
+                            "username": "samuelyongbo",
+                            "link": "https://unsplash.com/@samuelyongbo",
+                            "author": "Samuel Yongbo Kwon"
+                          },
+                          "width": "fill_container",
+                          "height": 180,
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "https://images.unsplash.com/photo-1731341711748-ef0596ae4959?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzMyOTU5NzZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                            "mode": "fill"
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "VDYID",
+                          "name": "Card Body",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": [
+                            24,
+                            24,
+                            28,
+                            24
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "aNlih",
+                              "name": "pigAcc",
+                              "width": 36,
+                              "height": 3,
+                              "fill": "#DDDDDD",
+                              "cornerRadius": 2
+                            },
+                            {
+                              "type": "text",
+                              "id": "F5QnW",
+                              "name": "pigDay",
+                              "fill": "#888888",
+                              "content": "SATURDAY",
+                              "fontFamily": "Inter",
+                              "fontSize": 10,
+                              "fontWeight": "700",
+                              "letterSpacing": 2.5
+                            },
+                            {
+                              "type": "text",
+                              "id": "LClYC",
+                              "name": "pigName",
+                              "fill": "#0D0D0D",
+                              "content": "Pasig",
+                              "fontFamily": "Cormorant Garamond",
+                              "fontSize": 26,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "d1u8J",
+                              "name": "pigLoc",
+                              "fill": "#999999",
+                              "content": "Metro Manila",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "YNCUR",
+                              "name": "pigDL",
+                              "width": "fill_container",
+                              "height": 1,
+                              "fill": "#F0F0F0"
+                            },
+                            {
+                              "type": "text",
+                              "id": "AWnsC",
+                              "name": "pigDesc",
+                              "fill": "#555555",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Covering Sta. Clara and Sta. Martha areas. Two vibrant communities, one heart — united every Saturday under the banner of Divine Mercy.",
+                              "lineHeight": 1.65,
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "O58Pr",
+                      "name": "Tala Card",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 10,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#EEEEEE"
+                      },
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "toDo8",
+                          "name": "Card Image",
+                          "metadata": {
+                            "type": "unsplash",
+                            "username": "vkodra",
+                            "link": "https://unsplash.com/@vkodra",
+                            "author": "Valeria Kodra"
+                          },
+                          "width": "fill_container",
+                          "height": 180,
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "https://images.unsplash.com/photo-1727002268344-460d391f7031?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzMyOTU5Nzd8&ixlib=rb-4.1.0&q=80&w=1080",
+                            "mode": "fill"
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "xApKt",
+                          "name": "Card Body",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": [
+                            24,
+                            24,
+                            28,
+                            24
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "EJPBg",
+                              "name": "tlAcc",
+                              "width": 36,
+                              "height": 3,
+                              "fill": "#DDDDDD",
+                              "cornerRadius": 2
+                            },
+                            {
+                              "type": "text",
+                              "id": "jlteh",
+                              "name": "tlDay",
+                              "fill": "#888888",
+                              "content": "WEDNESDAY",
+                              "fontFamily": "Inter",
+                              "fontSize": 10,
+                              "fontWeight": "700",
+                              "letterSpacing": 2.5
+                            },
+                            {
+                              "type": "text",
+                              "id": "toAZf",
+                              "name": "tlName",
+                              "fill": "#0D0D0D",
+                              "content": "Tala",
+                              "fontFamily": "Cormorant Garamond",
+                              "fontSize": 26,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "XBvCe",
+                              "name": "tlLoc",
+                              "fill": "#999999",
+                              "content": "Caloocan City",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "jbHyR",
+                              "name": "tlDL",
+                              "width": "fill_container",
+                              "height": 1,
+                              "fill": "#F0F0F0"
+                            },
+                            {
+                              "type": "text",
+                              "id": "iAang",
+                              "name": "tlDesc",
+                              "fill": "#555555",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "A mid-week gathering every Wednesday in Tala, Caloocan. A community devoted to prayer, service, and the daily living of God's mercy.",
+                              "lineHeight": 1.65,
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "D4xXQ",
+          "name": "Gallery Section",
+          "metadata": {
+            "type": "unsplash",
+            "username": "ayodigital",
+            "link": "https://unsplash.com/@ayodigital",
+            "author": "Ayodele Adeniyi"
+          },
+          "width": "fill_container",
+          "height": 480,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "https://images.unsplash.com/photo-1681936485170-5f3cdb89c933?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzMyOTU5OTR8&ixlib=rb-4.1.0&q=80&w=1080",
+            "mode": "fill"
+          },
+          "gap": 4,
+          "children": [
+            {
+              "type": "frame",
+              "id": "GnK0W",
+              "name": "Overlay",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "#00000080",
+              "layout": "vertical",
+              "gap": 12,
+              "padding": [
+                0,
+                120
+              ],
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "7SYgJ",
+                  "name": "galEyebrow",
+                  "fill": "#a92227",
+                  "content": "OUR COMMUNITY",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "700",
+                  "letterSpacing": 3
+                },
+                {
+                  "type": "text",
+                  "id": "yR9Sl",
+                  "name": "galHeadline",
+                  "fill": "#FFFFFF",
+                  "content": "Faces of Faith",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Cormorant Garamond",
+                  "fontSize": 64,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "LWAzB",
+                  "name": "galSub",
+                  "fill": "#ffffffbf",
+                  "content": "Hundreds of members across six chapters — each one a living witness to the mercy and love of God.",
+                  "lineHeight": 1.7,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "vmVMx",
+          "name": "Stats Strip",
+          "width": "fill_container",
+          "height": 260,
+          "fill": "#1a0a0b",
+          "padding": [
+            0,
+            120
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "WyF6K",
+              "name": "Stat 1",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "k4dXh",
+                  "name": "s1num",
+                  "fill": "#a92227",
+                  "content": "6",
+                  "textAlign": "center",
+                  "fontFamily": "Cormorant Garamond",
+                  "fontSize": 64,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "DlPz6",
+                  "name": "s1label",
+                  "fill": "#cccccc",
+                  "content": "Chapters",
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "letterSpacing": 1.5
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "TVj2Y",
+              "name": "divider",
+              "width": 1,
+              "height": 80,
+              "fill": "#333333"
+            },
+            {
+              "type": "frame",
+              "id": "dw757",
+              "name": "Stat 2",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "8YT27",
+                  "name": "s2num",
+                  "fill": "#a92227",
+                  "content": "500+",
+                  "textAlign": "center",
+                  "fontFamily": "Cormorant Garamond",
+                  "fontSize": 64,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "Nvvec",
+                  "name": "s2label",
+                  "fill": "#cccccc",
+                  "content": "Members",
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "letterSpacing": 1.5
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "wN1hj",
+              "name": "divider",
+              "width": 1,
+              "height": 80,
+              "fill": "#333333"
+            },
+            {
+              "type": "frame",
+              "id": "q1aKl",
+              "name": "Stat 3",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "GRGzg",
+                  "name": "s3num",
+                  "fill": "#a92227",
+                  "content": "30+",
+                  "textAlign": "center",
+                  "fontFamily": "Cormorant Garamond",
+                  "fontSize": 64,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "KtmYt",
+                  "name": "s3label",
+                  "fill": "#cccccc",
+                  "content": "Years of Service",
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "letterSpacing": 1.5
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "yyDM4",
+              "name": "divider",
+              "width": 1,
+              "height": 80,
+              "fill": "#333333"
+            },
+            {
+              "type": "frame",
+              "id": "VqRUv",
+              "name": "Stat 4",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "QQiil",
+                  "name": "s4num",
+                  "fill": "#a92227",
+                  "content": "50+",
+                  "textAlign": "center",
+                  "fontFamily": "Cormorant Garamond",
+                  "fontSize": 64,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "5lXse",
+                  "name": "s4label",
+                  "fill": "#cccccc",
+                  "content": "Events per Year",
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "letterSpacing": 1.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "IpyqH",
+          "name": "Our Story",
+          "width": "fill_container",
+          "fill": "#F9F5F2",
+          "gap": 80,
+          "padding": [
+            100,
+            120
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "8iAS9",
+              "name": "Story Left",
+              "rotation": 0.19365228775248655,
+              "width": 599,
+              "height": 332,
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "g2Z06",
+                  "name": "storyEye",
+                  "fill": "#a92227",
+                  "content": "OUR STORY",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "700",
+                  "letterSpacing": 3
+                },
+                {
+                  "type": "text",
+                  "id": "gZjFi",
+                  "name": "storyTitle",
+                  "fill": "#0D0D0D",
+                  "content": "Three Decades of Mercy",
+                  "lineHeight": 1.1,
+                  "fontFamily": "Cormorant Garamond",
+                  "fontSize": 48,
+                  "fontWeight": "600",
+                  "letterSpacing": -1
+                },
+                {
+                  "type": "frame",
+                  "id": "uL65T",
+                  "name": "storyDiv",
+                  "width": 48,
+                  "height": 3,
+                  "fill": "#a92227"
+                },
+                {
+                  "type": "text",
+                  "id": "57FTU",
+                  "name": "storyP1",
+                  "fill": "#555555",
+                  "textGrowth": "fixed-width-height",
+                  "width": 626,
+                  "height": 61,
+                  "content": "Founded in the spirit of Saint Faustina's message, the Friends of the Divine Mercy began as a small prayer group dedicated to living and spreading God's mercy.",
+                  "lineHeight": 1.75,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "NdHcx",
+                  "name": "storyP2",
+                  "fill": "#555555",
+                  "textGrowth": "fixed-width-height",
+                  "width": 619,
+                  "height": 75,
+                  "content": "Over three decades, FDM has grown into six active chapters across Metro Manila and nearby provinces — each one a beacon of faith, service, and community transformation.",
+                  "lineHeight": 1.75,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "UcMCx",
+              "name": "Story Right",
+              "metadata": {
+                "type": "unsplash",
+                "username": "olga_kononenko",
+                "link": "https://unsplash.com/@olga_kononenko",
+                "author": "Olga Kononenko"
+              },
+              "width": 562,
+              "height": 455,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1700740395791-ae61da81418a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzMyOTYwMTh8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "cornerRadius": 12
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "GOpC5",
+          "name": "CTA Section",
+          "width": "fill_container",
+          "fill": "#FDF8F5",
+          "layout": "vertical",
+          "gap": 20,
+          "padding": [
+            100,
+            120
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "1Ew1g",
+              "name": "ctaEyebrow",
+              "fill": "#a92227",
+              "content": "JOIN THE COMMUNITY",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "letterSpacing": 3
+            },
+            {
+              "type": "text",
+              "id": "ehE61",
+              "name": "ctaTitle",
+              "fill": "#1a1a1a",
+              "content": "Walk with Us in Faith",
+              "textAlign": "center",
+              "fontFamily": "Cormorant Garamond",
+              "fontSize": 52,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "5k9Wn",
+              "name": "ctaSub",
+              "fill": "#666666",
+              "content": "Whether you are seeking community, deepen your faith, or serve others — there is a place for you in Friends of the Divine Mercy.",
+              "lineHeight": 1.7,
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 15,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "7cnt9",
+              "name": "CTA Buttons",
+              "gap": 16,
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "1PGAJ",
+                  "name": "Primary CTA",
+                  "width": 180,
+                  "height": 52,
+                  "fill": "#a92227",
+                  "cornerRadius": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "WknKT",
+                      "name": "ctaBtn1Txt",
+                      "fill": "#FFFFFF",
+                      "content": "Find a Chapter",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "A5rAw",
+                  "name": "Secondary CTA",
+                  "width": 180,
+                  "height": 52,
+                  "fill": "#00000000",
+                  "cornerRadius": 4,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1.5,
+                    "fill": "#a92227"
+                  },
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Q3pxq",
+                      "name": "ctaBtn2Txt",
+                      "fill": "#a92227",
+                      "content": "Contact Us",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "VKRQp",
+          "name": "Footer",
+          "width": "fill_container",
+          "height": 240,
+          "fill": "#1a0a0b",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": [
+            56,
+            120,
+            40,
+            120
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "rQyZb",
+              "name": "Footer Top",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "j81Zh",
+                  "name": "Brand",
+                  "width": 320,
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Gco2n",
+                      "name": "footerLogo",
+                      "fill": "#FFFFFF",
+                      "content": "✛ FDM",
+                      "fontFamily": "Cormorant Garamond",
+                      "fontSize": 22,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "6txre",
+                      "name": "footerTagline",
+                      "fill": "#888888",
+                      "content": "Friends of the Divine Mercy",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "VE07O",
+                  "name": "Footer Nav",
+                  "width": "fill_container",
+                  "gap": 64,
+                  "justifyContent": "end",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "flH4G",
+                      "name": "Col 1",
+                      "layout": "vertical",
+                      "gap": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "CHAIS",
+                          "name": "fc1Title",
+                          "fill": "#888888",
+                          "content": "Navigation",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "700",
+                          "letterSpacing": 2
+                        },
+                        {
+                          "type": "text",
+                          "id": "pgmYd",
+                          "name": "fc1L1",
+                          "fill": "#AAAAAA",
+                          "content": "Home",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "rHNdT",
+                          "name": "fc1L2",
+                          "fill": "#FFFFFF",
+                          "content": "About FDM",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "BRxWZ",
+                          "name": "fc1L3",
+                          "fill": "#AAAAAA",
+                          "content": "Chapters",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "nwNX8",
+                      "name": "Col 2",
+                      "layout": "vertical",
+                      "gap": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "SFETO",
+                          "name": "fc2Title",
+                          "fill": "#888888",
+                          "content": "Community",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "700",
+                          "letterSpacing": 2
+                        },
+                        {
+                          "type": "text",
+                          "id": "7MYjd",
+                          "name": "fc2L1",
+                          "fill": "#AAAAAA",
+                          "content": "Events",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "yRMRp",
+                          "name": "fc2L2",
+                          "fill": "#AAAAAA",
+                          "content": "Ministries",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "fOjrG",
+                          "name": "fc2L3",
+                          "fill": "#AAAAAA",
+                          "content": "Contact",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "SBsbs",
+              "name": "Divider",
+              "width": "fill_container",
+              "height": 1,
+              "fill": "#2a1a1b"
+            },
+            {
+              "type": "frame",
+              "id": "hsHwd",
+              "name": "Footer Bottom",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Xis5g",
+                  "name": "footerCopy",
+                  "fill": "#555555",
+                  "content": "© 2025 Friends of the Divine Mercy. All rights reserved.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "iR4Cp",
+                  "name": "footerQuote",
+                  "fill": "#555555",
+                  "content": "\"Jesus, I trust in You.\"",
+                  "textAlign": "right",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-﻿# FDM — Master Task Plan
+# FDM — Master Task Plan
 
 > Based on FDM Community Management System Requirements v3.0
 > Work phase by phase. Complete and verify each phase before moving to the next.
@@ -16,8 +16,6 @@
 
 > Goal: Public header live, reusable branding components, and responsive state management.
 
-### 2.1 Public Header & Branding
-
 - `config/navigation.ts` — nav data file
 - `components/ui/logo.tsx` — reusable logo with fallback icon & text fallback
 - `components/layout/public-header.tsx` — Refactored with NavLinks and AuthAction helpers
@@ -32,10 +30,19 @@
 
 ---
 
-## Phase 3: Public Pages & Information
+## Phase 3: Public Pages — About
 
-> Goal: Basic informational pages live.
+> Goal: About FDM page live, all sections, data-driven from config, using real assets.
 
--`app/(public)/about/page.tsx` — About FDM content 
--`app/(public)/chapters/page.tsx` — Chapter list and locations
+### Design
+- [x] `design/about.pen` — Full About page designed (9 sections)
 
+### Config & Data
+- [x] `config/about.ts` — chapters, pillars, communityStats, heroStats
+
+### Implementation
+- [x] `app/(public)/about/page.tsx` — Hero, Mission, Pillars, Chapters, Gallery, Stats, Our Story, CTA, Footer
+- [x] Verify all 6 chapter images load (qc, bataan, cavite, pasau, pasig, tala)
+- [x] `npx tsc --noEmit` — zero errors
+
+---

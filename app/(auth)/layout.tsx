@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Plus } from "lucide-react";
-import divineMercy from "@/app/assets/icons/divine_mercy.png";
+import divineMercy from "@/app/assets/media/divine_mercy.png";
 
 export default function AuthLayout({
   children,

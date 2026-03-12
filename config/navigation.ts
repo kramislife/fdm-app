@@ -5,6 +5,7 @@ export interface NavLink {
 
 export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
-  { label: "About FDM", href: "/about" },
+  { label: "About", href: "/about" },
   { label: "Chapters", href: "/chapters" },
+  { label: "Contact Us", href: "/contact-us" }
 ];
