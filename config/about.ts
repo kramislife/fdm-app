@@ -13,6 +13,18 @@ import talaImage from "@/app/assets/media/chapters/tala.png";
 import communityImage from "@/app/assets/media/faces-of-faith.jpg";
 import storyImage from "@/app/assets/media/story-of-mercy.jpg";
 
+import prayerImage from "@/app/assets/media/missions/3-o-clock.png";
+import bigasImage from "@/app/assets/media/missions/biyayang-bigas.png";
+import coffeeImage from "@/app/assets/media/missions/cup-of-coffee.png";
+import sanctuaryImage from "@/app/assets/media/missions/healing-sanctuary.png";
+import jacobsImage from "@/app/assets/media/missions/jacobs-well.png";
+import enthronementImage from "@/app/assets/media/missions/mdm-enthronement.png";
+import romImage from "@/app/assets/media/missions/rays-of-mercy.png";
+import yfaImage from "@/app/assets/media/missions/yfa.png";
+import aralImage from "@/app/assets/media/missions/aral-at-kwento.png";
+import sisterImage from "@/app/assets/media/missions/friends-sister.png";
+import breadImage from "@/app/assets/media/missions/daily-bread.png";
+
 // ---------------------------- Base Interfaces ----------------------------
 
 export interface BaseSection {
@@ -24,18 +36,25 @@ export interface SectionWithDescription extends BaseSection {
   description: string;
 }
 
+export interface BaseImage {
+  src: StaticImageData;
+  alt: string;
+}
+
 export interface SectionWithImage extends SectionWithDescription {
-  image: StaticImageData;
+  image: BaseImage;
 }
 
 // ---------------------------- Specific Section Interfaces ----------------------------
 
 export interface HeroContent extends Omit<SectionWithDescription, "eyebrow"> {
   badge: string; // Hero uses 'badge' instead of 'eyebrow'
-  image: StaticImageData;
+  image: BaseImage;
 }
 
-export interface MissionContent extends SectionWithDescription {}
+export interface MissionContent extends SectionWithDescription {
+  items: BaseImage[];
+}
 
 export interface PillarItem {
   title: string;
@@ -53,7 +72,7 @@ export interface Chapter {
   location: string;
   day: string;
   description: string;
-  image: StaticImageData;
+  image: BaseImage;
 }
 
 export interface ChaptersContent extends SectionWithDescription {
@@ -69,7 +88,7 @@ export interface Stat {
 
 export interface StoryContent extends BaseSection {
   paragraphs: string[];
-  image: StaticImageData;
+  image: BaseImage;
 }
 
 export interface BibleQuote {
@@ -95,16 +114,32 @@ export const heroContent: HeroContent = {
   title: "Bearing Witness to God's Mercy",
   description:
     "A growing community across Metro Manila and nearby provinces, united in prayer, service, and the mission — bringing God’s mercy to life through corporal and spiritual works of mercy for those experiencing both material and spiritual poverty.",
-  image: heroImage,
+  image: {
+    src: heroImage,
+    alt: "Friends of the Divine Mercy",
+  },
 };
 
 // ---------------------------- Mission Section ----------------------------
 
 export const missionContent: MissionContent = {
   eyebrow: "Our Mission",
-  title: "Spreading God’s mercy through faith, service, and community.",
+  title: "Spreading God’s Mercy through Faith, Service, and Community",
   description:
     "Guided by the spirituality of Saint Faustina Kowalska, FDM forms and accompanies the faithful in deepening their trust in God’s mercy and in sharing the message of Divine Mercy with others.",
+  items: [
+    { src: prayerImage, alt: "3 o'clock Prayer" },
+    { src: bigasImage, alt: "Biyayang Bigas" },
+    { src: coffeeImage, alt: "Cup of Coffee" },
+    { src: sanctuaryImage, alt: "Healing Sanctuary" },
+    { src: jacobsImage, alt: "Jacob's Well" },
+    { src: enthronementImage, alt: "MDM Enthronement" },
+    { src: romImage, alt: "Rays of Mercy" },
+    { src: yfaImage, alt: "Young Friends in Action" },
+    { src: aralImage, alt: "Aral at Kwento" },
+    { src: sisterImage, alt: "Friend's Sisters" },
+    { src: breadImage, alt: "Daily Bread" },
+  ],
 };
 
 export const pillarsContent: PillarsContent = {
@@ -147,7 +182,7 @@ export const chaptersContent: ChaptersContent = {
       day: "Saturday",
       description:
         "One of FDM's founding chapters. Gathers every Saturday for the Believers Fellowship — prayer, formation, and community in the heart of QC.",
-      image: qcImage,
+      image: { src: qcImage, alt: "Quezon City Chapter gathering" },
     },
     {
       id: "bataan",
@@ -156,7 +191,7 @@ export const chaptersContent: ChaptersContent = {
       day: "Saturday",
       description:
         "Bringing Divine Mercy to the province of Bataan. Members gather every Saturday for fellowship, sharing faith across the historic province.",
-      image: bataanImage,
+      image: { src: bataanImage, alt: "Bataan Chapter community" },
     },
     {
       id: "cavite",
@@ -165,7 +200,7 @@ export const chaptersContent: ChaptersContent = {
       day: "Friday",
       description:
         "A Friday chapter rooted in service and prayer. The Cavite community gathers weekly, bringing the message of mercy to their province.",
-      image: caviteImage,
+      image: { src: caviteImage, alt: "Cavite Chapter gathering" },
     },
     {
       id: "pasay",
@@ -174,7 +209,7 @@ export const chaptersContent: ChaptersContent = {
       day: "Thursday",
       description:
         "Every Thursday, the Pasay chapter gathers in the heart of Metro Manila — a community anchored in mercy, fellowship, and service.",
-      image: pasayImage,
+      image: { src: pasayImage, alt: "Pasay Chapter community" },
     },
     {
       id: "pasig",
@@ -183,7 +218,7 @@ export const chaptersContent: ChaptersContent = {
       day: "Saturday",
       description:
         "Covering Sta. Clara and Sta. Martha areas. Two vibrant communities, one heart — united every Saturday under the banner of Divine Mercy.",
-      image: pasigImage,
+      image: { src: pasigImage, alt: "Pasig Chapter gathering" },
     },
     {
       id: "tala",
@@ -192,7 +227,7 @@ export const chaptersContent: ChaptersContent = {
       day: "Wednesday",
       description:
         "A mid-week gathering every Wednesday in Tala, Caloocan. A community devoted to prayer, service, and the daily living of God's mercy.",
-      image: talaImage,
+      image: { src: talaImage, alt: "Tala Chapter community" },
     },
   ],
 };
@@ -204,7 +239,7 @@ export const communityGallery: CommunityGallery = {
   title: "Faces of Faith",
   description:
     "Hundreds of members across different chapters — each one a living witness to the mercy and love of God. We are a family united in faith, dedicated to spreading the message of compassion and hope.",
-  image: communityImage,
+  image: { src: communityImage, alt: "Faces of Faith - FDM Community Gallery" },
 };
 
 // ---------------------------- Stats --------------------------------------------
@@ -225,7 +260,7 @@ export const story: StoryContent = {
     "The Friends of the Divine Mercy began in 1991 when Bro. Rene Tumang, a veteran of the charismatic movement, formed a small community devoted to prayer and the message of Divine Mercy.",
     "What started as a humble group of young professionals grew into a mission of devotion, evangelization, and outreach — culminating in the establishment of the Friends of the Divine Mercy Foundation in 2021 to continue spreading God’s mercy through works of compassion and service.",
   ],
-  image: storyImage,
+  image: { src: storyImage, alt: "The Story of Community" },
 };
 
 // ---------------------------- CTA --------------------------------------------

@@ -23,6 +23,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 
@@ -72,9 +80,8 @@ export default function AboutPage() {
           >
             <div className="relative aspect-video overflow-hidden rounded-bl-[50px] rounded-br-[100px] rounded-tl-[200px] rounded-tr-3xl shadow-2xl transition-transform duration-500 hover:scale-105">
               <Image
-                src={heroContent.image}
-                alt="FDM Community"
-                fill
+                src={heroContent.image.src}
+                alt={heroContent.image.alt}
                 className="object-cover"
                 priority
               />
@@ -100,6 +107,36 @@ export default function AboutPage() {
           <p className="text-sm md:text-base leading-relaxed text-muted-foreground">
             {missionContent.description}
           </p>
+        </div>
+
+        {/* Mission Image Carousel */}
+        <div className="mt-10">
+          <Carousel
+            opts={{ loop: true, align: "start" }}
+            plugins={[Autoplay({ delay: 3000, stopOnInteraction: false })]}
+            className="w-full"
+          >
+            <CarouselContent>
+              {missionContent.items.map((img, i) => (
+                <CarouselItem
+                  key={i}
+                  className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+                >
+                  <div className="relative aspect-video overflow-hidden rounded-md">
+                    <Image
+                      src={img.src}
+                      alt={img.alt}
+                      fill
+                      loading="lazy"
+                      className="object-cover transition-transform duration-500 hover:scale-105"
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-2" />
+            <CarouselNext className="right-2" />
+          </Carousel>
         </div>
       </motion.section>
 
@@ -171,9 +208,8 @@ export default function AboutPage() {
                 {/* Chapter image */}
                 <div className="relative h-52 overflow-hidden">
                   <Image
-                    src={chapter.image}
-                    alt={chapter.name}
-                    fill
+                    src={chapter.image.src}
+                    alt={chapter.image.alt}
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
@@ -213,9 +249,8 @@ export default function AboutPage() {
       >
         {/* Full-bleed background image */}
         <Image
-          src={communityGallery.image}
-          alt={communityGallery.title}
-          fill
+          src={communityGallery.image.src}
+          alt={communityGallery.image.alt}
           className="object-cover"
         />
         {/* Dark gradient overlay for bottom-left text readability */}
@@ -270,9 +305,8 @@ export default function AboutPage() {
       >
         {/* Full-bleed background image */}
         <Image
-          src={story.image}
-          alt={story.title}
-          fill
+          src={story.image.src}
+          alt={story.image.alt}
           className="object-cover"
         />
 
