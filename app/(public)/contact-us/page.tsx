@@ -81,7 +81,6 @@ export default function ContactPage() {
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
                 placeholder="blur"
-
               />
               <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent" />
               <div className="absolute bottom-4 right-4">
@@ -130,7 +129,10 @@ export default function ContactPage() {
           </motion.div>
 
           {/*------------------------ Right: Contact Form -------------------------*/}
-          <motion.div {...getAnimationProps(fadeInRight)} className="lg:sticky lg:top-20">
+          <motion.div
+            {...getAnimationProps(fadeInRight)}
+            className="lg:sticky lg:top-20"
+          >
             <Card>
               <CardHeader>
                 <CardTitle className="font-serif text-2xl font-bold md:text-3xl">
@@ -142,23 +144,36 @@ export default function ContactPage() {
               </CardHeader>
 
               <CardContent className="p-3">
-                <div className="flex flex-col gap-5">
+                <form className="flex flex-col gap-5">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-2">
                     {/* Full Name */}
                     <div className="flex flex-col md:col-span-2 gap-2">
-                      <Label className="text-xs font-bold tracking-wider uppercase text-muted-foreground">
+                      <Label
+                        htmlFor="full-name"
+                        className="text-xs font-bold tracking-wider uppercase text-muted-foreground"
+                      >
                         Full Name
                       </Label>
-                      <Input placeholder="Your full name" className="h-12" />
+                      <Input
+                        id="full-name"
+                        name="full-name"
+                        type="text"
+                        autoComplete="name"
+                        placeholder="Your full name"
+                        className="h-12"
+                      />
                     </div>
 
                     {/* Inquiry Type */}
                     <div className="flex flex-col gap-2">
-                      <Label className="text-xs font-bold tracking-wider uppercase text-muted-foreground">
+                      <Label
+                        htmlFor="inquiry-type"
+                        className="text-xs font-bold tracking-wider uppercase text-muted-foreground"
+                      >
                         Inquiry Type
                       </Label>
-                      <Select>
-                        <SelectTrigger className="w-full h-12">
+                      <Select name="inquiry-type">
+                        <SelectTrigger id="inquiry-type" className="w-full h-12">
                           <SelectValue placeholder="Select inquiry type" />
                         </SelectTrigger>
                         <SelectContent position="popper">
@@ -174,11 +189,17 @@ export default function ContactPage() {
 
                   {/* Email */}
                   <div className="flex flex-col gap-2">
-                    <Label className="text-xs font-bold tracking-wider uppercase text-muted-foreground">
+                    <Label
+                      htmlFor="email"
+                      className="text-xs font-bold tracking-wider uppercase text-muted-foreground"
+                    >
                       Email Address
                     </Label>
                     <Input
+                      id="email"
+                      name="email"
                       type="email"
+                      autoComplete="email"
                       placeholder="you@gmail.com"
                       className="h-12"
                     />
@@ -186,36 +207,41 @@ export default function ContactPage() {
 
                   {/* Message */}
                   <div className="flex flex-col gap-2">
-                    <Label className="text-xs font-bold tracking-wider uppercase text-muted-foreground">
+                    <Label
+                      htmlFor="message"
+                      className="text-xs font-bold tracking-wider uppercase text-muted-foreground"
+                    >
                       Message
                     </Label>
                     <Textarea
+                      id="message"
+                      name="message"
                       placeholder="Write your message here..."
                       className="min-h-[120px]"
                     />
                   </div>
 
                   {/* Submit */}
-                  <Button className="h-12 cursor-pointer">
+                  <Button type="submit" className="h-12 cursor-pointer">
                     {formContent.submitLabel}
                   </Button>
+                </form>
 
-                  {/* Social Links */}
-                  <div className="flex items-center justify-center gap-5">
-                    {socialLinks.map(({ Icon, label, href }) => (
-                      <a
-                        key={label}
-                        href={href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={label}
-                        title={label}
-                        className="text-primary transition-transform hover:scale-110 cursor-pointer"
-                      >
-                        <Icon className="w-6 h-6" />
-                      </a>
-                    ))}
-                  </div>
+                {/* Social Links */}
+                <div className="flex items-center justify-center gap-5 mt-5">
+                  {socialLinks.map(({ Icon, label, href }) => (
+                    <a
+                      key={label}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      title={label}
+                      className="text-primary transition-transform hover:scale-110 cursor-pointer"
+                    >
+                      <Icon className="w-6 h-6" />
+                    </a>
+                  ))}
                 </div>
               </CardContent>
             </Card>
