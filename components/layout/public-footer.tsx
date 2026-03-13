@@ -11,9 +11,7 @@ import {
   type QuickLink,
 } from "@/config/footer";
 
-// ---------------------------------------------------------------------------
-// Sub-components
-// ---------------------------------------------------------------------------
+// --------------------------------- Components ----------------------------------------
 
 function FooterColumn({
   heading,
@@ -93,7 +91,7 @@ export function PublicFooter() {
         />
       </div>
 
-      <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 px-5 py-10 gap-10">
+      <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 px-5 py-10 gap-5">
         <FooterColumn heading="Navigation">
           <FooterNavList items={navLinks} />
         </FooterColumn>
@@ -113,7 +111,7 @@ export function PublicFooter() {
           <p className="text-sm text-white/80 italic leading-relaxed">
             &ldquo;{footerBrand.description}&rdquo;
           </p>
-          <div className="text-right text-white/80">
+          <div className="flex flex-col items-end justify-end text-white/80">
             <p className="font-serif italic text-base tracking-wide">
               &ldquo;{footerBrand.quote.text}&rdquo;
             </p>
