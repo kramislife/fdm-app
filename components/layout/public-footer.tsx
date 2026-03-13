@@ -86,8 +86,8 @@ export function PublicFooter() {
           src={divineMercy}
           alt="Divine Mercy Image"
           fill
-          sizes="38vw"
-          className="object-contain object-bottom-left opacity-30"
+          sizes="50vw"
+          className="object-center md:object-contain md:object-bottom-left opacity-30"
           style={{ mixBlendMode: "luminosity" }}
           placeholder="blur"
         />
@@ -98,12 +98,12 @@ export function PublicFooter() {
           <FooterNavList items={navLinks} />
         </FooterColumn>
 
-        <FooterColumn heading="Our Chapters">
-          <FooterBulletList items={footerChapters} />
-        </FooterColumn>
-
         <FooterColumn heading="Quick Links">
           <FooterNavList items={quickLinks} />
+        </FooterColumn>
+
+        <FooterColumn heading="Our Chapters">
+          <FooterBulletList items={footerChapters} />
         </FooterColumn>
 
         <FooterColumn heading="About FDM">
