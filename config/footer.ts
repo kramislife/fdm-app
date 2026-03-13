@@ -1,26 +1,69 @@
+import type { NavLink, BaseImage } from "@/lib/types";
+
+import divineMercy from "@/app/assets/media/divine-mercy-footer.png";
+
 import { navLinks } from "@/config/navigation";
 import { chaptersContent } from "@/config/about";
 
-export { navLinks };
+export interface FooterQuote {
+  text: string;
+  attribution: string;
+}
 
-export const footerChapters = chaptersContent.items.map((c) => c.name);
+export interface FooterColumn {
+  heading: string;
+  links: NavLink[];
+}
 
-import type { NavLink as QuickLink } from "@/lib/types";
+export interface FooterChaptersColumn {
+  heading: string;
+  items: string[];
+}
 
-export const quickLinks: QuickLink[] = [
-  { label: "Find a Chapter", href: "/chapters" },
-  { label: "Member Login", href: "/login" },
-  { label: "Prayer Requests", href: "/contact-us" },
-  { label: "Privacy Policy", href: "/privacy-policy" },
-  { label: "Terms of Use", href: "/terms-of-use" },
-];
+export interface FooterBrandColumn {
+  heading: string;
+  description: string;
+  quote: FooterQuote;
+}
 
-export const footerBrand = {
-  heading: "Spreading God's Mercy to All",
-  description:
-    "A community united in faith, service, and the mission of spreading God's mercy across Metro Manila and nearby provinces.",
-  quote: {
-    text: "Jesus, I trust in You.",
-    attribution: "St. Faustina Kowalska",
+export interface FooterConfig {
+  backgroundImage: BaseImage;
+  navigation: FooterColumn;
+  quickLinks: FooterColumn;
+  chapters: FooterChaptersColumn;
+  brand: FooterBrandColumn;
+}
+
+export const footerConfig: FooterConfig = {
+  backgroundImage: {
+    src: divineMercy,
+    alt: "Divine Mercy Image",
+  },
+  navigation: {
+    heading: "Navigation",
+    links: navLinks,
+  },
+  quickLinks: {
+    heading: "Quick Links",
+    links: [
+      { label: "Find a Chapter", href: "/chapters" },
+      { label: "Member Login", href: "/login" },
+      { label: "Prayer Requests", href: "/contact-us" },
+      { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Terms of Use", href: "/terms-of-use" },
+    ],
+  },
+  chapters: {
+    heading: "Our Chapters",
+    items: chaptersContent.items.map((c) => c.name),
+  },
+  brand: {
+    heading: "About FDM",
+    description:
+      "A community united in faith, service, and the mission of spreading God's mercy across Metro Manila and nearby provinces.",
+    quote: {
+      text: "Jesus, I trust in You.",
+      attribution: "St. Faustina Kowalska",
+    },
   },
 };
