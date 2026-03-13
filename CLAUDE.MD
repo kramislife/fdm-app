@@ -142,6 +142,7 @@ prisma/
   schema.prisma       # database schema
   seed.ts             # seed data
 ```
+
 ---
 
 ## Responsive Typography & Spacing
@@ -157,7 +158,6 @@ Always use responsive text sizes — never a single fixed size. Follow this scal
 | Label / caption | `text-xs`   | `text-sm`    | `text-sm`     |
 | Table cell      | `text-xs`   | `text-sm`    | `text-sm`     |
 | Button          | `text-sm`   | `text-sm`    | `text-base`   |
-
 
 **Rules:**
 
@@ -189,3 +189,11 @@ Always use responsive text sizes — never a single fixed size. Follow this scal
 ## Additional Docs
 
 See `tasks/` folder for full requirements (`FDM_REQUIREMENTS.md`) and tech stack setup (`FDM_TECHSTACK.md`).
+
+## Pencil MCP
+
+- pencil get_style_guide: always pass tags as a real array — never a JSON string
+  Correct: tags: ["warm", "elegant"]
+  Wrong: tags: "[\"warm\", \"elegant\"]"
+- If get_style_guide fails with "Either tags or name must be provided",
+  retry immediately with tags as a native array, not a quoted string
