@@ -24,6 +24,7 @@ import yfaImage from "@/app/assets/media/missions/yfa.png";
 import aralImage from "@/app/assets/media/missions/aral-at-kwento.png";
 import sisterImage from "@/app/assets/media/missions/friends-sister.png";
 import breadImage from "@/app/assets/media/missions/daily-bread.png";
+import diaryImage from "@/app/assets/media/missions/diary.png"
 
 // ---------------------------- Base Interfaces ----------------------------
 
@@ -139,6 +140,7 @@ export const missionContent: MissionContent = {
     { src: aralImage, alt: "Aral at Kwento" },
     { src: sisterImage, alt: "Friend's Sisters" },
     { src: breadImage, alt: "Daily Bread" },
+    { src: diaryImage, alt: "Diary of St. Faustina" },
   ],
 };
 

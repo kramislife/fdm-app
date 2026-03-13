@@ -210,6 +210,8 @@ export default function AboutPage() {
                   <Image
                     src={chapter.image.src}
                     alt={chapter.image.alt}
+                    fill
+                    loading="lazy"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
@@ -244,19 +246,21 @@ export default function AboutPage() {
 
       {/*  ---------------------- Our Community Section --------------------- */}
       <motion.section
-        className="relative overflow-hidden aspect-4/5 md:aspect-16/7"
+        className="relative overflow-hidden aspect-4/5 md:aspect-16/5"
         {...getAnimationProps(fadeIn)}
       >
         {/* Full-bleed background image */}
         <Image
           src={communityGallery.image.src}
           alt={communityGallery.image.alt}
+          fill
+          loading="lazy"
           className="object-cover"
         />
         {/* Dark gradient overlay for bottom-left text readability */}
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
 
-        <div className="absolute inset-0 flex flex-col justify-end px-5 py-10 md:px-10 md:pb-20">
+        <div className="absolute inset-0 flex flex-col justify-end px-5 py-10 md:px-10">
           <motion.div
             className="max-w-xl space-y-5"
             {...getAnimationProps(fadeInUp)}
@@ -307,6 +311,8 @@ export default function AboutPage() {
         <Image
           src={story.image.src}
           alt={story.image.alt}
+          fill
+          loading="lazy"
           className="object-cover"
         />
 
