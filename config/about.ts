@@ -24,7 +24,7 @@ import yfaImage from "@/app/assets/media/missions/yfa.png";
 import aralImage from "@/app/assets/media/missions/aral-at-kwento.png";
 import sisterImage from "@/app/assets/media/missions/friends-sister.png";
 import breadImage from "@/app/assets/media/missions/daily-bread.png";
-import diaryImage from "@/app/assets/media/missions/diary.png"
+import diaryImage from "@/app/assets/media/missions/diary.png";
 
 // ---------------------------- Base Interfaces ----------------------------
 
@@ -260,7 +260,7 @@ export const story: StoryContent = {
   title: "Three Decades of Mercy",
   paragraphs: [
     "The Friends of the Divine Mercy began in 1991 when Bro. Rene Tumang, a veteran of the charismatic movement, formed a small community devoted to prayer and the message of Divine Mercy.",
-    "What started as a humble group of young professionals grew into a mission of devotion, evangelization, and outreach — culminating in the establishment of the Friends of the Divine Mercy Foundation in 2021 to continue spreading God’s mercy through works of compassion and service.",
+    "A humble group of young professionals grew into a mission of devotion, evangelization, and outreach, culminating in the establishment of the Friends of the Divine Mercy Foundation in 2021 to continue spreading God’s mercy through works of compassion and service.",
   ],
   image: { src: storyImage, alt: "The Story of Community" },
 };

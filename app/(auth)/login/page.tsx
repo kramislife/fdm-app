@@ -16,7 +16,7 @@ export default function LoginPage() {
 
   return (
     <AuthFormCard
-      title="Welcome back."
+      title="Welcome back"
       description="Sign in to your community account."
       formAction={formAction}
       isPending={isPending}

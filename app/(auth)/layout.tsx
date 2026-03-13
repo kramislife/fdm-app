@@ -30,7 +30,7 @@ export default function AuthLayout({
             fill
             sizes="(max-width: 1024px) 1px, 60vw"
             className="object-contain"
-            loading="eager"
+            placeholder="blur"
           />
         </motion.div>
 

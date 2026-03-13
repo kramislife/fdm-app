@@ -82,8 +82,10 @@ export default function AboutPage() {
               <Image
                 src={heroContent.image.src}
                 alt={heroContent.image.alt}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
-                priority
+                placeholder="blur"
               />
               {/* Subtle inner glow/overlay */}
               <div className="absolute inset-0 bg-linear-to-tr from-black/20 via-transparent to-transparent pointer-events-none" />
@@ -127,8 +129,9 @@ export default function AboutPage() {
                       src={img.src}
                       alt={img.alt}
                       fill
-                      loading="lazy"
+                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                       className="object-cover transition-transform duration-500 hover:scale-105"
+                      placeholder="blur"
                     />
                   </div>
                 </CarouselItem>
@@ -211,8 +214,9 @@ export default function AboutPage() {
                     src={chapter.image.src}
                     alt={chapter.image.alt}
                     fill
-                    loading="lazy"
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    placeholder="blur"
                   />
                 </div>
 
@@ -254,8 +258,9 @@ export default function AboutPage() {
           src={communityGallery.image.src}
           alt={communityGallery.image.alt}
           fill
-          loading="lazy"
+          sizes="100vw"
           className="object-cover"
+          placeholder="blur"
         />
         {/* Dark gradient overlay for bottom-left text readability */}
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
@@ -312,8 +317,9 @@ export default function AboutPage() {
           src={story.image.src}
           alt={story.image.alt}
           fill
-          loading="lazy"
+          sizes="100vw"
           className="object-cover"
+          placeholder="blur"
         />
 
         {/* Gradient overlay — opaque left, fades right */}
@@ -338,7 +344,7 @@ export default function AboutPage() {
             {story.paragraphs.map((p, i) => (
               <p
                 key={i}
-                className="text-sm md:text-base leading-relaxed text-white/75"
+                className="text-xs md:text-sm lg:text-base leading-relaxed text-white/75"
               >
                 {p}
               </p>
@@ -368,16 +374,16 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-2 pt-5">
+            <div className="flex flex-wrap gap-5 pt-5">
               <Link href={ctaContent.primaryButton.href}>
-                <Button className="rounded-full h-auto px-10 py-5 cursor-pointer">
+                <Button className="rounded-full h-auto px-7 py-5 md:px-10 md:py-5 cursor-pointer">
                   {ctaContent.primaryButton.label}
                 </Button>
               </Link>
               <Link href={ctaContent.secondaryButton.href}>
                 <Button
                   variant="outline"
-                  className="rounded-full h-auto px-10 py-5 cursor-pointer"
+                  className="rounded-full h-auto px-7 py-5 md:px-10 md:py-5 cursor-pointer"
                 >
                   {ctaContent.secondaryButton.label}
                 </Button>
