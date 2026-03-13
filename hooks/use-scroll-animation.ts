@@ -30,7 +30,7 @@ export const staggerContainer: Variants = {
 };
 
 export const commonTransition: Transition = { duration: 0.8, ease: "easeOut" };
-export const commonViewport = { once: true, amount: 0.5 } as const;
+export const commonViewport = { once: true, amount: 0.2 } as const;
 
 export function useScrollAnimation() {
   const getAnimationProps = (

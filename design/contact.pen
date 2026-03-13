@@ -1,0 +1,1215 @@
+{
+  "version": "2.8",
+  "children": [
+    {
+      "type": "frame",
+      "id": "sNmil",
+      "x": 0,
+      "y": 0,
+      "name": "Contact Us Section",
+      "width": 1440,
+      "fill": "#0A0A0A",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "TZ8xg",
+          "name": "Top Border",
+          "width": "fill_container",
+          "height": 1,
+          "fill": "#C9A962"
+        },
+        {
+          "type": "frame",
+          "id": "e05h2",
+          "name": "Section Content",
+          "width": "fill_container",
+          "fill": "#0A0A0A",
+          "layout": "vertical",
+          "gap": 64,
+          "padding": [
+            80,
+            120
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "Jwblt",
+              "name": "Header Row",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "CpxtJ",
+                  "name": "Eyebrow",
+                  "fill": "#C9A962",
+                  "content": "GET IN TOUCH",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "500",
+                  "letterSpacing": 4
+                },
+                {
+                  "type": "text",
+                  "id": "MU2ow",
+                  "name": "Main Heading",
+                  "fill": "#FFFFFF",
+                  "content": "Contact Us",
+                  "lineHeight": 1,
+                  "fontFamily": "Cormorant Garamond",
+                  "fontSize": 56,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "HN7fq",
+                  "name": "Sub Heading",
+                  "fill": "#848484",
+                  "textGrowth": "fixed-width",
+                  "width": 560,
+                  "content": "We'd love to hear from you. Reach out and we'll respond as soon as we can.",
+                  "lineHeight": 1.6,
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 16
+                },
+                {
+                  "type": "frame",
+                  "id": "zv0ok",
+                  "name": "Gold Divider",
+                  "width": 60,
+                  "height": 2,
+                  "fill": "#C9A962"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "cLF6n",
+              "name": "Body Row",
+              "width": "fill_container",
+              "gap": 80,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "b15rv",
+                  "name": "Left Column",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 40,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "1t9jg",
+                      "name": "Church Image",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "giabyte",
+                        "link": "https://unsplash.com/@giabyte",
+                        "author": "Gia Oris"
+                      },
+                      "width": "fill_container",
+                      "height": 280,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1572010801565-fa47902d31ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzMzOTUwMjR8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "fill"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ObSsk",
+                      "name": "Info Block",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 24,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "tFEGg",
+                          "name": "Info Title",
+                          "fill": "#FFFFFF",
+                          "content": "Contact Information",
+                          "fontFamily": "Cormorant Garamond",
+                          "fontSize": 20,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "75tiG",
+                          "name": "Address Row",
+                          "width": "fill_container",
+                          "gap": 16,
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "oGZAM",
+                              "name": "Map Pin",
+                              "width": 18,
+                              "height": 18,
+                              "iconFontName": "map-pin",
+                              "iconFontFamily": "lucide",
+                              "fill": "#C9A962"
+                            },
+                            {
+                              "type": "text",
+                              "id": "LeXED",
+                              "name": "Address Text",
+                              "fill": "#848484",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "1839 Leogardo St., Corner Sandejas St.\nPasay City, Philippines",
+                              "lineHeight": 1.6,
+                              "fontFamily": "Inter",
+                              "fontSize": 14
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "tvRJM",
+                          "name": "Email Row",
+                          "width": "fill_container",
+                          "gap": 16,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "5sKQt",
+                              "name": "Mail Icon",
+                              "width": 18,
+                              "height": 18,
+                              "iconFontName": "mail",
+                              "iconFontFamily": "lucide",
+                              "fill": "#C9A962"
+                            },
+                            {
+                              "type": "text",
+                              "id": "IwFEE",
+                              "name": "Email Text",
+                              "fill": "#848484",
+                              "content": "info@friendsofthedivinemercyfoundation.org",
+                              "fontFamily": "Inter",
+                              "fontSize": 14
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "BGC73",
+                          "name": "Phone Row",
+                          "width": "fill_container",
+                          "gap": 16,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "2N5gH",
+                              "name": "Phone Icon",
+                              "width": 18,
+                              "height": 18,
+                              "iconFontName": "phone",
+                              "iconFontFamily": "lucide",
+                              "fill": "#C9A962"
+                            },
+                            {
+                              "type": "text",
+                              "id": "dVPfx",
+                              "name": "Phone Text",
+                              "fill": "#848484",
+                              "content": "+63 917 798 3366",
+                              "fontFamily": "Inter",
+                              "fontSize": 14
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "o618D",
+                          "name": "Landline Row",
+                          "width": "fill_container",
+                          "gap": 16,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "SVW6N",
+                              "name": "landlineIcon",
+                              "width": 18,
+                              "height": 18,
+                              "iconFontName": "phone-call",
+                              "iconFontFamily": "lucide",
+                              "fill": "#C9A962"
+                            },
+                            {
+                              "type": "text",
+                              "id": "RgZAg",
+                              "name": "landlineText",
+                              "fill": "#848484",
+                              "content": "+63 2 8361-9870 (Landline)",
+                              "fontFamily": "Inter",
+                              "fontSize": 14
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "VquQy",
+                          "name": "Hours Row",
+                          "width": "fill_container",
+                          "gap": 16,
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "TgNdP",
+                              "name": "hoursIcon",
+                              "width": 18,
+                              "height": 18,
+                              "iconFontName": "calendar",
+                              "iconFontFamily": "lucide",
+                              "fill": "#C9A962"
+                            },
+                            {
+                              "type": "text",
+                              "id": "2NTeT",
+                              "name": "hoursText",
+                              "fill": "#848484",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Sunday Mass & Fellowship\n7:00 AM – 12:00 PM",
+                              "lineHeight": 1.6,
+                              "fontFamily": "Inter",
+                              "fontSize": 14
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "00KZb",
+                          "name": "Social Row",
+                          "width": "fill_container",
+                          "gap": 16,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "7DopO",
+                              "name": "socialLabel",
+                              "fill": "#848484",
+                              "content": "Follow us:",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "500",
+                              "letterSpacing": 1
+                            },
+                            {
+                              "type": "frame",
+                              "id": "1hX7A",
+                              "name": "fbBtn",
+                              "width": 36,
+                              "height": 36,
+                              "fill": "#1A1A1A",
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "#2A2A2A"
+                              },
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "AxBKF",
+                                  "name": "fbIcon",
+                                  "width": 16,
+                                  "height": 16,
+                                  "iconFontName": "facebook",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#C9A962"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "sMEYr",
+                              "name": "ytBtn",
+                              "width": 36,
+                              "height": 36,
+                              "fill": "#1A1A1A",
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "#2A2A2A"
+                              },
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "qc5HD",
+                                  "name": "ytIcon",
+                                  "width": 16,
+                                  "height": 16,
+                                  "iconFontName": "youtube",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#C9A962"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "leaUc",
+                              "name": "igBtn",
+                              "width": 36,
+                              "height": 36,
+                              "fill": "#1A1A1A",
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "#2A2A2A"
+                              },
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "P4uHg",
+                                  "name": "igIcon",
+                                  "width": 16,
+                                  "height": 16,
+                                  "iconFontName": "instagram",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#C9A962"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "jMldm",
+                  "name": "Right Column - Form",
+                  "width": "fill_container",
+                  "fill": "#141414",
+                  "layout": "vertical",
+                  "gap": 32,
+                  "padding": 40,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "J9TpZ",
+                      "name": "Form Title",
+                      "fill": "#FFFFFF",
+                      "content": "Send a Message",
+                      "fontFamily": "Cormorant Garamond",
+                      "fontSize": 24,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "f6LpX",
+                      "name": "Form Subtitle",
+                      "fill": "#848484",
+                      "content": "Our team will get back to you within 24 hours.",
+                      "fontFamily": "Inter",
+                      "fontSize": 13
+                    },
+                    {
+                      "type": "frame",
+                      "id": "0zVdM",
+                      "name": "Name Group",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "oRJM7",
+                          "name": "Name Label",
+                          "fill": "#C9A962",
+                          "content": "Full Name",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500",
+                          "letterSpacing": 1
+                        },
+                        {
+                          "type": "frame",
+                          "id": "svXu2",
+                          "name": "Name Input",
+                          "width": "fill_container",
+                          "height": 48,
+                          "fill": "#0A0A0A",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#2A2A2A"
+                          },
+                          "padding": [
+                            0,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "pWZMX",
+                              "name": "Name Placeholder",
+                              "fill": "#4A4A4A",
+                              "content": "Your full name",
+                              "fontFamily": "Inter",
+                              "fontSize": 14
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "kRSIR",
+                      "name": "Email Group",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "qXlu2",
+                          "name": "Email Label",
+                          "fill": "#C9A962",
+                          "content": "Email Address",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500",
+                          "letterSpacing": 1
+                        },
+                        {
+                          "type": "frame",
+                          "id": "7foWU",
+                          "name": "Email Input",
+                          "width": "fill_container",
+                          "height": 48,
+                          "fill": "#0A0A0A",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#2A2A2A"
+                          },
+                          "padding": [
+                            0,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "j83v7",
+                              "name": "Email Placeholder",
+                              "fill": "#4A4A4A",
+                              "content": "your@email.com",
+                              "fontFamily": "Inter",
+                              "fontSize": 14
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "uSnBn",
+                      "name": "Chapter Group",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "opcfb",
+                          "name": "Chapter Label",
+                          "fill": "#C9A962",
+                          "content": "Chapter",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500",
+                          "letterSpacing": 1
+                        },
+                        {
+                          "type": "frame",
+                          "id": "3QVkW",
+                          "name": "Chapter Select",
+                          "width": "fill_container",
+                          "height": 48,
+                          "fill": "#0A0A0A",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#2A2A2A"
+                          },
+                          "padding": [
+                            0,
+                            16
+                          ],
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "79XLD",
+                              "name": "Chapter Placeholder",
+                              "fill": "#4A4A4A",
+                              "content": "Select your chapter",
+                              "fontFamily": "Inter",
+                              "fontSize": 14
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "jDtpK",
+                              "name": "Chevron Down",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "chevron-down",
+                              "iconFontFamily": "lucide",
+                              "fill": "#848484"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "UNPZz",
+                      "name": "Message Group",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "jGMgJ",
+                          "name": "Message Label",
+                          "fill": "#C9A962",
+                          "content": "Message",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500",
+                          "letterSpacing": 1
+                        },
+                        {
+                          "type": "frame",
+                          "id": "UzSBv",
+                          "name": "Message Textarea",
+                          "width": "fill_container",
+                          "height": 120,
+                          "fill": "#0A0A0A",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#2A2A2A"
+                          },
+                          "layout": "vertical",
+                          "padding": 16,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "EH4RJ",
+                              "name": "Message Placeholder",
+                              "fill": "#4A4A4A",
+                              "content": "Write your message here...",
+                              "fontFamily": "Inter",
+                              "fontSize": 14
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "n360P",
+                      "name": "Send Button",
+                      "width": "fill_container",
+                      "height": 52,
+                      "fill": "#C9A962",
+                      "gap": 10,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "YoVcT",
+                          "name": "Send Label",
+                          "fill": "#0A0A0A",
+                          "content": "SEND MESSAGE",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "500",
+                          "letterSpacing": 2
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "SqFrm",
+                          "name": "Send Icon",
+                          "width": 16,
+                          "height": 16,
+                          "iconFontName": "send",
+                          "iconFontFamily": "lucide",
+                          "fill": "#0A0A0A"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "FA8BF",
+                      "name": "Privacy Note",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "Xfj9Y",
+                          "name": "Lock Icon",
+                          "width": 14,
+                          "height": 14,
+                          "iconFontName": "lock",
+                          "iconFontFamily": "lucide",
+                          "fill": "#4A4A4A"
+                        },
+                        {
+                          "type": "text",
+                          "id": "VofQ9",
+                          "name": "Privacy Text",
+                          "fill": "#4A4A4A",
+                          "content": "Your information is safe. We never share your data.",
+                          "fontFamily": "Inter",
+                          "fontSize": 12
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "fpYbw",
+              "name": "Map Section",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 32,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "i0gEQ",
+                  "name": "Map Header",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "wZIh5",
+                      "name": "mapTitle",
+                      "fill": "#FFFFFF",
+                      "content": "Our Location",
+                      "fontFamily": "Cormorant Garamond",
+                      "fontSize": 28,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "l80ej",
+                      "name": "mapSubtitle",
+                      "fill": "#848484",
+                      "content": "1839 Leogardo St., Corner Sandejas St., Pasay City",
+                      "fontFamily": "Inter",
+                      "fontSize": 14
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "0e0Pd",
+                  "name": "Map Container",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 420,
+                  "fill": "#141414",
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#2A2A2A"
+                  },
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "UUCVA",
+                      "x": 0,
+                      "y": 0,
+                      "name": "Map Image",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "lucabucken",
+                        "link": "https://unsplash.com/@lucabucken",
+                        "author": "Luca Bucken"
+                      },
+                      "width": 1200,
+                      "height": 420,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1511721464821-5641710d5bf2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzMzOTU3MTJ8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "fill"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "C4aNg",
+                      "x": 0,
+                      "y": 0,
+                      "name": "Dark Overlay",
+                      "width": 1200,
+                      "height": 420,
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 270,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "#0A0A0A00",
+                            "position": 0
+                          },
+                          {
+                            "color": "#0A0A0A33",
+                            "position": 1
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Wlxid",
+                      "x": 560,
+                      "y": 155,
+                      "name": "Location Pin Group",
+                      "width": 200,
+                      "height": 100,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "YTX4u",
+                          "x": 27,
+                          "y": 72,
+                          "name": "Pin Shadow",
+                          "fill": "#00000066",
+                          "width": 20,
+                          "height": 8,
+                          "effect": {
+                            "type": "blur",
+                            "radius": 4
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "xHgiT",
+                          "x": 0,
+                          "y": 0,
+                          "name": "Pin Body",
+                          "width": 74,
+                          "layout": "vertical",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "a0CIx",
+                              "name": "Pin Bubble",
+                              "width": 74,
+                              "height": 32,
+                              "fill": "#C9A962",
+                              "cornerRadius": 4,
+                              "gap": 6,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "dsdun",
+                                  "name": "pinBubbleIcon",
+                                  "width": 14,
+                                  "height": 14,
+                                  "iconFontName": "map-pin",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#0A0A0A"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "zZCa3",
+                                  "name": "pinBubbleText",
+                                  "fill": "#0A0A0A",
+                                  "content": "FDM",
+                                  "fontFamily": "Inter",
+                                  "fontSize": 11,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "polygon",
+                              "polygonCount": 3,
+                              "id": "Anapq",
+                              "name": "Pin Tail",
+                              "fill": "#C9A962",
+                              "width": 12,
+                              "height": 8
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "QfGpJ",
+                      "x": 20,
+                      "y": 300,
+                      "name": "Address Card",
+                      "width": 300,
+                      "fill": "#0A0A0AEE",
+                      "cornerRadius": 4,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#2A2A2A"
+                      },
+                      "layout": "vertical",
+                      "gap": 4,
+                      "padding": [
+                        12,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "WG2rS",
+                          "name": "addrCardTitle",
+                          "fill": "#FFFFFF",
+                          "content": "Friends of the Divine Mercy",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "xLv7q",
+                          "name": "addrCardStreet",
+                          "fill": "#848484",
+                          "content": "1839 Leogardo St., Corner Sandejas St.",
+                          "fontFamily": "Inter",
+                          "fontSize": 11
+                        },
+                        {
+                          "type": "text",
+                          "id": "0z1rM",
+                          "name": "addrCardCity",
+                          "fill": "#848484",
+                          "content": "Pasay City, Philippines",
+                          "fontFamily": "Inter",
+                          "fontSize": 11
+                        },
+                        {
+                          "type": "frame",
+                          "id": "2JGAI",
+                          "name": "View Maps Btn",
+                          "height": 26,
+                          "fill": "#C9A962",
+                          "cornerRadius": 3,
+                          "gap": 6,
+                          "padding": [
+                            0,
+                            10
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "J4OO4",
+                              "name": "addrCardBtnIcon",
+                              "width": 12,
+                              "height": 12,
+                              "iconFontName": "external-link",
+                              "iconFontFamily": "lucide",
+                              "fill": "#0A0A0A"
+                            },
+                            {
+                              "type": "text",
+                              "id": "e9Nrj",
+                              "name": "addrCardBtnText",
+                              "fill": "#0A0A0A",
+                              "content": "View on Google Maps",
+                              "fontFamily": "Inter",
+                              "fontSize": 10,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "cUNVR",
+                      "x": 1148,
+                      "y": 20,
+                      "name": "Zoom Controls",
+                      "width": 32,
+                      "layout": "vertical",
+                      "gap": 1,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "frbIW",
+                          "name": "Zoom In",
+                          "width": 32,
+                          "height": 32,
+                          "fill": "#0A0A0AEE",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#2A2A2A"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "Xcqrn",
+                              "name": "zoomInIcon",
+                              "width": 14,
+                              "height": 14,
+                              "iconFontName": "plus",
+                              "iconFontFamily": "lucide",
+                              "fill": "#FFFFFF"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "OEmZr",
+                          "name": "Zoom Out",
+                          "width": 32,
+                          "height": 32,
+                          "fill": "#0A0A0AEE",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#2A2A2A"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "turQN",
+                              "name": "zoomOutIcon",
+                              "width": 14,
+                              "height": 14,
+                              "iconFontName": "minus",
+                              "iconFontFamily": "lucide",
+                              "fill": "#FFFFFF"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "l3ZPD",
+                      "x": 1148,
+                      "y": 90,
+                      "name": "Compass",
+                      "width": 32,
+                      "height": 32,
+                      "fill": "#0A0A0AEE",
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#2A2A2A"
+                      },
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "HXT9y",
+                          "name": "compassIcon",
+                          "width": 14,
+                          "height": 14,
+                          "iconFontName": "navigation",
+                          "iconFontFamily": "lucide",
+                          "fill": "#C9A962"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "mWeZL",
+              "name": "Bottom Strip",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "top": 1
+                },
+                "fill": "#2A2A2A"
+              },
+              "gap": 48,
+              "padding": [
+                28,
+                0
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "XikTO",
+                  "name": "Chapter 1",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "B7ysl",
+                      "name": "dot1",
+                      "fill": "#C9A962",
+                      "width": 6,
+                      "height": 6
+                    },
+                    {
+                      "type": "text",
+                      "id": "xHZyl",
+                      "name": "chapTxt1",
+                      "fill": "#848484",
+                      "content": "Main Church · Pasay City",
+                      "fontFamily": "Inter",
+                      "fontSize": 12
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "hTfK9",
+                      "name": "scheduleIcon",
+                      "width": 14,
+                      "height": 14,
+                      "iconFontName": "clock-3",
+                      "iconFontFamily": "lucide",
+                      "fill": "#C9A962"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "aEulE",
+                  "name": "Hours Item",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "nJ7tL",
+                      "name": "hoursIcon2",
+                      "width": 14,
+                      "height": 14,
+                      "iconFontName": "calendar",
+                      "iconFontFamily": "lucide",
+                      "fill": "#C9A962"
+                    },
+                    {
+                      "type": "text",
+                      "id": "05o4Y",
+                      "name": "hoursLabel",
+                      "fill": "#848484",
+                      "content": "Sunday Mass · 7:00 AM – 12:00 PM",
+                      "fontFamily": "Inter",
+                      "fontSize": 12
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "dcqbd",
+                  "name": "Phone Item",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "5sJmO",
+                      "name": "phoneIcon2",
+                      "width": 14,
+                      "height": 14,
+                      "iconFontName": "phone",
+                      "iconFontFamily": "lucide",
+                      "fill": "#C9A962"
+                    },
+                    {
+                      "type": "text",
+                      "id": "PPO2V",
+                      "name": "phoneLabel",
+                      "fill": "#848484",
+                      "content": "+63 917 798 3366",
+                      "fontFamily": "Inter",
+                      "fontSize": 12
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Spg7C",
+                  "name": "Email Item",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "qU0d3",
+                      "name": "emailIcon2",
+                      "width": 14,
+                      "height": 14,
+                      "iconFontName": "mail",
+                      "iconFontFamily": "lucide",
+                      "fill": "#C9A962"
+                    },
+                    {
+                      "type": "text",
+                      "id": "s5vYv",
+                      "name": "emailLabel",
+                      "fill": "#848484",
+                      "content": "info@friendsofthedivinemercyfoundation.org",
+                      "fontFamily": "Inter",
+                      "fontSize": 12
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
