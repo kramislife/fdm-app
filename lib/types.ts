@@ -45,4 +45,5 @@ export interface ContactItem {
   Icon: LucideIcon;
   label: string;
   value: string;
+  href?: string;
 }

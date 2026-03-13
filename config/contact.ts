@@ -53,6 +53,7 @@ export const contactSection: ContactSection = {
       Icon: MapPin,
       label: "Address",
       value: "1839 Leogardo St., Corner Sandejas St. Pasay City, Philippines",
+      href: "https://maps.app.goo.gl/Fy9jNc2RL9Ad7YdU9",
     },
     {
       Icon: Mail,

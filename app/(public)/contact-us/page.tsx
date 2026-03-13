@@ -106,7 +106,7 @@ export default function ContactPage() {
                 </h2>
               </motion.div>
 
-              {contactSection.items.map(({ Icon, label, value }) => (
+              {contactSection.items.map(({ Icon, label, value, href }) => (
                 <motion.div
                   key={label}
                   variants={fadeInUp}
@@ -119,9 +119,20 @@ export default function ContactPage() {
                     <h3 className="text-lg font-extrabold text-primary">
                       {label}
                     </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {value}
-                    </p>
+                    {href ? (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-info leading-relaxed underline"
+                      >
+                        {value}
+                      </a>
+                    ) : (
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {value}
+                      </p>
+                    )}
                   </div>
                 </motion.div>
               ))}
