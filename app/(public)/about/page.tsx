@@ -4,16 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-import {
-  heroContent,
-  pillarsContent,
-  communityGallery,
-  ctaContent,
-  chaptersContent,
-  missionContent,
-  communityStats,
-  story,
-} from "@/config/about";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +21,19 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+
+import { ChapterCard } from "@/components/chapters/chapter-card";
+
+import {
+  heroContent,
+  pillarsContent,
+  communityGallery,
+  ctaContent,
+  chaptersContent,
+  missionContent,
+  communityStats,
+  story,
+} from "@/config/about";
 
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 
@@ -206,44 +209,11 @@ export default function AboutPage() {
           viewport={{ once: true }}
         >
           {chaptersContent.items.map((chapter) => (
-            <motion.div key={chapter.id} variants={fadeInUp}>
-              <Card className="group overflow-hidden pt-0 cursor-pointer h-full">
-                {/* Chapter image */}
-                <div className="relative h-52 overflow-hidden">
-                  <Image
-                    src={chapter.image.src}
-                    alt={chapter.image.alt}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    placeholder="blur"
-                  />
-                </div>
-
-                {/* Card body */}
-                <CardHeader className="space-y-2">
-                  <div className="h-1 w-9 rounded-full bg-border transition-colors group-hover:bg-primary" />
-                  <div className="space-y-2">
-                    <p className="text-xs font-bold uppercase text-muted-foreground transition-colors group-hover:text-primary">
-                      {chapter.day}
-                    </p>
-                    <CardTitle className="font-serif text-2xl font-bold transition-colors group-hover:text-primary">
-                      {chapter.name}
-                    </CardTitle>
-                    <p className="text-xs text-muted-foreground">
-                      {chapter.location}
-                    </p>
-                  </div>
-                </CardHeader>
-
-                <CardContent>
-                  <hr className="mb-4 border-border" />
-                  <CardDescription className="text-sm leading-relaxed">
-                    {chapter.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            </motion.div>
+            <ChapterCard
+              key={chapter.id}
+              chapter={chapter}
+              variants={fadeInUp}
+            />
           ))}
         </motion.div>
       </section>

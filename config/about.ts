@@ -225,7 +225,7 @@ export const chaptersContent: ChaptersContent = {
     {
       id: "tala",
       name: "Tala",
-      location: "Caloocan City",
+      location: "Metro Manila",
       day: "Wednesday",
       description:
         "A mid-week gathering every Wednesday in Tala, Caloocan. A community devoted to prayer, service, and the daily living of God's mercy.",
