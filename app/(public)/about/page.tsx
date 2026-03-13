@@ -168,7 +168,7 @@ export default function AboutPage() {
             <motion.div key={pillar.title} variants={fadeInUp}>
               <Card className="border-t-2 border-t-primary h-full">
                 <CardHeader className="space-y-3">
-                  <pillar.icon className="h-8 w-8 text-primary" />
+                  <pillar.Icon className="h-8 w-8 text-primary" />
                   <CardTitle className="font-serif text-2xl md:text-3xl font-extrabold">
                     {pillar.title}
                   </CardTitle>

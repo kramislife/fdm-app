@@ -1,5 +1,4 @@
-import type { StaticImageData } from "next/image";
-import { Heart, Users, Plus, type LucideIcon } from "lucide-react";
+import { Heart, Users, Plus } from "lucide-react";
 
 import heroImage from "@/app/assets/media/god-mercy.jpg";
 
@@ -26,25 +25,13 @@ import sisterImage from "@/app/assets/media/missions/friends-sister.png";
 import breadImage from "@/app/assets/media/missions/daily-bread.png";
 import diaryImage from "@/app/assets/media/missions/diary.png";
 
-// ---------------------------- Base Interfaces ----------------------------
-
-export interface BaseSection {
-  eyebrow: string;
-  title: string;
-}
-
-export interface SectionWithDescription extends BaseSection {
-  description: string;
-}
-
-export interface BaseImage {
-  src: StaticImageData;
-  alt: string;
-}
-
-export interface SectionWithImage extends SectionWithDescription {
-  image: BaseImage;
-}
+import type {
+  BaseSection,
+  SectionWithDescription,
+  BaseImage,
+  SectionWithImage,
+  PillarItem,
+} from "@/lib/types";
 
 // ---------------------------- Specific Section Interfaces ----------------------------
 
@@ -57,11 +44,6 @@ export interface MissionContent extends SectionWithDescription {
   items: BaseImage[];
 }
 
-export interface PillarItem {
-  title: string;
-  icon: LucideIcon;
-  description: string;
-}
 
 export interface PillarsContent extends BaseSection {
   items: PillarItem[];
@@ -150,19 +132,19 @@ export const pillarsContent: PillarsContent = {
   items: [
     {
       title: "Faith",
-      icon: Plus,
+      Icon: Plus,
       description:
         "Centered on the message of Divine Mercy, we nurture a deeper trust in God through prayer, devotion, and spiritual formation.",
     },
     {
       title: "Service",
-      icon: Heart,
+      Icon: Heart,
       description:
         "Inspired by mercy in action, we respond to the needs of others through outreach programs, charitable initiatives, and acts of compassion.",
     },
     {
       title: "Community",
-      icon: Users,
+      Icon: Users,
       description:
         "Across our chapters, we foster unity and belonging by growing together in faith, mission, and shared spiritual life.",
     },

@@ -5,10 +5,7 @@ export { navLinks };
 
 export const footerChapters = chaptersContent.items.map((c) => c.name);
 
-export interface QuickLink {
-  label: string;
-  href: string;
-}
+import type { NavLink as QuickLink } from "@/lib/types";
 
 export const quickLinks: QuickLink[] = [
   { label: "Find a Chapter", href: "/chapters" },
