@@ -45,7 +45,7 @@ export default function ContactPage() {
   const { getAnimationProps } = useScrollAnimation();
 
   return (
-    <main className="overflow-x-hidden">
+    <main>
       {/* -------------------------- Hero --------------------------- */}
       <section className="bg-muted/50 px-5 py-10 md:px-10 md:py-20">
         <motion.div
@@ -64,9 +64,9 @@ export default function ContactPage() {
 
       {/* -------------------- Contact Info + Form --------------------- */}
       <section className="px-5 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:items-start">
           <motion.div
-            className="flex flex-col gap-6"
+            className="flex flex-col gap-5"
             {...getAnimationProps(staggerContainer)}
           >
             {/* Church Image */}
@@ -78,8 +78,10 @@ export default function ContactPage() {
                 src={contactSection.image.src}
                 alt={contactSection.image.alt}
                 fill
-                className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+                placeholder="blur"
+
               />
               <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent" />
               <div className="absolute bottom-4 right-4">
@@ -128,7 +130,7 @@ export default function ContactPage() {
           </motion.div>
 
           {/*------------------------ Right: Contact Form -------------------------*/}
-          <motion.div {...getAnimationProps(fadeInRight)}>
+          <motion.div {...getAnimationProps(fadeInRight)} className="lg:sticky lg:top-20">
             <Card>
               <CardHeader>
                 <CardTitle className="font-serif text-2xl font-bold md:text-3xl">
