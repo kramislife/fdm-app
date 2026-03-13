@@ -79,9 +79,9 @@ export default function AuthLayout({
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
             >
-              <p className="text-sm">"Jesus, I trust in You."</p>
+              <p className="text-sm"> &ldquo;Jesus, I trust in You.&rdquo;</p>
               <p className="text-[10px] not-italic pl-5">
-                — St. Faustina Kowalska
+                &mdash; St. Faustina Kowalska
               </p>
             </motion.div>
           </motion.div>
