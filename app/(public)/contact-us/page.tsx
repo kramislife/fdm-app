@@ -113,7 +113,7 @@ export default function ContactPage() {
                   className="flex items-start gap-2"
                 >
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center">
-                    <Icon className="h-4 w-4 text-primary" />
+                    <Icon className="h-4 w-4 text-primary mb-1" />
                   </div>
                   <div className="flex flex-col gap-1">
                     <h3 className="text-lg font-extrabold text-primary">
@@ -173,7 +173,10 @@ export default function ContactPage() {
                         Inquiry Type
                       </Label>
                       <Select name="inquiry-type">
-                        <SelectTrigger id="inquiry-type" className="w-full h-12">
+                        <SelectTrigger
+                          id="inquiry-type"
+                          className="w-full h-12"
+                        >
                           <SelectValue placeholder="Select inquiry type" />
                         </SelectTrigger>
                         <SelectContent position="popper">
@@ -236,7 +239,6 @@ export default function ContactPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={label}
-                      title={label}
                       className="text-primary transition-transform hover:scale-110 cursor-pointer"
                     >
                       <Icon className="w-6 h-6" />

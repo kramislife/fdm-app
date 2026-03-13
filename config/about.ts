@@ -31,6 +31,7 @@ import type {
   BaseImage,
   SectionWithImage,
   PillarItem,
+  NavLink,
 } from "@/lib/types";
 
 // ---------------------------- Specific Section Interfaces ----------------------------
@@ -79,15 +80,10 @@ export interface BibleQuote {
   reference: string;
 }
 
-export interface CtaButton {
-  label: string;
-  href: string;
-}
-
 export interface CtaContent extends SectionWithDescription {
   bibleQuotes: BibleQuote[];
-  primaryButton: CtaButton;
-  secondaryButton: CtaButton;
+  primaryButton: NavLink;
+  secondaryButton: NavLink;
 }
 
 // ---------------------------- Hero Section -----------------------------
