@@ -59,6 +59,7 @@ export const contactSection: ContactSection = {
       Icon: Mail,
       label: "Email",
       value: "socialmediafriends2017@gmail.com",
+      href: "mailto:socialmediafriends2017@gmail.com",
     },
     {
       Icon: Phone,
@@ -86,11 +87,7 @@ export const socialLinks: SocialLink[] = [
     label: "Facebook",
     href: "https://www.facebook.com/friendsofdivinemercy",
   },
-  {
-    Icon: FaInstagram,
-    label: "Instagram",
-    href: "https://instagram.com/friendsofdivinemercy",
-  },
+
   {
     Icon: FaTiktok,
     label: "TikTok",
@@ -100,6 +97,16 @@ export const socialLinks: SocialLink[] = [
     Icon: FaYoutube,
     label: "YouTube",
     href: "https://youtube.com/@friendsofthedivinemercyfou456",
+  },
+  {
+    Icon: FaInstagram,
+    label: "Instagram",
+    href: "https://instagram.com/friendsofdivinemercy",
+  },
+  {
+    Icon: Mail,
+    label: "Email",
+    href: "mailto:socialmediafriends2017@gmail.com",
   },
 ];
 

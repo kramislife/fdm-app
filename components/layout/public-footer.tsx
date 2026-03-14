@@ -33,7 +33,7 @@ export function PublicFooter() {
         />
       </div>
 
-      <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 px-5 py-10 gap-5">
+      <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 px-5 pt-10 pb-5 gap-2">
         {/* Navigation Column */}
         <div className="space-y-5">
           <p className="text-sm font-bold uppercase tracking-widest text-muted/50">
@@ -105,24 +105,24 @@ export function PublicFooter() {
                 &mdash; {brand.quote.attribution}
               </p>
             </div>
-
-            {/* Socials */}
-            <div className="flex gap-3">
-              {brand.socials.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={item.label}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all"
-                >
-                  <item.Icon size={14} />
-                </a>
-              ))}
-            </div>
           </div>
         </div>
+      </div>
+
+      {/* Socials */}
+      <div className="relative z-10 flex justify-end gap-3 px-5 pb-5">
+        {brand.socials.map((item) => (
+          <a
+            key={item.label}
+            href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={item.label}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/80 transition-all hover:bg-white/20 hover:text-white"
+          >
+            <item.Icon size={14} />
+          </a>
+        ))}
       </div>
 
       {/* Bottom bar */}

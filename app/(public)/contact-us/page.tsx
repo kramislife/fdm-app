@@ -115,7 +115,7 @@ export default function ContactPage() {
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center">
                     <Icon className="h-4 w-4 text-primary mb-1" />
                   </div>
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col">
                     <h3 className="text-lg font-extrabold text-primary">
                       {label}
                     </h3>
