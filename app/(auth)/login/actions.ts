@@ -2,7 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getUserWithRoles, getRoleKeys, isMemberOnly } from "@/lib/auth/session";
+import {
+  getUserWithRoles,
+  getRoleKeys,
+  isMemberOnly,
+} from "@/lib/auth/session";
 
 export type LoginState = {
   error: string | null;
@@ -35,11 +39,29 @@ export async function loginAction(
     return { error: "Authentication failed. Please try again." };
   }
 
-  const dbUser = await getUserWithRoles(user.id);
+  let dbUser;
+  try {
+    dbUser = await getUserWithRoles(user.id);
+  } catch (err) {
+    console.error("Database connection error during login:", err);
+    await supabase.auth.signOut();
+    return {
+      error:
+        "Unable to verify your account at this time. Please try again later.",
+    };
+  }
 
-  if (dbUser?.is_temp_password) redirect("/first-login");
+  if (!dbUser) {
+    await supabase.auth.signOut();
+    return {
+      error:
+        "Your account exists but is not linked to a community profile. Please contact an admin.",
+    };
+  }
 
-  if (isMemberOnly(getRoleKeys(dbUser!))) redirect("/");
+  if (dbUser.is_temp_password) redirect("/first-login");
+
+  if (isMemberOnly(getRoleKeys(dbUser))) redirect("/");
 
   redirect("/dashboard");
 }
