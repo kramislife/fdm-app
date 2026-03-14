@@ -1,10 +1,13 @@
 "use client";
 
 import { Bell, Menu } from "lucide-react";
+import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
+
+import type { DashboardSessionUser } from "@/lib/types";
+
 import { UserDropdown } from "@/components/shared/user-dropdown";
 import { useSignOut } from "@/hooks/use-sign-out";
-import type { DashboardSessionUser } from "@/lib/types";
 
 interface DashboardHeaderProps {
   sessionUser: DashboardSessionUser;
@@ -16,6 +19,13 @@ export function DashboardHeader({
   onMenuClick,
 }: DashboardHeaderProps) {
   const signOut = useSignOut();
+  const [isPending, startTransition] = useTransition();
+
+  function handleSignOut() {
+    startTransition(async () => {
+      await signOut();
+    });
+  }
 
   return (
     <header className="flex items-center justify-between h-16 px-5 border-b border-border shrink-0">
@@ -46,7 +56,8 @@ export function DashboardHeader({
         <UserDropdown
           user={sessionUser}
           showDashboardLink={false}
-          onSignOut={signOut}
+          onSignOut={handleSignOut}
+          isPending={isPending}
         />
       </div>
     </header>

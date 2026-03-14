@@ -289,3 +289,118 @@ Public layout (app/(public)/layout.tsx) — has public header + footer
 Dashboard layout (app/(dashboard)/layout.tsx) — has sidebar + dashboard header only
 No public header/footer inside dashboard ever
 No sidebar inside public pages ever
+
+### Phase 7: Secure Authentication, Role Handling & Logout
+
+Goal: Server-enforced roles, secure session handling, clean logout with full page refresh.
+All business logic lives in lib/ files — pages and components are thin.
+
+#### 7a. Auth Logic File
+
+lib/auth.ts — all auth business logic lives here, imported by server actions
+
+getSession() — returns Supabase session or null
+getUser() — returns full user row from public.users joined with role
+requireAuth() — throws redirect to /login if no session
+requireRole(roles: string[]) — throws redirect if user role not in allowed list
+signOut() — calls supabase.auth.signOut(), clears cookies, returns void
+All functions are server-side only — never called from client components
+
+#### 7b. Role Resolution (Server-Side Only)
+
+lib/roles.ts — role resolution logic
+
+getUserRole(userId: string) — queries user_roles table, returns role key
+getUserWithRole(authId: string) — returns { user, role, chapter } in one query
+hasRole(userRole: string, allowed: string[]) — pure boolean check
+isAdminRole(role: string) — returns true if role is not member
+Role is ALWAYS resolved from DB — never from cookie, localStorage, or client context
+Cache result per request using React cache() to avoid duplicate DB calls
+
+#### 7c. Middleware — Route Protection
+
+Update middleware.ts
+
+Protect all /dashboard/\* routes — redirect to /login if no session
+Protect all /my-qr, /my-attendance, /profile — redirect to /login if no session
+Allow public routes: /, /about, /chapters, /contact, /login, /auth/callback
+Do NOT check role in middleware — only check session exists
+Role checks happen inside each page/action, not middleware
+Uses lib/supabase/proxy.ts for session refresh
+
+### 7d. Server Actions — Auth
+
+app/(auth)/login/actions.ts — refactor to use lib/auth.ts
+
+Call supabase.auth.signInWithPassword()
+On success: fetch role via getUserRole() from lib/roles.ts
+Redirect: member → /, all others → /dashboard
+On error: return typed error object — never throw to client
+
+app/(auth)/logout/actions.ts — dedicated logout server action
+
+Call lib/auth.signOut()
+Call revalidatePath('/', 'layout') — clears all cached data
+Return { success: true } — client handles full page reload
+
+#### 7e. Logout — Full Page Refresh
+
+Logout flow:
+
+Client calls logout server action
+Server: supabase.auth.signOut() + revalidatePath('/', 'layout')
+Server returns success
+Client receives response → calls window.location.href = '/'
+Full hard reload — clears all React state, context, cached data
+
+Update components/shared/user-dropdown.tsx
+
+Sign Out calls the server action then does window.location.href = '/'
+Show loading state on Sign Out button while action is pending
+Use useTransition() for pending state
+
+### 7f. Protected Page Pattern
+
+lib/auth.ts exports requireAuth() and requireRole()
+Every dashboard page calls requireAuth() at the top (server component)
+Admin-only pages call requireRole(['spiritual_director', 'elder']) at the top
+Pattern to use in every protected page:
+
+ts // app/(dashboard)/admin/roles/page.tsx
+import { requireRole } from '@/lib/auth'
+
+export default async function RolesPage() {
+await requireRole(['spiritual_director', 'elder'])
+// render page
+}
+
+### 7g. UserContext — Server-Fed, Not Self-Fetching
+
+Update lib/context/user-context.tsx
+
+Remove any client-side Supabase fetching from context
+Context receives user + role as props from server layout
+Layout fetches once server-side, passes down to context provider
+Client components read from context — never fetch role themselves
+
+Update app/(dashboard)/layout.tsx
+
+Fetch user + role server-side using getUserWithRole() from lib/roles.ts
+Pass to <UserProvider user={user} role={role} />
+If fetch fails → redirect to /login
+
+### 7h. Remove Dev Role Switcher from Context
+
+Dev role switcher only overrides the UI display — it never changes
+the actual session or DB role
+Add a clear comment: "DEV ONLY — does not affect server-side role checks"
+Ensure switching role in dev switcher does NOT bypass requireRole() checks
+
+### Security Rules (add to CLAUDE.md after this phase)
+
+Role is always resolved from DB — never from client, cookie, or context alone
+requireAuth() and requireRole() called at the top of every protected page
+Business logic lives in lib/ — pages are thin wrappers only
+Logout always does a full hard reload via window.location.href
+Middleware only checks session — role checks are inside pages and actions
+Never expose role or user data in client-readable cookies

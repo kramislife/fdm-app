@@ -7,7 +7,9 @@
       "Bash(node -e \"const fs=require\\('fs'\\); console.log\\(fs.readFileSync\\('D:/Brick Extreme/FDM/fdm-app/tasks/todo.md','utf16le'\\)\\)\")",
       "Bash(cd \"D:\\\\Brick Extreme\\\\FDM\\\\fdm-app\" && npx tsc --noEmit 2>&1)",
       "Bash(ls \"D:\\\\Brick Extreme\\\\FDM\\\\fdm-app\\\\app\\\\\\(public\\)\")",
-      "Bash(cd \"D:\\\\Brick Extreme\\\\FDM\\\\fdm-app\" && npx tsc --noEmit 2>&1 | head -30)"
+      "Bash(cd \"D:\\\\Brick Extreme\\\\FDM\\\\fdm-app\" && npx tsc --noEmit 2>&1 | head -30)",
+      "Bash(find:*)",
+      "Bash(cat:*)"
     ]
   }
 }

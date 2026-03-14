@@ -7,7 +7,12 @@ import crypto from "node:crypto";
 
 export type SetPasswordState = {
   error: string | null;
+  errorId?: number;
 };
+
+function err(message: string): SetPasswordState {
+  return { error: message, errorId: Date.now() };
+}
 
 export async function setPasswordAction(
   _prevState: SetPasswordState,
@@ -17,11 +22,11 @@ export async function setPasswordAction(
   const confirmPassword = formData.get("confirm_password") as string;
 
   if (!newPassword || newPassword.length < 8) {
-    return { error: "Password must be at least 8 characters." };
+    return err("Password must be at least 8 characters.");
   }
 
   if (newPassword !== confirmPassword) {
-    return { error: "Passwords do not match." };
+    return err("Passwords do not match.");
   }
 
   const supabase = await createClient();
@@ -40,10 +45,7 @@ export async function setPasswordAction(
 
   if (updateError) {
     console.error("Supabase password update error:", updateError);
-    return {
-      error:
-        updateError.message || "Failed to update password. Please try again.",
-    };
+    return err(updateError.message || "Failed to update password. Please try again.");
   }
 
   try {
@@ -53,9 +55,7 @@ export async function setPasswordAction(
 
     if (!dbUser) {
       console.error("User profile not found for auth_id:", user.id);
-      return {
-        error: "User profile not found. Please contact an administrator.",
-      };
+      return err("User profile not found. Please contact an administrator.");
     }
 
     await prisma.user.update({
@@ -99,9 +99,7 @@ export async function setPasswordAction(
     }
   } catch (error) {
     console.error("First login data update error:", error);
-    return {
-      error: "Failed to finalize account setup. Please try again.",
-    };
+    return err("Failed to finalize account setup. Please try again.");
   }
 
   redirect("/dashboard");

@@ -156,3 +156,62 @@
 - [x] `npx tsc --noEmit` — zero errors
 - [x] No console errors on any page
 - [x] Tested logged out, member login, and admin login flows
+
+### 7a + 7b. Logic Files
+
+- [x] `lib/auth.ts` exists with: getSession, getUser, requireAuth, requireRole, signOut
+- [x] `lib/roles.ts` exists with: getUserRole, getUserWithRole, hasRole, isAdminRole
+- [x] No role fetching logic exists inside any component or page — only in lib/
+- [x] `getUserWithRole()` uses React `cache()` — no duplicate DB calls per request
+
+### 7c. Middleware
+
+- [x] `/dashboard/*` redirects to `/login` when no session
+- [x] `/my-qr`, `/my-attendance`, `/profile` redirect to `/login` when no session
+- [x] Public routes load without auth: `/`, `/about`, `/chapters`, `/login`
+- [x] Middleware does NOT check role — only session existence
+
+### 7d. Login Action
+
+- [x] Wrong credentials shows error message, no crash
+- [x] Member login redirects to `/`
+- [x] All other roles redirect to `/dashboard`
+- [x] Role resolved from DB after login — not from JWT claims alone
+
+### 7e. Logout
+
+- [x] Clicking Sign Out shows loading state on button
+- [x] After Sign Out: full hard page reload occurs (`window.location.href`)
+- [x] After reload: user is on `/`, avatar dropdown replaced by Sign In button
+- [x] No stale user data visible anywhere after logout
+- [x] Opening `/dashboard` after logout redirects to `/login`
+- [x] Browser back button after logout does not show dashboard
+
+### 7f. Protected Pages
+
+- [x] `/dashboard` without session → redirects to `/login`
+- [x] `/dashboard/admin/roles` as Head Servant → redirects (forbidden)
+- [x] `/dashboard/admin/roles` as Spiritual Director → loads correctly
+- [x] `/dashboard/finance` as Builder → redirects (forbidden)
+- [x] `/my-qr` without session → redirects to `/login`
+
+### 7g. UserContext
+
+- [x] Context receives user + role from server layout — no client fetching
+- [x] Dashboard layout fetches user + role once server-side
+- [x] Failing to resolve user in layout redirects to `/login`
+- [x] No Supabase client calls inside UserContext itself
+
+### 7h. Dev Role Switcher
+
+- [x] Role switcher only changes UI display
+- [x] Switching role in dev does NOT bypass requireRole() server checks
+- [x] Comment in code clearly marks it as DEV ONLY
+
+### Final
+
+- [x] `npx tsc --noEmit` — zero errors
+- [x] No console errors
+- [x] Test all 3 flows: logged out, member, admin
+- [x] Test forbidden page access for 3 different roles
+- [x] Hard reload after logout confirmed in browser network tab

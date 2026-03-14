@@ -13,6 +13,7 @@ interface AuthFormCardProps {
   formAction: (formData: FormData) => void;
   isPending: boolean;
   error: string | null;
+  errorId?: number;
   submitLabel: string;
   pendingLabel: string;
   footer?: React.ReactNode;
@@ -26,6 +27,7 @@ export function AuthFormCard({
   formAction,
   isPending,
   error,
+  errorId,
   submitLabel,
   pendingLabel,
   footer,
@@ -33,7 +35,10 @@ export function AuthFormCard({
 }: AuthFormCardProps) {
   useEffect(() => {
     if (error) toast.error(error);
-  }, [error]);
+    // errorId changes on every new error — guarantees the toast fires even
+    // when the same message is returned on consecutive attempts.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errorId]);
 
   return (
     <div className="flex flex-col">

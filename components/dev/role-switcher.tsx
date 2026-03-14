@@ -21,6 +21,9 @@ interface RoleSwitcherProps {
   onRoleChange: (role: AppRole) => void;
 }
 
+// DEV ONLY — overrides the sidebar UI display only.
+// Does NOT affect server-side role checks (requireAuth / requireRole).
+// Switching role here will NOT bypass protected pages or server actions.
 export function RoleSwitcher({ activeRole, onRoleChange }: RoleSwitcherProps) {
   if (process.env.NODE_ENV !== "development") return null;
 

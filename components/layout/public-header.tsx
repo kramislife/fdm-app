@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTransition } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -27,15 +28,18 @@ export function PublicHeader({ sessionUser }: PublicHeaderProps) {
   const pathname = usePathname();
   const { open, setOpen } = useMobileSheet();
   const signOut = useSignOut();
+  const [isPending, startTransition] = useTransition();
 
   const isInDashboard = pathname.startsWith("/dashboard");
   const showDashboardLink =
     !!sessionUser && !sessionUser.isMember && !isInDashboard;
 
-  const handleSignOut = async () => {
-    setOpen(false);
-    await signOut();
-  };
+  function handleSignOut() {
+    startTransition(async () => {
+      setOpen(false);
+      await signOut();
+    });
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background shadow-sm">
@@ -67,7 +71,8 @@ export function PublicHeader({ sessionUser }: PublicHeaderProps) {
               <UserDropdown
                 user={sessionUser}
                 showDashboardLink={showDashboardLink}
-                onSignOut={signOut}
+                onSignOut={handleSignOut}
+                isPending={isPending}
               />
             </div>
           ) : (

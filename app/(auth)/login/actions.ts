@@ -2,15 +2,16 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import {
-  getUserWithRoles,
-  getRoleKeys,
-  isMemberOnly,
-} from "@/lib/auth/session";
+import { getUserRole } from "@/lib/roles";
 
 export type LoginState = {
   error: string | null;
+  errorId?: number;
 };
+
+function err(message: string): LoginState {
+  return { error: message, errorId: Date.now() };
+}
 
 export async function loginAction(
   _prevState: LoginState,
@@ -20,7 +21,7 @@ export async function loginAction(
   const password = formData.get("password") as string;
 
   if (!email || !password) {
-    return { error: "Email and password are required." };
+    return err("Email and password are required.");
   }
 
   const supabase = await createClient();
@@ -28,7 +29,7 @@ export async function loginAction(
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    return { error: "Invalid email or password." };
+    return err("Invalid email or password.");
   }
 
   const {
@@ -36,32 +37,34 @@ export async function loginAction(
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { error: "Authentication failed. Please try again." };
+    return err("Authentication failed. Please try again.");
   }
 
+  // Check for temp password before role lookup
+  const { prisma } = await import("@/lib/prisma");
   let dbUser;
   try {
-    dbUser = await getUserWithRoles(user.id);
-  } catch (err) {
-    console.error("Database connection error during login:", err);
+    dbUser = await prisma.user.findUnique({
+      where: { auth_id: user.id },
+      select: { is_temp_password: true },
+    });
+  } catch (e) {
+    console.error("Database connection error during login:", e);
     await supabase.auth.signOut();
-    return {
-      error:
-        "Unable to verify your account at this time. Please try again later.",
-    };
+    return err("Unable to verify your account at this time. Please try again later.");
   }
 
   if (!dbUser) {
     await supabase.auth.signOut();
-    return {
-      error:
-        "Your account exists but is not linked to a community profile. Please contact an admin.",
-    };
+    return err("Your account exists but is not linked to a community profile. Please contact an admin.");
   }
 
   if (dbUser.is_temp_password) redirect("/first-login");
 
-  if (isMemberOnly(getRoleKeys(dbUser))) redirect("/");
+  // Resolve role from DB
+  const role = await getUserRole(user.id);
+
+  if (!role || role === "member") redirect("/");
 
   redirect("/dashboard");
 }

@@ -21,6 +21,7 @@ export default function FirstLoginPage() {
       formAction={formAction}
       isPending={isPending}
       error={state.error}
+      errorId={state.errorId}
       submitLabel="Save password"
       pendingLabel="Saving password…"
       footer={

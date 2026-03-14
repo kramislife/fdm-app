@@ -1,13 +1,6 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-
-import {
-  getUserWithRoles,
-  buildSessionUser,
-  isMemberOnly,
-  getRoleKeys,
-} from "@/lib/auth/session";
-
+import { requireAuth } from "@/lib/auth";
+import { getUserWithRole } from "@/lib/roles";
 import { DashboardLayoutClient } from "@/components/layout/dashboard-layout-client";
 
 export default async function DashboardLayout({
@@ -15,17 +8,18 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const authUser = await requireAuth();
+  const data = await getUserWithRole(authUser.id);
 
-  if (!user) redirect("/login");
+  if (!data || data.roles.every((r) => r === "member")) redirect("/");
 
-  const dbUser = await getUserWithRoles(user.id);
-  if (!dbUser || isMemberOnly(getRoleKeys(dbUser))) redirect("/");
-
-  const sessionUser = buildSessionUser(dbUser);
+  const { user, roles } = data;
+  const sessionUser = {
+    name: `${user.first_name} ${user.last_name}`,
+    initials: `${user.first_name[0]}${user.last_name[0]}`.toUpperCase(),
+    email: user.email,
+    roles,
+  };
 
   return (
     <DashboardLayoutClient sessionUser={sessionUser}>

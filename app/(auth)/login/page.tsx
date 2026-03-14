@@ -21,6 +21,7 @@ export default function LoginPage() {
       formAction={formAction}
       isPending={isPending}
       error={state.error}
+      errorId={state.errorId}
       submitLabel="Sign In"
       pendingLabel="Signing in…"
       footer={

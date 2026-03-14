@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { LogOut } from "lucide-react";
+import { LogOut, Loader2 } from "lucide-react";
 import type { BaseUser } from "@/lib/types";
 import { USER_NAV_ITEMS, DASHBOARD_NAV_ITEM } from "@/config/navigation";
 import { Button } from "@/components/ui/button";
@@ -18,12 +20,14 @@ export interface UserDropdownProps {
   user: BaseUser;
   showDashboardLink: boolean;
   onSignOut: () => void;
+  isPending?: boolean;
 }
 
 export function UserDropdown({
   user: { name, initials, email },
   showDashboardLink,
   onSignOut,
+  isPending = false,
 }: UserDropdownProps) {
   return (
     <DropdownMenu>
@@ -67,10 +71,15 @@ export function UserDropdown({
         {/* Sign out */}
         <DropdownMenuItem
           onSelect={onSignOut}
+          disabled={isPending}
           className="text-destructive focus:text-destructive cursor-pointer"
         >
-          <LogOut className="mr-2 h-4 w-4" />
-          Sign Out
+          {isPending ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <LogOut className="mr-2 h-4 w-4" />
+          )}
+          {isPending ? "Signing out…" : "Sign Out"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
