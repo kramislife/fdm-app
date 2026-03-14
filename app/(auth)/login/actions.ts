@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { prisma } from "@/lib/prisma";
+import { getUserWithRoles, getRoleKeys, isMemberOnly } from "@/lib/auth/session";
 
 export type LoginState = {
   error: string | null;
@@ -35,13 +35,11 @@ export async function loginAction(
     return { error: "Authentication failed. Please try again." };
   }
 
-  const dbUser = await prisma.user.findUnique({
-    where: { auth_id: user.id },
-  });
+  const dbUser = await getUserWithRoles(user.id);
 
-  if (dbUser?.is_temp_password) {
-    redirect("/first-login");
-  }
+  if (dbUser?.is_temp_password) redirect("/first-login");
+
+  if (isMemberOnly(getRoleKeys(dbUser!))) redirect("/");
 
   redirect("/dashboard");
 }

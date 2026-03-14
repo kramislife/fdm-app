@@ -1,7 +1,6 @@
 "use client";
 
 import { ChevronUp } from "lucide-react";
-import { useUser } from "@/lib/context/user-context";
 import { ROLE_LABELS, type AppRole } from "@/config/sidebar-navigation";
 import {
   DropdownMenu,
@@ -13,11 +12,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-const ALL_ROLES = Object.keys(ROLE_LABELS) as AppRole[];
+const ALL_ROLES = (Object.keys(ROLE_LABELS) as AppRole[]).filter(
+  (r) => r !== "member",
+);
 
-export function RoleSwitcher() {
-  const { user, setRole } = useUser();
+interface RoleSwitcherProps {
+  activeRole: AppRole;
+  onRoleChange: (role: AppRole) => void;
+}
 
+export function RoleSwitcher({ activeRole, onRoleChange }: RoleSwitcherProps) {
   if (process.env.NODE_ENV !== "development") return null;
 
   return (
@@ -31,7 +35,7 @@ export function RoleSwitcher() {
           >
             <span className="text-xs text-muted-foreground">Role:</span>
             <span className="text-xs font-semibold text-primary">
-              {ROLE_LABELS[user.role]}
+              {ROLE_LABELS[activeRole]}
             </span>
             <ChevronUp className="h-3 w-3 text-muted-foreground" />
           </Button>
@@ -44,17 +48,17 @@ export function RoleSwitcher() {
           {ALL_ROLES.map((role) => (
             <DropdownMenuItem
               key={role}
-              onClick={() => setRole(role)}
+              onClick={() => onRoleChange(role)}
               className="text-sm cursor-pointer"
             >
               <span
                 className={
-                  user.role === role ? "font-semibold text-primary" : ""
+                  activeRole === role ? "font-semibold text-primary" : ""
                 }
               >
                 {ROLE_LABELS[role]}
               </span>
-              {user.role === role && (
+              {activeRole === role && (
                 <span className="ml-auto text-xs text-muted-foreground">
                   active
                 </span>

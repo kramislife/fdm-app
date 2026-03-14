@@ -5,9 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import webIcon from "@/app/assets/media/web-icon.png";
 import { usePathname } from "next/navigation";
-import { PanelLeftClose, PanelLeftOpen, LogOut } from "lucide-react";
-import { SIDEBAR_NAV, ROLE_LABELS } from "@/config/sidebar-navigation";
-import { useUser } from "@/lib/context/user-context";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -19,25 +17,34 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
+import type { DashboardSessionUser } from "@/lib/types";
+import { SIDEBAR_NAV, ROLE_LABELS } from "@/config/sidebar-navigation";
+
 interface SidebarProps {
+  sessionUser: DashboardSessionUser;
   onMobileClose?: () => void;
   isMobile?: boolean;
 }
 
-export function Sidebar({ onMobileClose, isMobile = false }: SidebarProps) {
+export function Sidebar({
+  sessionUser,
+  onMobileClose,
+  isMobile = false,
+}: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
-  const { user } = useUser();
   const pathname = usePathname();
 
   const isCollapsed = collapsed && !isMobile;
 
   const visibleGroups = SIDEBAR_NAV.map((group) => ({
     ...group,
-    items: group.items.filter((item) => item.roles.includes(user.role)),
+    items: group.items.filter((item) =>
+      item.roles.some((r) => sessionUser.roles.includes(r)),
+    ),
   })).filter((group) => group.items.length > 0);
 
   return (
-    <TooltipProvider delayDuration={0}>
+    <TooltipProvider>
       <aside
         className={cn(
           "flex flex-col h-full bg-sidebar/50 text-sidebar-foreground border-r border-sidebar-border transition-all duration-200",
@@ -162,53 +169,31 @@ export function Sidebar({ onMobileClose, isMobile = false }: SidebarProps) {
           </nav>
         </div>
 
-        {/* Footer — user info + sign out */}
-        <div className="border-t border-sidebar-border p-3 shrink-0">
-          {!isCollapsed ? (
-            <div className="flex items-center gap-3 p-2">
+        {/* Footer — user info */}
+        <div className="border-t border-sidebar-border p-2">
+          {isCollapsed ? (
+            <div className="flex justify-center p-2">
               <Avatar className="h-8 w-8 shrink-0">
-                <AvatarFallback className="bg-sidebar-primary/30 text-sidebar-foreground text-xs font-semibold">
-                  {user.initials}
+                <AvatarFallback className="bg-primary text-white text-xs font-semibold">
+                  {sessionUser.initials}
                 </AvatarFallback>
               </Avatar>
-              <div
-                className={cn(
-                  "flex-1 min-w-0 transition-all duration-300 overflow-hidden",
-                  isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100",
-                )}
-              >
-                <p className="text-sm font-medium truncate text-sidebar-foreground whitespace-nowrap">
-                  {user.name}
-                </p>
-                <span className="text-xs mt-1 border-sidebar-border text-sidebar-foreground/70 whitespace-nowrap">
-                  {ROLE_LABELS[user.role]}
-                </span>
-              </div>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="h-10 w-10 shrink-0 text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent cursor-pointer"
-                  >
-                    <LogOut className="h-5 w-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right">Sign Out</TooltipContent>
-              </Tooltip>
             </div>
           ) : (
-            <div className="flex justify-center">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="h-10 w-10 shrink-0 text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent cursor-pointer"
-                  >
-                    <LogOut className="h-5 w-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right">Sign Out</TooltipContent>
-              </Tooltip>
+            <div className="flex items-center gap-3 p-2">
+              <Avatar className="h-8 w-8 shrink-0">
+                <AvatarFallback className="bg-primary text-white text-xs font-semibold">
+                  {sessionUser.initials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold truncate">{sessionUser.name}</p>
+                <span className="text-xs text-muted-foreground truncate">
+                  {sessionUser.roles[0]
+                    ? ROLE_LABELS[sessionUser.roles[0]]
+                    : sessionUser.email}
+                </span>
+              </div>
             </div>
           )}
         </div>

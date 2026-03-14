@@ -17,32 +17,30 @@ import {
   Tag,
   Calendar,
   ShieldCheck,
-  QrCode,
-  CalendarCheck,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type AppRole =
-  | "sd"
+  | "spiritual_director"
   | "elder"
-  | "hs"
-  | "ahs"
-  | "mh"
+  | "head_servant"
+  | "asst_head_servant"
+  | "ministry_head"
   | "builder"
   | "cluster_head"
-  | "mc"
+  | "ministry_coordinator"
   | "finance"
   | "member";
 
 export const ROLE_LABELS: Record<AppRole, string> = {
-  sd: "Spiritual Director",
+  spiritual_director: "Spiritual Director",
   elder: "Elder",
-  hs: "Head Servant",
-  ahs: "Asst. Head Servant",
-  mh: "Ministry Head",
+  head_servant: "Head Servant",
+  asst_head_servant: "Asst. Head Servant",
+  ministry_head: "Ministry Head",
   builder: "Builder",
   cluster_head: "Cluster Head",
-  mc: "Master of Ceremonies",
+  ministry_coordinator: "Master of Ceremonies",
   finance: "Finance Officer",
   member: "Member",
 };
@@ -68,16 +66,15 @@ export const SIDEBAR_NAV: NavGroup[] = [
         href: "/dashboard",
         icon: LayoutDashboard,
         roles: [
-          "sd",
+          "spiritual_director",
           "elder",
-          "hs",
-          "ahs",
-          "mh",
+          "head_servant",
+          "asst_head_servant",
+          "ministry_head",
           "builder",
           "cluster_head",
-          "mc",
+          "ministry_coordinator",
           "finance",
-          "member",
         ],
       },
     ],
@@ -89,25 +86,49 @@ export const SIDEBAR_NAV: NavGroup[] = [
         label: "Members",
         href: "/dashboard/members",
         icon: Users,
-        roles: ["sd", "elder", "hs", "ahs", "mh"],
+        roles: [
+          "spiritual_director",
+          "elder",
+          "head_servant",
+          "asst_head_servant",
+          "ministry_head",
+        ],
       },
       {
         label: "Guests",
         href: "/dashboard/guests",
         icon: UserCheck,
-        roles: ["sd", "elder", "hs", "ahs"],
+        roles: [
+          "spiritual_director",
+          "elder",
+          "head_servant",
+          "asst_head_servant",
+        ],
       },
       {
         label: "Clusters",
         href: "/dashboard/clusters",
         icon: Network,
-        roles: ["sd", "elder", "hs", "ahs", "builder", "cluster_head"],
+        roles: [
+          "spiritual_director",
+          "elder",
+          "head_servant",
+          "asst_head_servant",
+          "builder",
+          "cluster_head",
+        ],
       },
       {
         label: "Ministries",
         href: "/dashboard/ministries",
         icon: Church,
-        roles: ["sd", "elder", "hs", "mc", "mh"],
+        roles: [
+          "spiritual_director",
+          "elder",
+          "head_servant",
+          "ministry_coordinator",
+          "ministry_head",
+        ],
       },
     ],
   },
@@ -118,19 +139,29 @@ export const SIDEBAR_NAV: NavGroup[] = [
         label: "Events",
         href: "/dashboard/events",
         icon: CalendarDays,
-        roles: ["sd", "elder", "hs", "ahs"],
+        roles: [
+          "spiritual_director",
+          "elder",
+          "head_servant",
+          "asst_head_servant",
+        ],
       },
       {
         label: "Attendance",
         href: "/dashboard/attendance",
         icon: ClipboardList,
-        roles: ["sd", "elder", "hs", "ahs"],
+        roles: [
+          "spiritual_director",
+          "elder",
+          "head_servant",
+          "asst_head_servant",
+        ],
       },
       {
         label: "Guest Encode",
         href: "/dashboard/encode",
         icon: UserPlus,
-        roles: ["ahs"],
+        roles: ["asst_head_servant"],
       },
     ],
   },
@@ -141,19 +172,30 @@ export const SIDEBAR_NAV: NavGroup[] = [
         label: "Enthronements",
         href: "/dashboard/enthronements",
         icon: Heart,
-        roles: ["sd", "elder", "hs", "builder", "cluster_head"],
+        roles: [
+          "spiritual_director",
+          "elder",
+          "head_servant",
+          "builder",
+          "cluster_head",
+        ],
       },
       {
         label: "Finance",
         href: "/dashboard/finance",
         icon: DollarSign,
-        roles: ["sd", "elder", "hs", "finance"],
+        roles: ["spiritual_director", "elder", "head_servant", "finance"],
       },
       {
         label: "Announcements",
         href: "/dashboard/announcements",
         icon: Megaphone,
-        roles: ["sd", "elder", "hs", "ahs"],
+        roles: [
+          "spiritual_director",
+          "elder",
+          "head_servant",
+          "asst_head_servant",
+        ],
       },
     ],
   },
@@ -164,7 +206,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
         label: "General Assembly",
         href: "/dashboard/reports",
         icon: FileBarChart,
-        roles: ["sd", "elder", "hs"],
+        roles: ["spiritual_director", "elder", "head_servant"],
       },
     ],
   },
@@ -175,60 +217,53 @@ export const SIDEBAR_NAV: NavGroup[] = [
         label: "Users",
         href: "/dashboard/admin/users",
         icon: UserCog,
-        roles: ["sd", "elder", "hs", "ahs"],
+        roles: [
+          "spiritual_director",
+          "elder",
+          "head_servant",
+          "asst_head_servant",
+        ],
       },
       {
         label: "Chapters",
         href: "/dashboard/admin/chapters",
         icon: Building2,
-        roles: ["sd", "elder"],
+        roles: ["spiritual_director", "elder"],
       },
       {
         label: "Areas & Clusters",
         href: "/dashboard/admin/areas",
         icon: MapPin,
-        roles: ["sd", "elder", "hs", "ahs"],
+        roles: [
+          "spiritual_director",
+          "elder",
+          "head_servant",
+          "asst_head_servant",
+        ],
       },
       {
         label: "Ministries",
         href: "/dashboard/admin/ministries",
         icon: Church,
-        roles: ["sd", "elder", "hs"],
+        roles: ["spiritual_director", "elder", "head_servant"],
       },
       {
         label: "Ministry Types",
         href: "/dashboard/admin/ministry-types",
         icon: Tag,
-        roles: ["sd", "elder"],
+        roles: ["spiritual_director", "elder"],
       },
       {
         label: "Event Types",
         href: "/dashboard/admin/event-types",
         icon: Calendar,
-        roles: ["sd", "elder"],
+        roles: ["spiritual_director", "elder"],
       },
       {
         label: "Roles",
         href: "/dashboard/admin/roles",
         icon: ShieldCheck,
-        roles: ["sd", "elder"],
-      },
-    ],
-  },
-  {
-    group: "MY ACCOUNT",
-    items: [
-      {
-        label: "My QR Code",
-        href: "/dashboard/my-qr",
-        icon: QrCode,
-        roles: ["member"],
-      },
-      {
-        label: "My Attendance",
-        href: "/dashboard/my-attendance",
-        icon: CalendarCheck,
-        roles: ["member"],
+        roles: ["spiritual_director", "elder"],
       },
     ],
   },

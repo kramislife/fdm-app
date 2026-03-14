@@ -1,6 +1,7 @@
 import type { StaticImageData } from "next/image";
 import type { LucideIcon } from "lucide-react";
 import type { IconType } from "react-icons";
+import type { AppRole } from "@/config/sidebar-navigation";
 
 // ---------------------------- Base Config Types ----------------------------
 
@@ -27,6 +28,7 @@ export interface SectionWithImage extends SectionWithDescription {
 export interface NavLink {
   label: string;
   href: string;
+  icon?: LucideIcon;
 }
 
 export interface SocialLink {
@@ -46,4 +48,14 @@ export interface ContactItem {
   label: string;
   value: string;
   href?: string;
+}
+
+export interface BaseUser {
+  name: string;
+  initials: string;
+  email: string;
+}
+
+export interface DashboardSessionUser extends BaseUser {
+  roles: AppRole[];
 }

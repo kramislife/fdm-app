@@ -2,128 +2,88 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { navLinks } from "@/config/navigation";
+import { Button } from "@/components/ui/button";
+
 import { Logo } from "@/components/ui/logo";
-import { useCloseOnResize } from "@/hooks/use-close-on-resize";
+import { UserDropdown } from "@/components/shared/user-dropdown";
+import { MobileNav } from "@/components/layout/mobile-nav";
 
-export function PublicHeader() {
+import { navLinks } from "@/config/navigation";
+import { useSignOut } from "@/hooks/use-sign-out";
+import { useMobileSheet } from "@/hooks/use-mobile-sheet";
+
+import type { BaseUser } from "@/lib/types";
+
+interface SessionUser extends BaseUser {
+  isMember: boolean;
+}
+
+interface PublicHeaderProps {
+  sessionUser: SessionUser | null;
+}
+
+export function PublicHeader({ sessionUser }: PublicHeaderProps) {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const { open, setOpen } = useMobileSheet();
+  const signOut = useSignOut();
 
-  // Close mobile menu when resizing to desktop using custom hook
-  useCloseOnResize(open, setOpen);
+  const isInDashboard = pathname.startsWith("/dashboard");
+  const showDashboardLink =
+    !!sessionUser && !sessionUser.isMember && !isInDashboard;
 
-  // Shared Auth Link component
-  const AuthAction = ({
-    className,
-    onClick,
-  }: {
-    className?: string;
-    onClick?: () => void;
-  }) => (
-    <Button asChild className={className} size="lg">
-      <Link href="/login" onClick={onClick}>
-        Sign In
-      </Link>
-    </Button>
-  );
-
-  // Shared Navigation component
-  const NavLinks = ({
-    itemClassName,
-    activeClassName,
-    onClick,
-  }: {
-    itemClassName?: string;
-    activeClassName?: string;
-    onClick?: () => void;
-  }) => (
-    <>
-      {navLinks.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          onClick={onClick}
-          className={cn(
-            itemClassName,
-            pathname === link.href ? activeClassName : "text-muted-foreground",
-          )}
-        >
-          {link.label}
-        </Link>
-      ))}
-    </>
-  );
+  const handleSignOut = async () => {
+    setOpen(false);
+    await signOut();
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background shadow-sm">
       <div className="mx-auto flex h-16 items-center justify-between px-5">
         <Logo size="w-20" />
 
-        {/* Desktop nav */}
+        {/* Desktop Navigation */}
         <nav className="hidden items-center gap-5 md:flex">
-          <NavLinks
-            itemClassName="text-sm font-medium transition-colors hover:text-primary"
-            activeClassName="text-primary"
-          />
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary",
+                pathname === link.href
+                  ? "text-primary"
+                  : "text-muted-foreground",
+              )}
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          <AuthAction className="hidden md:flex" />
+          {sessionUser ? (
+            <div className="hidden md:block">
+              <UserDropdown
+                user={sessionUser}
+                showDashboardLink={showDashboardLink}
+                onSignOut={signOut}
+              />
+            </div>
+          ) : (
+            <Button asChild className="hidden md:flex" size="lg">
+              <Link href="/login">Sign In</Link>
+            </Button>
+          )}
 
-          {/* Mobile hamburger */}
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden cursor-pointer"
-                aria-label="Open menu"
-                title="Open menu"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right">
-              <SheetHeader className="border-b pb-5 text-left">
-                <SheetTitle>
-                  <Logo size="w-16" />
-                </SheetTitle>
-                <SheetDescription className="sr-only">
-                  Navigation Menu
-                </SheetDescription>
-              </SheetHeader>
-
-              <nav className="flex flex-col gap-2 px-2">
-                <NavLinks
-                  onClick={() => setOpen(false)}
-                  itemClassName="flex h-12 items-center rounded-md px-5 font-medium"
-                  activeClassName="bg-accent-foreground text-white"
-                />
-              </nav>
-
-              <SheetFooter className="border-t">
-                <AuthAction
-                  className="w-full cursor-pointer h-12"
-                  onClick={() => setOpen(false)}
-                />
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
+          <MobileNav
+            sessionUser={sessionUser}
+            open={open}
+            onOpenChange={setOpen}
+            pathname={pathname}
+            showDashboardLink={showDashboardLink}
+            onSignOut={handleSignOut}
+          />
         </div>
       </div>
     </header>
