@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
-import { Loading } from "@/components/ui/loading";
+import { ChevronUp, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -9,26 +12,74 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export type Column = { key: string; label: string };
+import { Loading } from "@/components/ui/loading";
+
+export type Column = { key: string; label: string; sortable?: boolean };
 
 interface DataTableProps {
   columns: Column[];
   data: Record<string, React.ReactNode>[];
   isLoading?: boolean;
+  sort?: string;
+  order?: "asc" | "desc";
+  onSort?: (key: string) => void;
+}
+
+function SortIcon({
+  active,
+  order,
+}: {
+  active: boolean;
+  order?: "asc" | "desc";
+}) {
+  return (
+    <span className="inline-flex flex-col ml-1 align-middle">
+      <ChevronUp
+        className={cn(
+          "size-3 -mb-1",
+          active && order === "asc"
+            ? "text-primary"
+            : "text-muted-foreground/40",
+        )}
+      />
+      <ChevronDown
+        className={cn(
+          "size-3",
+          active && order === "desc"
+            ? "text-primary"
+            : "text-muted-foreground/40",
+        )}
+      />
+    </span>
+  );
 }
 
 export function DataTable({
   columns,
   data,
   isLoading = false,
+  sort,
+  order,
+  onSort,
 }: DataTableProps) {
   return (
     <Table>
       <TableHeader>
         <TableRow className="bg-muted hover:bg-muted/50">
           {columns.map((col) => (
-            <TableHead key={col.key} className="text-center">
+            <TableHead
+              key={col.key}
+              className={cn(
+                "text-center",
+                col.sortable &&
+                  "cursor-pointer select-none hover:text-foreground",
+              )}
+              onClick={col.sortable ? () => onSort?.(col.key) : undefined}
+            >
               {col.label}
+              {col.sortable && (
+                <SortIcon active={sort === col.key} order={order} />
+              )}
             </TableHead>
           ))}
         </TableRow>
@@ -53,7 +104,10 @@ export function DataTable({
           </TableRow>
         ) : (
           data.map((row, rowIdx) => (
-            <TableRow key={rowIdx} className="hover:bg-muted/40 transition-colors">
+            <TableRow
+              key={rowIdx}
+              className="hover:bg-muted/40 transition-colors"
+            >
               {columns.map((col) => (
                 <TableCell key={col.key} className="text-center px-4 py-3">
                   {row[col.key]}

@@ -12,34 +12,27 @@ import {
 
 interface TableControlsProps {
   perPage: number;
-  onPerPageChange: (value: number) => void;
-  searchValue: string;
-  onSearchChange: (value: string) => void;
+  searchInput: string;
   searchPlaceholder?: string;
+  onSearchChange: (value: string) => void;
+  onPerPageChange: (value: number) => void;
 }
 
 export function TableControls({
   perPage,
-  onPerPageChange,
-  searchValue,
-  onSearchChange,
+  searchInput,
   searchPlaceholder = "Search...",
+  onSearchChange,
+  onPerPageChange,
 }: TableControlsProps) {
-  const selectValue = perPage === 0 ? "all" : String(perPage);
-
-  function handleValueChange(v: string) {
-    if (v === "all") {
-      onPerPageChange(0);
-    } else {
-      onPerPageChange(Number(v));
-    }
-  }
-
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
         <span>Show</span>
-        <Select value={selectValue} onValueChange={handleValueChange}>
+        <Select
+          value={String(perPage)}
+          onValueChange={(v) => onPerPageChange(Number(v))}
+        >
           <SelectTrigger size="sm">
             <SelectValue />
           </SelectTrigger>
@@ -48,7 +41,7 @@ export function TableControls({
             <SelectItem value="20">20</SelectItem>
             <SelectItem value="30">30</SelectItem>
             <SelectItem value="50">50</SelectItem>
-            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="100">100</SelectItem>
           </SelectContent>
         </Select>
         <span>entries</span>
@@ -58,7 +51,7 @@ export function TableControls({
         <Input
           className="pl-9"
           placeholder={searchPlaceholder}
-          value={searchValue}
+          value={searchInput}
           onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>
