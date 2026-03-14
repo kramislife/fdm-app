@@ -89,7 +89,7 @@ export function MobileNav({
         </Button>
       </SheetTrigger>
 
-      <SheetContent side="right">
+      <SheetContent side="right" showCloseButton={false}>
         {/* Header: Avatar, Name, Email when logged in, Logo when not */}
         <SheetHeader className="border-b pb-4 text-left">
           <SheetTitle>

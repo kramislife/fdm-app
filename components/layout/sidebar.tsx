@@ -62,7 +62,7 @@ export function Sidebar({
           {/* Brand — left aligned */}
           <div
             className={cn(
-              "flex items-center gap-2 transition-all duration-300 overflow-hidden",
+              "flex items-center gap-2 transition-all duration-300 overflow-hidden p-3 md:p-0",
               isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100",
             )}
           >
@@ -70,7 +70,7 @@ export function Sidebar({
               <Image
                 src={webIcon}
                 alt="FDM Logo"
-                className="h-8 w-8 rounded-sm object-contain"
+                className="h-8 w-8 shrink-0 object-cover"
               />
             </Link>
             <div className="flex flex-col justify-center">
