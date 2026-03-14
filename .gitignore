@@ -47,6 +47,7 @@ tasks/todo.md
 tasks/checking.md
 tasks/completed.md
 tasks/lessons.md
+tasks/FDM_TECHSTACK.md
 
 # Claude Code settings (machine-specific)
 .claude/settings.json
