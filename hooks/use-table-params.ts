@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { VALID_PER_PAGE } from "@/lib/table";
 
 export interface TableParamHandlers {
   search: string;
@@ -31,7 +32,9 @@ export function useTableParams(defaultSort = "name"): TableParamHandlers {
   const urlSearch = searchParams.get("search") ?? "";
   const urlPage = Math.max(1, Number(searchParams.get("page")) || 1);
   const urlPerPageRaw = Number(searchParams.get("perPage"));
-  const urlPerPage = [10, 20, 30, 50, 100].includes(urlPerPageRaw)
+  const urlPerPage = (VALID_PER_PAGE as readonly number[]).includes(
+    urlPerPageRaw,
+  )
     ? urlPerPageRaw
     : 10;
   const urlSortRaw = searchParams.get("sort");

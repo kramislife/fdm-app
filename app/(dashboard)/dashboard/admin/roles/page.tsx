@@ -1,26 +1,41 @@
+import { requireRole } from "@/lib/auth";
+import { getRoles } from "@/lib/data/roles";
+import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
 import { AdminPage, type Column } from "@/components/admin";
 
 const columns: Column[] = [
-  { key: "name", label: "Name" },
-  { key: "scope", label: "Scope" },
+  { key: "name", label: "Name", sortable: true },
+  { key: "scope", label: "Scope", sortable: true },
 ];
 
-const data = [
-  { name: "Spiritual Director", scope: "Community" },
-  { name: "Elder", scope: "Community" },
-  { name: "Head Server", scope: "Chapter" },
-  { name: "Asst. Head Server", scope: "Chapter" },
-  { name: "Ministry Head", scope: "Ministry" },
-];
+export default async function RolesPage({ searchParams }: PageProps) {
+  await requireRole(["spiritual_director", "elder"]);
 
-export default function Page() {
+  const { search, page, perPage, sort, order } = parseTableParams(
+    await searchParams,
+    "name",
+  );
+
+  const result = await getRoles({
+    search: search || undefined,
+    page,
+    perPage,
+    sort,
+    order,
+  });
+
+  const data = result.data.map((role) => ({
+    name: role.name,
+    scope: role.scope,
+  }));
+
   return (
     <AdminPage
       title="Role Management"
-      description="Manage community roles and their scopes."
+      description="View all community roles and their scopes."
       columns={columns}
       data={data}
-      action={{ label: "Create Role" }}
+      pagination={toPagination(result)}
     />
   );
 }

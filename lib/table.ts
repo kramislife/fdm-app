@@ -16,6 +16,14 @@ export type TableResult<T> = {
 
 export type RawSearchParams = Record<string, string | string[] | undefined>;
 
+/** Single source of truth for valid perPage options */
+export const VALID_PER_PAGE = [10, 20, 30, 50, 100] as const;
+
+/** Shared page component prop type for server pages that use table params */
+export type PageProps = {
+  searchParams: Promise<RawSearchParams>;
+};
+
 export function parseTableParams(
   params: RawSearchParams,
   defaultSort = "name",
@@ -27,7 +35,9 @@ export function parseTableParams(
     search:
       typeof params.search === "string" && params.search ? params.search : "",
     page: rawPage > 0 ? rawPage : 1,
-    perPage: [10, 20, 30, 50, 100].includes(rawPerPage) ? rawPerPage : 10,
+    perPage: (VALID_PER_PAGE as readonly number[]).includes(rawPerPage)
+      ? rawPerPage
+      : 10,
     sort:
       typeof params.sort === "string" && params.sort
         ? params.sort
@@ -43,4 +53,19 @@ export function buildPaginationMeta(
 ) {
   const totalPages = Math.max(1, Math.ceil(total / perPage));
   return { total, page, perPage, totalPages };
+}
+
+/** Maps a fetcher result to the AdminPage pagination prop shape and converts `total` → `totalEntries` to match the component interface */
+export function toPagination(result: {
+  page: number;
+  perPage: number;
+  totalPages: number;
+  total: number;
+}) {
+  return {
+    page: result.page,
+    perPage: result.perPage,
+    totalPages: result.totalPages,
+    totalEntries: result.total,
+  };
 }
