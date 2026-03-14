@@ -60,28 +60,28 @@ export function Sidebar({
           )}
         >
           {/* Brand — left aligned */}
-          <div
+          <Link
+            href="/"
+            title="Navigate to Home"
             className={cn(
-              "flex items-center gap-2 transition-all duration-300 overflow-hidden p-3 md:p-0",
-              isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100",
+              "group flex items-center gap-2 transition-all duration-300 overflow-hidden cursor-pointer",
+              isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100 ml-2",
             )}
           >
-            <Link href="/" className="shrink-0" title="Navigate to Home">
-              <Image
-                src={webIcon}
-                alt="FDM Logo"
-                className="h-8 w-8 shrink-0 object-cover"
-              />
-            </Link>
+            <Image
+              src={webIcon}
+              alt="FDM Logo"
+              className="h-8 w-8 shrink-0 object-cover"
+            />
             <div className="flex flex-col justify-center">
-              <p className="text-sm font-bold text-sidebar-foreground leading-tight whitespace-nowrap">
+              <p className="text-sm font-bold text-sidebar-foreground group-hover:text-primary transition-colors whitespace-nowrap">
                 FDM
               </p>
-              <p className="text-xs text-sidebar-foreground/60 leading-tight mt-1 italic whitespace-nowrap">
+              <p className="text-xs text-sidebar-foreground/60 group-hover:text-primary transition-colors mt-1 italic whitespace-nowrap">
                 Management System
               </p>
             </div>
-          </div>
+          </Link>
 
           {/* Collapse toggle — desktop only */}
           {!isMobile && (
