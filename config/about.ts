@@ -45,7 +45,6 @@ export interface MissionContent extends SectionWithDescription {
   items: BaseImage[];
 }
 
-
 export interface PillarsContent extends BaseSection {
   items: PillarItem[];
 }
@@ -98,6 +97,15 @@ export const heroContent: HeroContent = {
     alt: "Friends of the Divine Mercy",
   },
 };
+
+// ---------------------------- Stats --------------------------------------------
+
+export const communityStats: Stat[] = [
+  { value: "50+", label: "Chapters" },
+  { value: "5,000+", label: "Members" },
+  { value: "30+", label: "Years of Service" },
+  { value: "50,000+", label: "Enthronement" },
+];
 
 // ---------------------------- Mission Section ----------------------------
 
@@ -221,15 +229,6 @@ export const communityGallery: CommunityGallery = {
     "Hundreds of members across different chapters — each one a living witness to the mercy and love of God. We are a family united in faith, dedicated to spreading the message of compassion and hope.",
   image: { src: communityImage, alt: "Faces of Faith - FDM Community Gallery" },
 };
-
-// ---------------------------- Stats --------------------------------------------
-
-export const communityStats: Stat[] = [
-  { value: "6", label: "Chapters" },
-  { value: "500+", label: "Members" },
-  { value: "30+", label: "Years of Service" },
-  { value: "50+", label: "Events per Year" },
-];
 
 // ---------------------------- Story --------------------------------------------
 

@@ -97,9 +97,30 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/*  ---------------------- Stats Strip --------------------- */}
+      <section className="bg-muted/50 px-5 py-10 md:px-10 md:py-20">
+        <motion.div
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+          {...getAnimationProps(staggerContainer)}
+        >
+          {communityStats.map((stat) => (
+            <motion.div
+              key={stat.label}
+              className="flex flex-col items-center"
+              variants={fadeInUp}
+            >
+              <span className="font-serif text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight text-primary">
+                {stat.value}
+              </span>
+              <span className="text-sm md:text-base">{stat.label}</span>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
       {/* ---------------------------- Mission Section ---------------------------- */}
       <motion.section
-        className="bg-muted/50 px-5 py-10 md:px-10 md:py-20"
+        className="px-5 py-10 md:px-10 md:py-20"
         {...getAnimationProps(fadeInUp)}
       >
         <div className="mx-auto max-w-5xl space-y-5 text-center">
@@ -147,7 +168,7 @@ export default function AboutPage() {
       </motion.section>
 
       {/* ---------------------------- Pillars Section ---------------------------- */}
-      <section className="px-5 py-10 md:px-10 md:py-20">
+      <section className="bg-muted/50 px-5 py-10 md:px-10 md:py-20">
         <motion.div
           className="mb-10 space-y-5"
           {...getAnimationProps(fadeInUp)}
@@ -185,7 +206,7 @@ export default function AboutPage() {
       </section>
 
       {/* ---------------------------- Chapters Section ---------------------------- */}
-      <section className="bg-muted/50 px-5 py-10 md:px-10 md:py-20">
+      <section className="px-5 py-10 md:px-10 md:py-20">
         <motion.div
           className="mx-auto mb-10 max-w-4xl space-y-5 text-center"
           {...getAnimationProps(fadeInUp)}
@@ -231,7 +252,7 @@ export default function AboutPage() {
 
       {/*  ---------------------- Our Community Section --------------------- */}
       <motion.section
-        className="relative overflow-hidden aspect-4/5 md:aspect-16/5"
+        className="relative overflow-hidden aspect-4/5 md:aspect-16/5 mb-2"
         {...getAnimationProps(fadeIn)}
       >
         {/* Full-bleed background image */}
@@ -264,29 +285,6 @@ export default function AboutPage() {
           </motion.div>
         </div>
       </motion.section>
-
-      {/*  ---------------------- Stats Strip --------------------- */}
-      <section className="bg-sidebar px-5 py-10 md:px-10 md:py-20">
-        <motion.div
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
-          {...getAnimationProps(staggerContainer)}
-        >
-          {communityStats.map((stat) => (
-            <motion.div
-              key={stat.label}
-              className="flex flex-col items-center"
-              variants={fadeInUp}
-            >
-              <span className="font-serif text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight text-white">
-                {stat.value}
-              </span>
-              <span className="text-sm md:text-base text-white">
-                {stat.label}
-              </span>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
 
       {/*  ---------------------- Our Story --------------------- */}
       <section
