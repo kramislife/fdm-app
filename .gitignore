@@ -41,3 +41,13 @@ yarn-error.log*
 next-env.d.ts
 
 /lib/generated/prisma
+
+# Task management files
+tasks/todo.md
+tasks/checking.md
+tasks/completed.md
+tasks/lessons.md
+
+# Claude Code settings (machine-specific)
+.claude/settings.json
+.claude/settings.local.json
