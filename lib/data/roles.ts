@@ -4,6 +4,7 @@ import { buildPaginationMeta, type TableParams } from "@/lib/table";
 
 function buildOrderBy(sort: string, order: "asc" | "desc") {
   if (sort === "scope") return { scope: order };
+  if (sort === "description") return { description: order };
   return { name: order };
 }
 
@@ -16,6 +17,7 @@ export async function getRoles(params: TableParams = {}) {
         OR: [
           { name: { contains: search, mode: "insensitive" as const } },
           { key: { contains: search, mode: "insensitive" as const } },
+          { description: { contains: search, mode: "insensitive" as const } },
         ],
       }
     : {};

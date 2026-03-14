@@ -14,7 +14,12 @@ import {
 
 import { Loading } from "@/components/ui/loading";
 
-export type Column = { key: string; label: string; sortable?: boolean };
+export type Column = {
+  key: string;
+  label: string;
+  sortable?: boolean;
+  maxWidth?: string;
+};
 
 interface DataTableProps {
   columns: Column[];
@@ -23,6 +28,7 @@ interface DataTableProps {
   sort?: string;
   order?: "asc" | "desc";
   onSort?: (key: string) => void;
+  getCellTitle?: (value: React.ReactNode) => string | undefined;
 }
 
 function SortIcon({
@@ -61,6 +67,7 @@ export function DataTable({
   sort,
   order,
   onSort,
+  getCellTitle,
 }: DataTableProps) {
   return (
     <Table>
@@ -69,8 +76,9 @@ export function DataTable({
           {columns.map((col) => (
             <TableHead
               key={col.key}
+              style={col.maxWidth ? { maxWidth: col.maxWidth } : undefined}
               className={cn(
-                "text-center",
+                "text-left px-4 py-3",
                 col.sortable &&
                   "cursor-pointer select-none hover:text-foreground",
               )}
@@ -108,11 +116,24 @@ export function DataTable({
               key={rowIdx}
               className="hover:bg-muted/40 transition-colors"
             >
-              {columns.map((col) => (
-                <TableCell key={col.key} className="text-center px-4 py-3">
-                  {row[col.key]}
-                </TableCell>
-              ))}
+              {columns.map((col) => {
+                const value = row[col.key];
+                const titleText = getCellTitle?.(value);
+                return (
+                  <TableCell
+                    key={col.key}
+                    className="text-left px-4 py-3"
+                    style={col.maxWidth ? { maxWidth: col.maxWidth } : undefined}
+                  >
+                    <div
+                      className={cn(col.maxWidth && "truncate")}
+                      title={titleText}
+                    >
+                      {value}
+                    </div>
+                  </TableCell>
+                );
+              })}
             </TableRow>
           ))
         )}

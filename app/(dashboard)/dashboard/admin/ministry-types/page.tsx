@@ -2,10 +2,15 @@ import { requireRole } from "@/lib/auth";
 import { getMinistryTypes } from "@/lib/data/ministry-types";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
 import { AdminPage, type Column } from "@/components/admin";
+import { StatusBadge, CreatorCell, DateCell, TextCell } from "@/components/shared/cells";
 
 const columns: Column[] = [
   { key: "name", label: "Name", sortable: true },
-  { key: "description", label: "Description" },
+  { key: "description", label: "Description", maxWidth: "250px" },
+  { key: "status", label: "Status" },
+  { key: "createdBy", label: "Created By" },
+  { key: "createdAt", label: "Created At", sortable: true },
+  { key: "updatedAt", label: "Updated At", sortable: true },
 ];
 
 export default async function MinistryTypesPage({ searchParams }: PageProps) {
@@ -13,7 +18,7 @@ export default async function MinistryTypesPage({ searchParams }: PageProps) {
 
   const { search, page, perPage, sort, order } = parseTableParams(
     await searchParams,
-    "name",
+    "created_at",
   );
 
   const result = await getMinistryTypes({
@@ -26,16 +31,21 @@ export default async function MinistryTypesPage({ searchParams }: PageProps) {
 
   const data = result.data.map((mt) => ({
     name: mt.name,
-    description: mt.description ?? "—",
+    description: <TextCell value={mt.description} />,
+    status: <StatusBadge isActive={mt.is_active} />,
+    createdBy: <CreatorCell creator={mt.creator} />,
+    createdAt: <DateCell date={mt.created_at} />,
+    updatedAt: <DateCell date={mt.updated_at} />,
   }));
 
   return (
     <AdminPage
       title="Ministry Types"
-      description="View all ministry types defined in the system."
+      description="View and manage all types of ministries"
       columns={columns}
       data={data}
       pagination={toPagination(result)}
+      defaultSort="created_at"
     />
   );
 }

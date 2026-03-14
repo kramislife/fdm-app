@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import type { ReactNode } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { VALID_PER_PAGE } from "@/lib/table";
 
@@ -17,6 +18,8 @@ export interface TableParamHandlers {
   handlePage: (page: number) => void;
   handleSort: (key: string) => void;
   getRange: (totalEntries: number) => { from: number; to: number };
+  /** Extract a plain string from a ReactNode for use as a cell title attribute. Returns undefined for JSX nodes. */
+  getCellTitle: (value: ReactNode) => string | undefined;
 }
 
 export function useTableParams(defaultSort = "name"): TableParamHandlers {
@@ -93,6 +96,13 @@ export function useTableParams(defaultSort = "name"): TableParamHandlers {
     return { from, to };
   }
 
+  function getCellTitle(value: ReactNode): string | undefined {
+    if (typeof value === "string" || typeof value === "number") {
+      return String(value);
+    }
+    return undefined;
+  }
+
   return {
     search: urlSearch,
     searchInput,
@@ -106,5 +116,6 @@ export function useTableParams(defaultSort = "name"): TableParamHandlers {
     handlePage,
     handleSort,
     getRange,
+    getCellTitle,
   };
 }

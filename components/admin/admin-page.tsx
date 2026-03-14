@@ -61,6 +61,7 @@ export function AdminPage({
         sort={table.sort}
         order={table.order}
         onSort={table.handleSort}
+        getCellTitle={table.getCellTitle}
       />
       <AdminTableFooter
         {...table.getRange(pagination.totalEntries)}
