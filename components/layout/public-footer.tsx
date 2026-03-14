@@ -110,7 +110,7 @@ export function PublicFooter() {
       </div>
 
       {/* Socials */}
-      <div className="relative z-10 flex justify-end gap-3 px-5 pb-5">
+      <div className="relative z-10 flex justify-end gap-1 px-5 pb-5">
         {brand.socials.map((item) => (
           <a
             key={item.label}

@@ -24,17 +24,31 @@ async function main() {
         key: "spiritual_director",
         name: "Spiritual Director",
         scope: "global",
+        description:
+          "Overall spiritual leader of the FDM community. Full access across all chapters.",
       },
     }),
     prisma.role.upsert({
       where: { key: "elder" },
       update: {},
-      create: { key: "elder", name: "Elder", scope: "global" },
+      create: {
+        key: "elder",
+        name: "Elder",
+        scope: "global",
+        description:
+          "Senior community leader with full access. Cannot delete chapters.",
+      },
     }),
     prisma.role.upsert({
       where: { key: "head_servant" },
       update: {},
-      create: { key: "head_servant", name: "Head Servant", scope: "chapter" },
+      create: {
+        key: "head_servant",
+        name: "Head Servant",
+        scope: "chapter",
+        description:
+          "Leads and manages a specific chapter. Scoped to own chapter.",
+      },
     }),
     prisma.role.upsert({
       where: { key: "asst_head_servant" },
@@ -43,6 +57,8 @@ async function main() {
         key: "asst_head_servant",
         name: "Asst. Head Servant",
         scope: "chapter",
+        description:
+          "Assists the Head Servant. Handles guest encoding and attendance scanning.",
       },
     }),
     prisma.role.upsert({
@@ -52,32 +68,63 @@ async function main() {
         key: "ministry_coordinator",
         name: "Ministry Coordinator",
         scope: "global",
+        description: "Coordinates a ministry type across all chapters.",
       },
     }),
     prisma.role.upsert({
       where: { key: "builder" },
       update: {},
-      create: { key: "builder", name: "Builder", scope: "chapter" },
+      create: {
+        key: "builder",
+        name: "Builder",
+        scope: "chapter",
+        description:
+          "Manages clusters and logs household enthronements within their area.",
+      },
     }),
     prisma.role.upsert({
       where: { key: "cluster_head" },
       update: {},
-      create: { key: "cluster_head", name: "Cluster Head", scope: "chapter" },
+      create: {
+        key: "cluster_head",
+        name: "Cluster Head",
+        scope: "chapter",
+        description:
+          "Leads a cluster. Reports enthronements to their Builder verbally.",
+      },
     }),
     prisma.role.upsert({
       where: { key: "finance" },
       update: {},
-      create: { key: "finance", name: "Finance", scope: "chapter" },
+      create: {
+        key: "finance",
+        name: "Finance",
+        scope: "chapter",
+        description:
+          "Records and manages income and expense entries for their chapter.",
+      },
     }),
     prisma.role.upsert({
       where: { key: "ministry_head" },
       update: {},
-      create: { key: "ministry_head", name: "Ministry Head", scope: "chapter" },
+      create: {
+        key: "ministry_head",
+        name: "Ministry Head",
+        scope: "chapter",
+        description:
+          "Leads a specific ministry within a chapter. Views ministry members and attendance.",
+      },
     }),
     prisma.role.upsert({
       where: { key: "member" },
       update: {},
-      create: { key: "member", name: "Member", scope: "chapter" },
+      create: {
+        key: "member",
+        name: "Member",
+        scope: "chapter",
+        description:
+          "Regular community member. Access limited to own QR code and attendance history.",
+      },
     }),
   ]);
 
@@ -87,49 +134,80 @@ async function main() {
 
   // ============================================================
   // [2] MINISTRY TYPES
-  // Display names use proper casing for UI
+  // created_by is null — system-seeded defaults, no user creator
   // ============================================================
   console.log("→ Ministry types...");
   const ministryTypes = await Promise.all([
     prisma.ministryType.upsert({
       where: { key: "music" },
       update: {},
-      create: { key: "music", name: "Music Ministry" },
+      create: {
+        key: "music",
+        name: "Music Ministry",
+        description:
+          "Leads worship through song and instruments during community gatherings.",
+        is_active: true,
+      },
     }),
     prisma.ministryType.upsert({
       where: { key: "dance" },
       update: {},
-      create: { key: "dance", name: "Dance Ministry" },
+      create: {
+        key: "dance",
+        name: "Dance Ministry",
+        description:
+          "Expresses worship and praise through liturgical dance and movement.",
+        is_active: true,
+      },
     }),
     prisma.ministryType.upsert({
       where: { key: "gen_services" },
       update: {},
-      create: { key: "gen_services", name: "General Services Ministry" },
+      create: {
+        key: "gen_services",
+        name: "General Services Ministry",
+        description:
+          "Handles logistics, setup, and overall operations during events.",
+        is_active: true,
+      },
     }),
     prisma.ministryType.upsert({
       where: { key: "media" },
       update: {},
-      create: { key: "media", name: "Media Ministry" },
+      create: {
+        key: "media",
+        name: "Media Ministry",
+        description:
+          "Manages announcements, documentation, and digital communications.",
+        is_active: true,
+      },
     }),
     prisma.ministryType.upsert({
       where: { key: "food" },
       update: {},
-      create: { key: "food", name: "Food Ministry" },
+      create: {
+        key: "food",
+        name: "Food Ministry",
+        description:
+          "Prepares and serves food and refreshments during community events.",
+        is_active: true,
+      },
     }),
     prisma.ministryType.upsert({
       where: { key: "youth" },
       update: {},
-      create: { key: "youth", name: "Youth Ministry" },
+      create: {
+        key: "youth",
+        name: "Youth Ministry",
+        description: "Serves and disciples the youth members of the community.",
+        is_active: true,
+      },
     }),
   ]);
 
   // ============================================================
   // [3] EVENT TYPES
-  // rays_of_mercy    = monthly 2nd Sunday community gathering
-  // clse             = Catholic Life in the Spirit Experience
-  // biyayang_bigas   = rice outreach ministry
-  // youth            = youth group events
-  // special          = one-time celebrations and gatherings
+  // created_by is null — system-seeded defaults, no user creator
   // ============================================================
   console.log("→ Event types...");
   const eventTypes = await Promise.all([
@@ -140,7 +218,8 @@ async function main() {
         key: "rays_of_mercy",
         name: "Rays of Mercy",
         description:
-          "Monthly community gathering every 2nd Sunday of the month",
+          "Monthly community gathering every 2nd Sunday of the month.",
+        is_active: true,
       },
     }),
     prisma.eventType.upsert({
@@ -149,7 +228,8 @@ async function main() {
       create: {
         key: "clse",
         name: "Catholic Life in the Spirit Experience",
-        description: "Life in the Spirit seminar and retreat experience",
+        description: "Life in the Spirit seminar and retreat experience.",
+        is_active: true,
       },
     }),
     prisma.eventType.upsert({
@@ -159,7 +239,8 @@ async function main() {
         key: "biyayang_bigas",
         name: "Biyayang Bigas",
         description:
-          "Community outreach — rice distribution for families in need",
+          "Community outreach — rice distribution for families in need.",
+        is_active: true,
       },
     }),
     prisma.eventType.upsert({
@@ -168,7 +249,8 @@ async function main() {
       create: {
         key: "youth",
         name: "Youth Event",
-        description: "Youth group events, camps, and activities",
+        description: "Youth group events, camps, and activities.",
+        is_active: true,
       },
     }),
     prisma.eventType.upsert({
@@ -178,7 +260,8 @@ async function main() {
         key: "special",
         name: "Special Event",
         description:
-          "Special celebrations, anniversaries, and one-time gatherings",
+          "Special celebrations, anniversaries, and one-time gatherings.",
+        is_active: true,
       },
     }),
   ]);
@@ -189,8 +272,7 @@ async function main() {
 
   // ============================================================
   // [4] CHAPTERS
-  // 6 chapters — Pasig is one chapter (Sta. Clara and Sta. Martha are areas)
-  // Fellowship days are Monday–Saturday only
+  // created_by is null — seeded before users exist
   // ============================================================
   console.log("→ Chapters...");
   const chapters = await Promise.all([
@@ -261,7 +343,7 @@ async function main() {
   );
 
   // ============================================================
-  // [5] MINISTRIES — 6 per chapter (auto-assign all types)
+  // [5] MINISTRIES
   // ============================================================
   console.log("→ Ministries...");
   for (const chapter of chapters) {
@@ -281,26 +363,19 @@ async function main() {
 
   // ============================================================
   // [6] AREAS
-  // Pasig has Sta. Clara and Sta. Martha as areas
+  // created_by is null — seeded before users exist
   // ============================================================
   console.log("→ Areas...");
-
   const areasData = [
-    // Quezon City
     { name: "Commonwealth", chapter: "Quezon City" },
-    // Bataan
     { name: "Balanga", chapter: "Bataan" },
     { name: "Mariveles", chapter: "Bataan" },
-    // Cavite
     { name: "Imus", chapter: "Cavite" },
     { name: "Bacoor", chapter: "Cavite" },
-    // Pasay
     { name: "Baclaran", chapter: "Pasay" },
     { name: "Malibay", chapter: "Pasay" },
-    // Pasig — Sta. Clara and Sta. Martha are areas under one Pasig chapter
     { name: "Sta. Clara", chapter: "Pasig" },
     { name: "Sta. Martha", chapter: "Pasig" },
-    // Tala
     { name: "Tala", chapter: "Tala" },
   ];
 
@@ -320,9 +395,9 @@ async function main() {
 
   // ============================================================
   // [7] CLUSTERS
+  // created_by is null — seeded before users exist
   // ============================================================
   console.log("→ Clusters...");
-
   const clustersData = [
     {
       name: "Commonwealth Alpha",
@@ -359,9 +434,7 @@ async function main() {
   // [8] USERS
   // ============================================================
   console.log("→ Users...");
-
   const usersData = [
-    // Global
     {
       first_name: "Fr. Jose",
       last_name: "Reyes",
@@ -374,7 +447,6 @@ async function main() {
       email: "ramon.santos@fdm.org",
       contact_number: "09171000002",
     },
-    // Quezon City
     {
       first_name: "Maria",
       last_name: "dela Cruz",
@@ -405,7 +477,6 @@ async function main() {
       email: "liza.torres@fdm.org",
       contact_number: "09171000007",
     },
-    // Bataan
     {
       first_name: "Pedro",
       last_name: "Garcia",
@@ -418,21 +489,18 @@ async function main() {
       email: "rosa.villanueva@fdm.org",
       contact_number: "09171000009",
     },
-    // Cavite
     {
       first_name: "Miguel",
       last_name: "Aquino",
       email: "miguel.aquino@fdm.org",
       contact_number: "09171000010",
     },
-    // Pasay
     {
       first_name: "Eduardo",
       last_name: "Flores",
       email: "eduardo.flores@fdm.org",
       contact_number: "09171000011",
     },
-    // Pasig
     {
       first_name: "Roberto",
       last_name: "Castro",
@@ -445,14 +513,12 @@ async function main() {
       email: "gloria.ramos@fdm.org",
       contact_number: "09171000013",
     },
-    // Tala
     {
       first_name: "Francisco",
       last_name: "Morales",
       email: "francisco.morales@fdm.org",
       contact_number: "09171000014",
     },
-    // QC members
     {
       first_name: "Juan",
       last_name: "Dela Rosa",
@@ -511,7 +577,6 @@ async function main() {
   // [9] USER CHAPTERS
   // ============================================================
   console.log("→ User chapters...");
-
   const userChapterAssignments: { user: { id: number }; chapter: string }[] = [
     { user: sd, chapter: "Quezon City" },
     { user: elder, chapter: "Quezon City" },
@@ -553,7 +618,6 @@ async function main() {
   // [10] USER ROLES
   // ============================================================
   console.log("→ User roles...");
-
   const userRoleAssignments: {
     user: { id: number };
     role: string;
@@ -692,7 +756,6 @@ async function main() {
   // [11] CLUSTER MEMBERS
   // ============================================================
   console.log("→ Cluster members...");
-
   const clusterMemberData: {
     user: { id: number };
     cluster: string;
@@ -745,18 +808,13 @@ async function main() {
 
   // ============================================================
   // [12] EVENTS
-  // Rays of Mercy = community-wide, every 2nd Sunday
-  // Believers Fellowship = chapter-level, Mon–Sat
   // ============================================================
   console.log("→ Events...");
-
-  // Rays of Mercy — community-wide, every 2nd Sunday
   const event1 = await prisma.event.upsert({
     where: { id: 1 },
     update: {},
     create: {
       name: "Rays of Mercy — Manila March 2026",
-      chapter_id: undefined,
       event_type_id: eventTypeMap["rays_of_mercy"].id,
       event_date: new Date("2026-03-08"),
       event_time: new Date("1970-01-01T09:00:00"),
@@ -765,13 +823,11 @@ async function main() {
     },
   });
 
-  // Rays of Mercy — chapter-level (QC hosted)
   const event2 = await prisma.event.upsert({
     where: { id: 2 },
     update: {},
     create: {
       name: "Rays of Mercy — February 2026",
-      chapter_id: undefined,
       event_type_id: eventTypeMap["rays_of_mercy"].id,
       event_date: new Date("2026-02-08"),
       event_time: new Date("1970-01-01T09:00:00"),
@@ -780,7 +836,6 @@ async function main() {
     },
   });
 
-  // CLSE — hosted by QC chapter
   const event3 = await prisma.event.upsert({
     where: { id: 3 },
     update: {},
@@ -795,7 +850,6 @@ async function main() {
     },
   });
 
-  // Biyayang Bigas — Bataan outreach
   const event4 = await prisma.event.upsert({
     where: { id: 4 },
     update: {},
@@ -810,13 +864,11 @@ async function main() {
     },
   });
 
-  // Special — FDM Anniversary
-  const event5 = await prisma.event.upsert({
+  await prisma.event.upsert({
     where: { id: 5 },
     update: {},
     create: {
       name: "FDM Community Anniversary Celebration",
-      chapter_id: undefined,
       event_type_id: eventTypeMap["special"].id,
       event_date: new Date("2026-04-05"),
       event_time: new Date("1970-01-01T10:00:00"),
@@ -829,7 +881,6 @@ async function main() {
   // [13] ATTENDANCE
   // ============================================================
   console.log("→ Attendance...");
-
   const attendanceData: {
     user: { id: number };
     event: { id: number };
@@ -863,11 +914,9 @@ async function main() {
   // [14] GUEST LOGS
   // ============================================================
   console.log("→ Guest logs...");
-
   const guestAtt1 = await prisma.attendance.create({
     data: { event_id: event1.id, method: "encoded" },
   });
-
   const guestAtt2 = await prisma.attendance.create({
     data: { event_id: event2.id, method: "encoded" },
   });
@@ -904,7 +953,6 @@ async function main() {
   // [15] ENTHRONEMENT RECORDS
   // ============================================================
   console.log("→ Enthronement records...");
-
   await prisma.enthronementRecord.createMany({
     data: [
       {
@@ -961,7 +1009,6 @@ async function main() {
   // [16] FINANCE RECORDS
   // ============================================================
   console.log("→ Finance records...");
-
   await prisma.financeRecord.createMany({
     data: [
       {
@@ -1028,7 +1075,6 @@ async function main() {
   // [17] ANNOUNCEMENTS
   // ============================================================
   console.log("→ Announcements...");
-
   await prisma.announcement.createMany({
     data: [
       {
@@ -1036,7 +1082,6 @@ async function main() {
         content:
           "Join us for this month's Rays of Mercy on March 8, 2026 at 9:00 AM. All chapters are invited. Raffle draw at 12:00 PM.",
         posted_by: sd.id,
-        chapter_id: undefined,
         type: "event",
         is_published: true,
         published_at: new Date("2026-03-01"),
@@ -1066,7 +1111,6 @@ async function main() {
         content:
           "Please welcome our new members who joined this month across all chapters. May they find a home in our community.",
         posted_by: sd.id,
-        chapter_id: undefined,
         type: "announcement",
         is_published: false,
       },

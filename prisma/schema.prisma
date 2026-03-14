@@ -3,7 +3,7 @@
 
 // ============================================================
 // FDM — Friends of the Divine Mercy
-// Community Management System — Prisma Schema v6
+// Community Management System — Prisma Schema v8
 // ============================================================
 
 generator client {
@@ -20,10 +20,11 @@ datasource db {
 // ============================================================
 
 model Role {
-  id    Int    @id @default(autoincrement())
-  key   String @unique @db.VarChar(50)
-  name  String @db.VarChar(100)
-  scope String @db.VarChar(20)
+  id          Int     @id @default(autoincrement())
+  key         String  @unique @db.VarChar(50)
+  name        String  @db.VarChar(100)
+  scope       String  @db.VarChar(20)
+  description String? @db.VarChar(255)
 
   user_roles UserRole[]
 
@@ -31,33 +32,47 @@ model Role {
 }
 
 model MinistryType {
-  id          Int     @id @default(autoincrement())
-  key         String  @unique @db.VarChar(50)
-  name        String  @db.VarChar(100)
-  description String? @db.VarChar(255)
+  id          Int      @id @default(autoincrement())
+  key         String   @unique @db.VarChar(50)
+  name        String   @db.VarChar(100)
+  description String?  @db.VarChar(255)
+  is_active   Boolean  @default(true)
+  created_by  Int?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
+  creator    User?      @relation("MinistryTypeCreator", fields: [created_by], references: [id])
   ministries Ministry[]
 
   @@map("ministry_types")
 }
 
 model EventType {
-  id          Int     @id @default(autoincrement())
-  key         String  @unique @db.VarChar(50)
-  name        String  @db.VarChar(100)
-  description String? @db.VarChar(255)
+  id          Int      @id @default(autoincrement())
+  key         String   @unique @db.VarChar(50)
+  name        String   @db.VarChar(100)
+  description String?  @db.VarChar(255)
+  is_active   Boolean  @default(true)
+  created_by  Int?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
-  events Event[]
+  creator User?   @relation("EventTypeCreator", fields: [created_by], references: [id])
+  events  Event[]
 
   @@map("event_types")
 }
 
 model Area {
-  id         Int    @id @default(autoincrement())
-  name       String @db.VarChar(100)
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(100)
   chapter_id Int
+  created_by Int?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   chapter  Chapter   @relation(fields: [chapter_id], references: [id])
+  creator  User?     @relation("AreaCreator", fields: [created_by], references: [id])
   clusters Cluster[]
 
   @@unique([name, chapter_id])
@@ -81,7 +96,6 @@ model User {
   photo_url      String?   @db.VarChar(500)
   member_qr      String?   @db.VarChar(500)
 
-  // Admin-provisioned account fields
   is_temp_password         Boolean   @default(false)
   account_expires_at       DateTime?
   created_by_admin         Int?
@@ -91,7 +105,6 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  // Relations
   created_by_admin_user User?  @relation("AdminCreated", fields: [created_by_admin], references: [id])
   provisioned_users     User[] @relation("AdminCreated")
 
@@ -113,6 +126,12 @@ model User {
   finance_records FinanceRecord[]
   announcements   Announcement[]
 
+  ministry_types_created MinistryType[] @relation("MinistryTypeCreator")
+  event_types_created    EventType[]    @relation("EventTypeCreator")
+  areas_created          Area[]         @relation("AreaCreator")
+  chapters_created       Chapter[]      @relation("ChapterCreator")
+  clusters_created       Cluster[]      @relation("ClusterCreator")
+
   @@map("users")
 }
 
@@ -122,8 +141,11 @@ model Chapter {
   location       String   @db.VarChar(255)
   fellowship_day String?  @db.VarChar(20)
   is_active      Boolean  @default(true)
+  created_by     Int?
   created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
+  creator         User?           @relation("ChapterCreator", fields: [created_by], references: [id])
   areas           Area[]
   ministries      Ministry[]
   clusters        Cluster[]
@@ -142,6 +164,7 @@ model Ministry {
   chapter_id       Int
   ministry_type_id Int
   created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
 
   chapter       Chapter      @relation(fields: [chapter_id], references: [id])
   ministry_type MinistryType @relation(fields: [ministry_type_id], references: [id])
@@ -158,10 +181,13 @@ model Cluster {
   name       String   @db.VarChar(100)
   area_id    Int
   chapter_id Int
+  created_by Int?
   created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   area    Area    @relation(fields: [area_id], references: [id])
   chapter Chapter @relation(fields: [chapter_id], references: [id])
+  creator User?   @relation("ClusterCreator", fields: [created_by], references: [id])
 
   user_roles      UserRole[]
   cluster_members ClusterMember[]
@@ -179,7 +205,6 @@ model Event {
   event_date    DateTime @db.Date
   event_time    DateTime @db.Time
 
-  // QR fields
   qr_token      String?   @db.VarChar(500)
   qr_expires_at DateTime?
   qr_interval   Int       @default(15)
@@ -187,6 +212,7 @@ model Event {
   is_raffle_event Boolean  @default(false)
   created_by      Int
   created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
   chapter    Chapter?  @relation(fields: [chapter_id], references: [id])
   event_type EventType @relation(fields: [event_type_id], references: [id])
@@ -276,6 +302,7 @@ model Attendance {
   event_id      Int
   method        String   @db.VarChar(20)
   checked_in_at DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
   user       User?      @relation(fields: [user_id], references: [id])
   event      Event      @relation(fields: [event_id], references: [id])
@@ -298,6 +325,7 @@ model GuestLog {
   linked_user_id   Int?
   follow_up_status String   @default("pending") @db.VarChar(30)
   created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
 
   chapter     Chapter?   @relation(fields: [chapter_id], references: [id])
   encoder     User       @relation("EncodedBy", fields: [encoded_by], references: [id])
@@ -340,6 +368,7 @@ model FinanceRecord {
   description      String
   transaction_date DateTime @db.Date
   created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
 
   chapter  Chapter @relation(fields: [chapter_id], references: [id])
   recorder User    @relation(fields: [recorded_by], references: [id])
@@ -357,6 +386,7 @@ model Announcement {
   is_published Boolean   @default(false)
   published_at DateTime?
   created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
 
   poster  User     @relation(fields: [posted_by], references: [id])
   chapter Chapter? @relation(fields: [chapter_id], references: [id])
