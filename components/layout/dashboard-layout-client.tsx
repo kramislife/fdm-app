@@ -42,7 +42,7 @@ export function DashboardLayoutClient({
           <SheetContent
             side="left"
             showCloseButton={false}
-            className="data-[side=left]:w-2/3 p-0 bg-sidebar overflow-hidden"
+            className="data-[side=left]:w-4/5"
           >
             <SheetTitle className="sr-only">Navigation</SheetTitle>
             <Sidebar
