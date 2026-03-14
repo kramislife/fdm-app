@@ -8,7 +8,6 @@
 >
 > 1. Build the phase tasks below
 > 2. Copy that phase's checklist to checking.md for manual verification
-> 3. Once ALL checks pass → move phase entry to completed.md
 
 ---
 
@@ -239,3 +238,54 @@ shadcn only: Card, Badge, Button, Avatar, Separator, Tooltip, ScrollArea, Sheet
 All nav items: icon + label always visible in expanded state
 No info by color alone — always pair with text label on badges
 Mobile-first layout
+
+## Phase 6: Auth-Aware Header + Member Layout
+
+Goal: Public header becomes auth-aware. Members stay on public layout.
+Dashboard stays separate — no public header/footer inside it.
+
+### 6a. Login Redirect Split
+
+After login, check role:
+
+member → redirect to / (public layout)
+all other roles → redirect to /dashboard
+
+Update app/(auth)/login/actions.ts redirect logic
+
+### 6b. Auth-Aware Public Header
+
+When session exists, replace "Sign In" button with avatar dropdown
+Avatar shows user initials (or photo if available) and their email account
+Dropdown items:
+
+My QR Code → /my-qr
+My Attendance → /my-attendance
+My Profile → /profile
+─────────────
+Sign Out
+
+Use shadcn DropdownMenu
+Dropdown only visible when session exists
+"Sign In" only visible when no session
+
+### 6c. Member Pages (under public layout)
+
+Move /my-qr and /my-attendance from app/(dashboard)/ to app/(public)/
+app/(public)/my-qr/page.tsx — shows member's QR code (mock for now)
+app/(public)/my-attendance/page.tsx — shows own attendance history (mock)
+Both pages protected — redirect to /login if no session
+Both use public header + footer (not dashboard layout)
+
+### 6d. Remove Member from Dashboard
+
+Remove member role from config/sidebar-navigation.ts entirely
+Remove my-qr and my-attendance placeholder pages from app/(dashboard)/
+Dashboard middleware: if role is member, redirect to /
+
+### 6e. Confirm Layout Separation
+
+Public layout (app/(public)/layout.tsx) — has public header + footer
+Dashboard layout (app/(dashboard)/layout.tsx) — has sidebar + dashboard header only
+No public header/footer inside dashboard ever
+No sidebar inside public pages ever

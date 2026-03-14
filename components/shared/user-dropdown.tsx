@@ -11,7 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
+import { UserAvatar } from "@/components/shared/user-avatar";
 
 export interface UserDropdownProps {
   user: BaseUser;
@@ -28,28 +29,14 @@ export function UserDropdown({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="p-0 cursor-pointer hover:bg-transparent">
-          <Avatar className="h-8 w-8 shrink-0">
-            <AvatarFallback className="bg-primary text-white text-xs font-semibold">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar initials={initials} />
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-52">
         {/* User identity */}
         <DropdownMenuLabel>
-          <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8 shrink-0">
-              <AvatarFallback className="bg-primary text-white text-xs font-semibold">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="text-sm font-bold truncate mb-1">{name}</p>
-              <p className="text-xs text-muted-foreground truncate">{email}</p>
-            </div>
-          </div>
+          <UserAvatar initials={initials} name={name} secondary={email} />
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 

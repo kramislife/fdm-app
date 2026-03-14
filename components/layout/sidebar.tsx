@@ -3,10 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import webIcon from "@/app/assets/media/web-icon.png";
 import { usePathname } from "next/navigation";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -16,6 +14,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+
+import webIcon from "@/app/assets/media/web-icon.png";
+import { UserAvatar } from "@/components/shared/user-avatar";
 
 import type { DashboardSessionUser } from "@/lib/types";
 import { SIDEBAR_NAV, ROLE_LABELS } from "@/config/sidebar-navigation";
@@ -170,32 +171,21 @@ export function Sidebar({
         </div>
 
         {/* Footer — user info */}
-        <div className="border-t border-sidebar-border p-2">
-          {isCollapsed ? (
-            <div className="flex justify-center p-2">
-              <Avatar className="h-8 w-8 shrink-0">
-                <AvatarFallback className="bg-primary text-white text-xs font-semibold">
-                  {sessionUser.initials}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3 p-2">
-              <Avatar className="h-8 w-8 shrink-0">
-                <AvatarFallback className="bg-primary text-white text-xs font-semibold">
-                  {sessionUser.initials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold truncate">{sessionUser.name}</p>
-                <span className="text-xs text-muted-foreground truncate">
-                  {sessionUser.roles[0]
-                    ? ROLE_LABELS[sessionUser.roles[0]]
-                    : sessionUser.email}
-                </span>
-              </div>
-            </div>
+        <div
+          className={cn(
+            "border-t border-sidebar-border p-4",
+            isCollapsed && "flex justify-center",
           )}
+        >
+          <UserAvatar
+            initials={sessionUser.initials}
+            name={isCollapsed ? undefined : sessionUser.name}
+            secondary={
+              sessionUser.roles[0]
+                ? ROLE_LABELS[sessionUser.roles[0]]
+                : sessionUser.email
+            }
+          />
         </div>
       </aside>
     </TooltipProvider>

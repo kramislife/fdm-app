@@ -116,3 +116,43 @@
 - [x] Tested at 375px mobile width
 - [x] Sidebar collapse/expand tested
 - [x] All 10 roles tested via role switcher
+
+## Currently Verifying: Phase 6 — Auth-Aware Header + Member Layout
+
+### 6a. Login Redirect
+
+- [x] Member role after login lands on `/` (public page)
+- [x] All other roles after login land on `/dashboard`
+
+### 6b. Auth-Aware Header
+
+- [x] Logged out: "Sign In" button visible
+- [x] Logged in: avatar shows (initials or photo), no Sign In button
+- [x] Avatar click opens dropdown
+- [x] Dropdown shows: My QR Code, My Attendance, My Profile, Sign Out
+- [x] Sign Out ends session and redirects to `/`
+
+### 6c. Member Pages
+
+- [x] `/my-qr` loads under public layout (header + footer visible)
+- [x] `/my-attendance` loads under public layout
+- [x] Both redirect to `/login` when no session
+- [x] No sidebar visible on either page
+
+### 6d. Dashboard Cleanup
+
+- [x] `member` role removed from sidebar-navigation.ts
+- [x] `/dashboard/my-qr` and `/dashboard/my-attendance` removed
+- [x] Member visiting `/dashboard` is redirected to `/`
+
+### 6e. Layout Separation
+
+- [x] Dashboard pages: no public header or footer
+- [x] Public pages: no sidebar
+- [x] No layout bleed between the two
+
+### Final
+
+- [x] `npx tsc --noEmit` — zero errors
+- [x] No console errors on any page
+- [x] Tested logged out, member login, and admin login flows

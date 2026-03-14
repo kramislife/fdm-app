@@ -11,9 +11,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+
+import { UserAvatar } from "@/components/shared/user-avatar";
 import { Logo } from "@/components/ui/logo";
+
 import {
   navLinks,
   USER_NAV_ITEMS,
@@ -92,19 +94,11 @@ export function MobileNav({
         <SheetHeader className="border-b pb-4 text-left">
           <SheetTitle>
             {sessionUser ? (
-              <div className="flex items-center gap-3">
-                <Avatar className="h-8 w-8 shrink-0">
-                  <AvatarFallback className="bg-primary text-white text-xs font-semibold">
-                    {sessionUser.initials}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold truncate mb-1">{sessionUser.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {sessionUser.email}
-                  </p>
-                </div>
-              </div>
+              <UserAvatar
+                initials={sessionUser.initials}
+                name={sessionUser.name}
+                secondary={sessionUser.email}
+              />
             ) : (
               <Logo size="w-16" />
             )}
