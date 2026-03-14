@@ -77,7 +77,7 @@ export function Sidebar({
               <p className="text-sm font-bold text-sidebar-foreground group-hover:text-primary transition-colors whitespace-nowrap">
                 FDM
               </p>
-              <p className="text-xs text-sidebar-foreground/60 group-hover:text-primary transition-colors mt-1 italic whitespace-nowrap">
+              <p className="text-xs text-sidebar-foreground/60 group-hover:text-primary transition-colors mt-1 whitespace-nowrap">
                 Management System
               </p>
             </div>
@@ -90,15 +90,15 @@ export function Sidebar({
                 <Button
                   variant="ghost"
                   onClick={() => setCollapsed(!collapsed)}
-                  className="h-10 w-10 shrink-0 text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent cursor-pointer"
+                  className="h-10 w-10 shrink-0 hover:bg-sidebar-accent cursor-pointer"
                   aria-label={
                     isCollapsed ? "Expand sidebar" : "Collapse sidebar"
                   }
                 >
                   {isCollapsed ? (
-                    <PanelLeftOpen className="h-5 w-5" />
+                    <PanelLeftOpen className="h-5 w-5 text-primary" />
                   ) : (
-                    <PanelLeftClose className="h-5 w-5" />
+                    <PanelLeftClose className="h-5 w-5 text-primary" />
                   )}
                 </Button>
               </TooltipTrigger>

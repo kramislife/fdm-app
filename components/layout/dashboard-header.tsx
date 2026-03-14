@@ -28,7 +28,7 @@ export function DashboardHeader({
   }
 
   return (
-    <header className="flex items-center justify-between h-16 px-5 border-b border-border shrink-0">
+    <header className="flex items-center justify-between h-16 px-5 border-b border-border shrink-0 shadow-sm">
       {/* Left: hamburger */}
       <div className="flex items-center gap-3 min-w-0">
         <Button
