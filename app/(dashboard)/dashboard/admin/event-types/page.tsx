@@ -4,14 +4,14 @@ import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
 import { AdminPage, type Column } from "@/components/admin";
 import {
   StatusBadge,
-  CreatorCell,
+  UserCell,
   DateCell,
   TextCell,
 } from "@/components/shared/cells";
 
 const columns: Column[] = [
   { key: "name", label: "Name", sortable: true },
-  { key: "description", label: "Description", maxWidth: "250px" },
+  { key: "description", label: "Description", maxWidth: "400px" },
   { key: "status", label: "Status" },
   { key: "createdBy", label: "Created By" },
   { key: "createdAt", label: "Created At", sortable: true },
@@ -38,7 +38,7 @@ export default async function EventTypesPage({ searchParams }: PageProps) {
     name: et.name,
     description: <TextCell value={et.description} />,
     status: <StatusBadge isActive={et.is_active} />,
-    createdBy: <CreatorCell creator={et.creator} />,
+    createdBy: <UserCell user={et.creator} />,
     createdAt: <DateCell date={et.created_at} />,
     updatedAt: <DateCell date={et.updated_at} />,
   }));

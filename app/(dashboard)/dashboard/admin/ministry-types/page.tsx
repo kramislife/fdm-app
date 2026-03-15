@@ -2,11 +2,16 @@ import { requireRole } from "@/lib/auth";
 import { getMinistryTypes } from "@/lib/data/ministry-types";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
 import { AdminPage, type Column } from "@/components/admin";
-import { StatusBadge, CreatorCell, DateCell, TextCell } from "@/components/shared/cells";
+import {
+  StatusBadge,
+  UserCell,
+  DateCell,
+  TextCell,
+} from "@/components/shared/cells";
 
 const columns: Column[] = [
   { key: "name", label: "Name", sortable: true },
-  { key: "description", label: "Description", maxWidth: "250px" },
+  { key: "description", label: "Description", maxWidth: "500px" },
   { key: "status", label: "Status" },
   { key: "createdBy", label: "Created By" },
   { key: "createdAt", label: "Created At", sortable: true },
@@ -33,7 +38,7 @@ export default async function MinistryTypesPage({ searchParams }: PageProps) {
     name: mt.name,
     description: <TextCell value={mt.description} />,
     status: <StatusBadge isActive={mt.is_active} />,
-    createdBy: <CreatorCell creator={mt.creator} />,
+    createdBy: <UserCell user={mt.creator} />,
     createdAt: <DateCell date={mt.created_at} />,
     updatedAt: <DateCell date={mt.updated_at} />,
   }));
