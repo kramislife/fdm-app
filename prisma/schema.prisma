@@ -44,6 +44,7 @@ model MinistryType {
   creator    User?      @relation("MinistryTypeCreator", fields: [created_by], references: [id])
   ministries Ministry[]
 
+  @@index([created_at])
   @@map("ministry_types")
 }
 
@@ -60,6 +61,7 @@ model EventType {
   creator User?   @relation("EventTypeCreator", fields: [created_by], references: [id])
   events  Event[]
 
+  @@index([created_at])
   @@map("event_types")
 }
 
@@ -76,6 +78,8 @@ model Area {
   clusters Cluster[]
 
   @@unique([name, chapter_id])
+  @@index([chapter_id])
+  @@index([created_at])
   @@map("areas")
 }
 
@@ -132,6 +136,9 @@ model User {
   chapters_created       Chapter[]      @relation("ChapterCreator")
   clusters_created       Cluster[]      @relation("ClusterCreator")
 
+  @@index([auth_id])
+  @@index([email])
+  @@index([created_at])
   @@map("users")
 }
 
@@ -156,6 +163,7 @@ model Chapter {
   finance_records FinanceRecord[]
   announcements   Announcement[]
 
+  @@index([created_at])
   @@map("chapters")
 }
 
@@ -173,6 +181,8 @@ model Ministry {
   ministry_members MinistryMember[]
 
   @@unique([chapter_id, ministry_type_id])
+  @@index([chapter_id])
+  @@index([ministry_type_id])
   @@map("ministries")
 }
 
@@ -194,6 +204,9 @@ model Cluster {
   enthronements   EnthronementRecord[]
 
   @@unique([name, chapter_id])
+  @@index([area_id])
+  @@index([chapter_id])
+  @@index([created_at])
   @@map("clusters")
 }
 
@@ -221,6 +234,9 @@ model Event {
   attendance Attendance[]
   guest_logs GuestLog[]
 
+  @@index([chapter_id])
+  @@index([event_date])
+  @@index([created_at])
   @@map("events")
 }
 
@@ -247,6 +263,10 @@ model UserRole {
   assigner User      @relation("AssignedBy", fields: [assigned_by], references: [id])
 
   @@unique([user_id, role_id, chapter_id, ministry_id, cluster_id])
+  @@index([user_id, is_active])
+  @@index([chapter_id])
+  @@index([ministry_id])
+  @@index([cluster_id])
   @@map("user_roles")
 }
 
@@ -260,6 +280,7 @@ model MinistryMember {
   ministry Ministry @relation(fields: [ministry_id], references: [id])
 
   @@unique([user_id, ministry_id])
+  @@index([ministry_id])
   @@map("ministry_members")
 }
 
@@ -275,6 +296,7 @@ model ClusterMember {
   cluster Cluster @relation(fields: [cluster_id], references: [id])
 
   @@unique([user_id, cluster_id])
+  @@index([cluster_id])
   @@map("cluster_members")
 }
 
@@ -289,6 +311,8 @@ model UserChapter {
   chapter Chapter @relation(fields: [chapter_id], references: [id])
 
   @@unique([user_id, chapter_id])
+  @@index([user_id, is_primary])
+  @@index([chapter_id])
   @@map("user_chapters")
 }
 
@@ -309,6 +333,8 @@ model Attendance {
   guest_logs GuestLog[]
 
   @@unique([user_id, event_id])
+  @@index([user_id, event_id])
+  @@index([event_id])
   @@map("attendance")
 }
 
@@ -333,6 +359,9 @@ model GuestLog {
   attendance  Attendance @relation(fields: [attendance_id], references: [id])
   linked_user User?      @relation("LinkedUser", fields: [linked_user_id], references: [id])
 
+  @@index([event_id])
+  @@index([chapter_id])
+  @@index([created_at])
   @@map("guest_logs")
 }
 
@@ -356,6 +385,8 @@ model EnthronementRecord {
   enthroned_by_user User    @relation("EnthronedBy", fields: [enthroned_by], references: [id])
   recorder          User    @relation("RecordedBy", fields: [recorded_by], references: [id])
 
+  @@index([cluster_id])
+  @@index([created_at])
   @@map("enthronement_records")
 }
 
@@ -373,6 +404,9 @@ model FinanceRecord {
   chapter  Chapter @relation(fields: [chapter_id], references: [id])
   recorder User    @relation(fields: [recorded_by], references: [id])
 
+  @@index([chapter_id])
+  @@index([transaction_date])
+  @@index([created_at])
   @@map("finance_records")
 }
 
@@ -391,5 +425,7 @@ model Announcement {
   poster  User     @relation(fields: [posted_by], references: [id])
   chapter Chapter? @relation(fields: [chapter_id], references: [id])
 
+  @@index([chapter_id])
+  @@index([created_at])
   @@map("announcements")
 }
