@@ -1,12 +1,11 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import { buildPaginationMeta, type TableParams } from "@/lib/table";
+import { buildOrderBy, buildPaginationMeta, type TableParams } from "@/lib/table";
 
-function buildOrderBy(sort: string, order: "asc" | "desc") {
-  if (sort === "scope") return { scope: order };
-  if (sort === "description") return { description: order };
-  return { name: order };
-}
+const ORDER_FIELDS: Record<string, string> = {
+  name: "name",
+  scope: "scope",
+};
 
 export async function getRoles(params: TableParams = {}) {
   const { search = "", page = 1, perPage = 10, sort = "name", order = "desc" } =
@@ -25,7 +24,7 @@ export async function getRoles(params: TableParams = {}) {
   const [data, total] = await Promise.all([
     prisma.role.findMany({
       where,
-      orderBy: buildOrderBy(sort, order),
+      orderBy: buildOrderBy(sort, order, ORDER_FIELDS, "name"),
       skip: (page - 1) * perPage,
       take: perPage,
     }),

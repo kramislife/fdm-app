@@ -1,14 +1,12 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import { buildPaginationMeta, type TableParams } from "@/lib/table";
+import { buildOrderBy, buildPaginationMeta, type TableParams } from "@/lib/table";
 
-function buildOrderBy(sort: string, order: "asc" | "desc") {
-  if (sort === "email") return { email: order };
-  if (sort === "status") return { status: order };
-  if (sort === "first_name") return { first_name: order };
-  if (sort === "last_name") return { last_name: order };
-  return { created_at: order };
-}
+const ORDER_FIELDS: Record<string, string> = {
+  name: "first_name",
+  email: "email",
+  created_at: "created_at",
+};
 
 export async function getUsers(params: TableParams = {}) {
   const {
@@ -66,7 +64,7 @@ export async function getUsers(params: TableParams = {}) {
           },
         },
       },
-      orderBy: buildOrderBy(sort, order),
+      orderBy: buildOrderBy(sort, order, ORDER_FIELDS),
       skip: (page - 1) * perPage,
       take: perPage,
     }),

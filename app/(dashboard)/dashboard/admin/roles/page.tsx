@@ -43,7 +43,6 @@ export default async function RolesPage({ searchParams }: PageProps) {
       columns={columns}
       data={data}
       pagination={toPagination(result)}
-      defaultSort="created_at"
     />
   );
 }

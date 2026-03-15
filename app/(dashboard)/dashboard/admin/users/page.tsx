@@ -12,12 +12,12 @@ import {
 const columns: Column[] = [
   { key: "name", label: "Full Name", sortable: true },
   { key: "email", label: "Email", sortable: true },
-  { key: "contact", label: "Contact Number" },
+  { key: "contact_number", label: "Contact Number" },
   { key: "birthday", label: "Birthday" },
   { key: "chapter", label: "Chapter" },
   { key: "role", label: "Role" },
   { key: "status", label: "Status" },
-  { key: "createdAt", label: "Created At", sortable: true },
+  { key: "created_at", label: "Created At", sortable: true },
 ];
 
 export default async function UsersPage({ searchParams }: PageProps) {
@@ -44,12 +44,12 @@ export default async function UsersPage({ searchParams }: PageProps) {
   const data = result.data.map((user) => ({
     name: <UserCell user={user} fallback="Unknown" />,
     email: <TextCell value={user.email} />,
-    contact: <TextCell value={user.contact_number} />,
+    contact_number: <TextCell value={user.contact_number} />,
     birthday: <DateCell date={user.birthday} dateOnly />,
     chapter: <TextCell value={user.user_chapters[0]?.chapter?.name} />,
     role: <TextCell value={user.user_roles[0]?.role?.name} />,
     status: <UserStatusBadge status={user.status} />,
-    createdAt: <DateCell date={user.created_at} />,
+    created_at: <DateCell date={user.created_at} />,
   }));
 
   return (
@@ -59,7 +59,6 @@ export default async function UsersPage({ searchParams }: PageProps) {
       columns={columns}
       data={data}
       pagination={toPagination(result)}
-      defaultSort="created_at"
     />
   );
 }

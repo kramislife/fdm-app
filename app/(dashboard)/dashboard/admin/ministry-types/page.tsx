@@ -13,9 +13,9 @@ const columns: Column[] = [
   { key: "name", label: "Name", sortable: true },
   { key: "description", label: "Description", maxWidth: "500px" },
   { key: "status", label: "Status" },
-  { key: "createdBy", label: "Created By" },
-  { key: "createdAt", label: "Created At", sortable: true },
-  { key: "updatedAt", label: "Updated At", sortable: true },
+  { key: "created_by", label: "Created By" },
+  { key: "created_at", label: "Created At", sortable: true },
+  { key: "updated_at", label: "Updated At", sortable: true },
 ];
 
 export default async function MinistryTypesPage({ searchParams }: PageProps) {
@@ -38,9 +38,9 @@ export default async function MinistryTypesPage({ searchParams }: PageProps) {
     name: <TextCell value={mt.name} />,
     description: <TextCell value={mt.description} />,
     status: <StatusBadge isActive={mt.is_active} />,
-    createdBy: <UserCell user={mt.creator} />,
-    createdAt: <DateCell date={mt.created_at} />,
-    updatedAt: <DateCell date={mt.updated_at} />,
+    created_by: <UserCell user={mt.creator} />,
+    created_at: <DateCell date={mt.created_at} />,
+    updated_at: <DateCell date={mt.updated_at} />,
   }));
 
   return (
@@ -50,7 +50,6 @@ export default async function MinistryTypesPage({ searchParams }: PageProps) {
       columns={columns}
       data={data}
       pagination={toPagination(result)}
-      defaultSort="created_at"
     />
   );
 }

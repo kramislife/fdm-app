@@ -1,12 +1,13 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import { buildPaginationMeta, type TableParams } from "@/lib/table";
+import { buildOrderBy, buildPaginationMeta, type TableParams } from "@/lib/table";
 
-function buildOrderBy(sort: string, order: "asc" | "desc") {
-  if (sort === "name") return { name: order };
-  if (sort === "location") return { location: order };
-  return { created_at: order };
-}
+const ORDER_FIELDS: Record<string, string> = {
+  name: "name",
+  location: "location",
+  created_at: "created_at",
+  updated_at: "updated_at",
+};
 
 export async function getChapters(params: TableParams = {}) {
   const {
@@ -32,7 +33,7 @@ export async function getChapters(params: TableParams = {}) {
       include: {
         creator: { select: { first_name: true, last_name: true } },
       },
-      orderBy: buildOrderBy(sort, order),
+      orderBy: buildOrderBy(sort, order, ORDER_FIELDS),
       skip: (page - 1) * perPage,
       take: perPage,
     }),

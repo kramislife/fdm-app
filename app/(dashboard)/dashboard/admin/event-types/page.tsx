@@ -13,9 +13,9 @@ const columns: Column[] = [
   { key: "name", label: "Name", sortable: true },
   { key: "description", label: "Description", maxWidth: "400px" },
   { key: "status", label: "Status" },
-  { key: "createdBy", label: "Created By" },
-  { key: "createdAt", label: "Created At", sortable: true },
-  { key: "updatedAt", label: "Updated At", sortable: true },
+  { key: "created_by", label: "Created By" },
+  { key: "created_at", label: "Created At", sortable: true },
+  { key: "updated_at", label: "Updated At", sortable: true },
 ];
 
 export default async function EventTypesPage({ searchParams }: PageProps) {
@@ -38,9 +38,9 @@ export default async function EventTypesPage({ searchParams }: PageProps) {
     name: <TextCell value={et.name} />,
     description: <TextCell value={et.description} />,
     status: <StatusBadge isActive={et.is_active} />,
-    createdBy: <UserCell user={et.creator} />,
-    createdAt: <DateCell date={et.created_at} />,
-    updatedAt: <DateCell date={et.updated_at} />,
+    created_by: <UserCell user={et.creator} />,
+    created_at: <DateCell date={et.created_at} />,
+    updated_at: <DateCell date={et.updated_at} />,
   }));
 
   return (
@@ -50,7 +50,6 @@ export default async function EventTypesPage({ searchParams }: PageProps) {
       columns={columns}
       data={data}
       pagination={toPagination(result)}
-      defaultSort="created_at"
     />
   );
 }

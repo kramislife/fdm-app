@@ -12,11 +12,11 @@ import {
 const columns: Column[] = [
   { key: "name", label: "Name", sortable: true },
   { key: "location", label: "Location", sortable: true },
-  { key: "fellowshipDay", label: "Fellowship Day" },
+  { key: "fellowship_day", label: "Fellowship Day" },
   { key: "status", label: "Status" },
-  { key: "createdBy", label: "Created By" },
-  { key: "createdAt", label: "Created At", sortable: true },
-  { key: "updatedAt", label: "Updated At", sortable: true },
+  { key: "created_by", label: "Created By" },
+  { key: "created_at", label: "Created At", sortable: true },
+  { key: "updated_at", label: "Updated At", sortable: true },
 ];
 
 export default async function ChaptersPage({ searchParams }: PageProps) {
@@ -38,11 +38,11 @@ export default async function ChaptersPage({ searchParams }: PageProps) {
   const data = result.data.map((chapter) => ({
     name: <TextCell value={chapter.name} />,
     location: <TextCell value={chapter.location} />,
-    fellowshipDay: <TextCell value={chapter.fellowship_day} />,
+    fellowship_day: <TextCell value={chapter.fellowship_day} />,
     status: <StatusBadge isActive={chapter.is_active} />,
-    createdBy: <UserCell user={chapter.creator} />,
-    createdAt: <DateCell date={chapter.created_at} />,
-    updatedAt: <DateCell date={chapter.updated_at} />,
+    created_by: <UserCell user={chapter.creator} />,
+    created_at: <DateCell date={chapter.created_at} />,
+    updated_at: <DateCell date={chapter.updated_at} />,
   }));
 
   return (
@@ -52,7 +52,6 @@ export default async function ChaptersPage({ searchParams }: PageProps) {
       columns={columns}
       data={data}
       pagination={toPagination(result)}
-      defaultSort="created_at"
     />
   );
 }

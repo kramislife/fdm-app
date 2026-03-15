@@ -38,24 +38,14 @@ function SortIcon({
   active: boolean;
   order?: "asc" | "desc";
 }) {
+  if (active && order === "asc")
+    return <ChevronUp className="size-3 text-primary shrink-0" />;
+  if (active && order === "desc")
+    return <ChevronDown className="size-3 text-primary shrink-0" />;
   return (
-    <span className="inline-flex flex-col ml-1 align-middle">
-      <ChevronUp
-        className={cn(
-          "size-3 -mb-1",
-          active && order === "asc"
-            ? "text-primary"
-            : "text-muted-foreground/40",
-        )}
-      />
-      <ChevronDown
-        className={cn(
-          "size-3",
-          active && order === "desc"
-            ? "text-primary"
-            : "text-muted-foreground/40",
-        )}
-      />
+    <span className="inline-flex flex-col shrink-0">
+      <ChevronUp className="size-3 -mb-1 text-muted-foreground/40" />
+      <ChevronDown className="size-3 text-muted-foreground/40" />
     </span>
   );
 }
@@ -82,11 +72,14 @@ export function DataTable({
                   ? "cursor-pointer select-none hover:text-foreground"
                   : undefined
               }
+              onClick={() => col.sortable && onSort?.(col.key)}
             >
-              {col.label}
-              {col.sortable && (
-                <SortIcon active={sort === col.key} order={order} />
-              )}
+              <div className="flex items-center justify-between gap-2">
+                <span>{col.label}</span>
+                {col.sortable && (
+                  <SortIcon active={sort === col.key} order={order} />
+                )}
+              </div>
             </TableHead>
           ))}
         </TableRow>

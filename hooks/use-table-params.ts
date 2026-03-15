@@ -18,11 +18,10 @@ export interface TableParamHandlers {
   handlePage: (page: number) => void;
   handleSort: (key: string) => void;
   getRange: (totalEntries: number) => { from: number; to: number };
-  /** Extract a plain string from a ReactNode for use as a cell title attribute. Returns undefined for JSX nodes. */
   getCellTitle: (value: ReactNode) => string | undefined;
 }
 
-export function useTableParams(defaultSort = "name"): TableParamHandlers {
+export function useTableParams(): TableParamHandlers {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -31,7 +30,7 @@ export function useTableParams(defaultSort = "name"): TableParamHandlers {
     undefined,
   );
 
-  // Derive current state from URL
+  // Derive state strictly from the URL — no client-side defaults for sort
   const urlSearch = searchParams.get("search") ?? "";
   const urlPage = Math.max(1, Number(searchParams.get("page")) || 1);
   const urlPerPageRaw = Number(searchParams.get("perPage"));
@@ -40,15 +39,12 @@ export function useTableParams(defaultSort = "name"): TableParamHandlers {
   )
     ? urlPerPageRaw
     : 10;
-  const urlSortRaw = searchParams.get("sort");
-  const urlSort = urlSortRaw ?? defaultSort;
+  const urlSort = searchParams.get("sort") ?? "";
   const urlOrder: "asc" | "desc" =
     searchParams.get("order") === "asc" ? "asc" : "desc";
 
-  // Local state for the input so it updates on every keystroke
   const [searchInput, setSearchInput] = useState(urlSearch);
 
-  // Sync input when URL search changes externally (e.g. browser back/forward)
   useEffect(() => {
     setSearchInput(urlSearch);
   }, [urlSearch]);
@@ -72,8 +68,7 @@ export function useTableParams(defaultSort = "name"): TableParamHandlers {
     setSearchInput(value);
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      const params = buildParams({ search: value || null, page: "1" });
-      navigate(params);
+      navigate(buildParams({ search: value || null, page: "1" }));
     }, 300);
   }
 
@@ -86,7 +81,9 @@ export function useTableParams(defaultSort = "name"): TableParamHandlers {
   }
 
   function handleSort(key: string) {
-    const nextOrder = urlSort === key && urlOrder === "desc" ? "asc" : "desc";
+    // Data loads desc by default, so first click on any column goes asc.
+    // Subsequent clicks on the same active column toggle direction.
+    const nextOrder = urlSort === key && urlOrder === "asc" ? "desc" : "asc";
     navigate(buildParams({ sort: key, order: nextOrder, page: "1" }));
   }
 

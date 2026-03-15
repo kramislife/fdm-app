@@ -24,6 +24,21 @@ export type PageProps = {
   searchParams: Promise<RawSearchParams>;
 };
 
+/**
+ * Builds a Prisma-compatible orderBy object from a sort key and direction.
+ * Pass all valid sort keys in fieldMap (key → DB field name). Any unrecognised
+ * sort key falls back to defaultField, preventing arbitrary field injection.
+ */
+export function buildOrderBy(
+  sort: string,
+  order: "asc" | "desc",
+  fieldMap: Record<string, string>,
+  defaultField = "created_at",
+): Record<string, "asc" | "desc"> {
+  const field = fieldMap[sort] ?? defaultField;
+  return { [field]: order };
+}
+
 export function parseTableParams(
   params: RawSearchParams,
   defaultSort = "name",

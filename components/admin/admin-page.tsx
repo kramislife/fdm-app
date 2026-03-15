@@ -28,7 +28,6 @@ interface AdminPageProps {
   isLoading?: boolean;
   searchPlaceholder?: string;
   pagination: Pagination;
-  defaultSort?: string;
 }
 
 export function AdminPage({
@@ -40,9 +39,8 @@ export function AdminPage({
   isLoading,
   searchPlaceholder,
   pagination,
-  defaultSort = "name",
 }: AdminPageProps) {
-  const table = useTableParams(defaultSort);
+  const table = useTableParams();
 
   return (
     <div className="space-y-5">
