@@ -33,7 +33,7 @@ export function PublicFooter() {
         />
       </div>
 
-      <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 px-5 pt-10 pb-5 gap-2">
+      <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 px-5 pt-10 pb-5 gap-x-5 gap-y-10">
         {/* Navigation Column */}
         <div className="space-y-5">
           <p className="text-sm font-bold uppercase tracking-widest text-muted/50">
