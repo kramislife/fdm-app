@@ -1,8 +1,36 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getUserRole } from "@/lib/roles";
+
+// Initiates the Google OAuth flow on the server.
+export async function signInWithGoogle() {
+  const origin = (await headers()).get("origin");
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${origin}/auth/callback`,
+      scopes: "openid email profile",
+      queryParams: {
+        prompt: "consent",
+        access_type: "offline",
+      },
+    },
+  });
+
+  if (error) {
+    console.error("Google sign-in error:", error);
+    return redirect("/login?error=auth_failed");
+  }
+
+  if (data.url) {
+    return redirect(data.url);
+  }
+}
 
 export type LoginState = {
   error: string | null;

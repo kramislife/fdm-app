@@ -544,3 +544,71 @@ vercel --prod
 □ npm run dev — opens at localhost:3000
 □ npx tsc --noEmit — zero errors
 ```
+
+###### ---------------- ACCOUNT TO SETUP IN LIVE -------------------------------------------
+
+### Google OAuth Setup
+
+#### Part 1 — Google Cloud Console
+
+- Go to console.cloud.google.com
+- Click the project dropdown at the top → New Project
+  - Name: FDM Community System
+  - Click Create
+- Make sure your new project is selected in the dropdown
+- In Quick Access → APIs & Services → OAuth consent screen → Branding
+  - App name: FDM Community System
+  - User support email: your email
+  - Developer contact email: your email
+    Click Save and Continue
+
+- Left sidebar → APIs & Services → Credentials
+  - Click + Create Credentials → OAuth Client ID
+  - Application type: Web application
+  - Name: FDM Web
+  - Under Authorized JavaScript origins — click Add URI:
+    - http://localhost:3000
+
+  - Under Authorized redirect URIs — click Add URI:
+    - http://localhost:3000/auth/callback
+  - Click Create
+
+  - A popup appears with your credentials — copy and save both:
+    - Client ID — looks like 123456789-abc.apps.googleusercontent.com
+    - Client Secret — looks like GOCSPX-xxxxx
+
+- Left sidebar → Data Access → Add or Remove Scopes
+  - Add the following scopes:
+    - email (.../auth/userinfo.email)
+    - profile (.../auth/userinfo.profile)
+    - openid (openid)
+
+#### Part 2 — Supabase Dashboard
+
+- Go to supabase.com → your project
+- Left sidebar → Authentication → Sign in / Providers
+- In Auth Providers below, find Google in the list → toggle Enable
+- Paste your credentials from Google Console:
+  - Client ID — from Step 6 above
+  - Client Secret — from Step 6 above
+- Copy the Callback URL (for OAuth) shown in Supabase — it looks like:
+  - https://[your-ref].supabase.co/auth/v1/callback
+- Head to Google Console and paste it on redirect URIs - it looks like:
+  - https://[your-supa-base-url].supabase.co/auth/v1/callback
+- Click Save
+
+---
+
+**When going live (church account)**
+
+When you're ready to switch from test to production:
+
+1. Google Cloud Console → OAuth consent screen → Branding → **Publish App**
+   - This removes the test user restriction
+   - Google may review your app (usually fast for basic OAuth)
+
+2. Update **Authorized JavaScript origins** to add your production domain:
+   - https://yourdomain.com
+
+3. Update **Authorized redirect URIs** to add:
+   - https://yourdomain.com/auth/callback

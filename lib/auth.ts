@@ -3,6 +3,7 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithRole } from "@/lib/roles";
+import { prisma } from "@/lib/prisma";
 import type { AppRole } from "@/config/sidebar-navigation";
 
 /** Returns the current Supabase auth user or null — verified via network call */
@@ -55,4 +56,32 @@ export async function requireRole(roles: AppRole[]) {
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
+}
+
+/**
+ * Links existing guest_log records to a newly registered user.
+ * Finds guest_logs by email where linked_user_id is null, updates
+ * the corresponding attendance.user_id and sets linked_user_id.
+ */
+export async function backfillAttendance(
+  email: string,
+  userId: number,
+): Promise<void> {
+  const guestLogs = await prisma.guestLog.findMany({
+    where: { email, linked_user_id: null },
+    select: { id: true, attendance_id: true },
+  });
+
+  for (const log of guestLogs) {
+    await prisma.$transaction([
+      prisma.attendance.updateMany({
+        where: { id: log.attendance_id, user_id: null },
+        data: { user_id: userId },
+      }),
+      prisma.guestLog.update({
+        where: { id: log.id },
+        data: { linked_user_id: userId },
+      }),
+    ]);
+  }
 }
