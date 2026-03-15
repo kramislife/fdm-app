@@ -282,6 +282,7 @@ async function main() {
       create: {
         name: "Quezon City",
         location: "Quezon City, Metro Manila",
+        province: "Metro Manila",
         fellowship_day: "Saturday",
         is_active: true,
       },
@@ -292,6 +293,7 @@ async function main() {
       create: {
         name: "Bataan",
         location: "Balanga City, Bataan",
+        province: "Bataan",
         fellowship_day: "Saturday",
         is_active: true,
       },
@@ -302,6 +304,7 @@ async function main() {
       create: {
         name: "Cavite",
         location: "Imus, Cavite",
+        province: "Cavite",
         fellowship_day: "Friday",
         is_active: true,
       },
@@ -312,6 +315,7 @@ async function main() {
       create: {
         name: "Pasay",
         location: "Pasay City, Metro Manila",
+        province: "Metro Manila",
         fellowship_day: "Thursday",
         is_active: true,
       },
@@ -322,6 +326,7 @@ async function main() {
       create: {
         name: "Pasig",
         location: "Pasig City, Metro Manila",
+        province: "Metro Manila",
         fellowship_day: "Saturday",
         is_active: true,
       },
@@ -332,6 +337,7 @@ async function main() {
       create: {
         name: "Tala",
         location: "Tala, Caloocan City",
+        province: "Metro Manila",
         fellowship_day: "Wednesday",
         is_active: true,
       },

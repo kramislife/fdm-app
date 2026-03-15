@@ -5,6 +5,7 @@ import { buildOrderBy, buildPaginationMeta, type TableParams } from "@/lib/table
 const ORDER_FIELDS: Record<string, string> = {
   name: "name",
   location: "location",
+  province: "province",
   created_at: "created_at",
   updated_at: "updated_at",
 };

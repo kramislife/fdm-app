@@ -3,7 +3,7 @@
 
 // ============================================================
 // FDM — Friends of the Divine Mercy
-// Community Management System — Prisma Schema v8
+// Community Management System — Prisma Schema v9
 // ============================================================
 
 generator client {
@@ -147,6 +147,7 @@ model Chapter {
   id             Int      @id @default(autoincrement())
   name           String   @unique @db.VarChar(100)
   location       String   @db.VarChar(255)
+  province       String   @db.VarChar(100)
   fellowship_day String?  @db.VarChar(20)
   is_active      Boolean  @default(true)
   created_by     Int?
@@ -164,6 +165,7 @@ model Chapter {
   finance_records FinanceRecord[]
   announcements   Announcement[]
 
+  @@index([province])
   @@index([created_at])
   @@map("chapters")
 }

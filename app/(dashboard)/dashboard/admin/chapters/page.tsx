@@ -12,6 +12,7 @@ import {
 const columns: Column[] = [
   { key: "name", label: "Name", sortable: true },
   { key: "location", label: "Location", sortable: true },
+  { key: "province", label: "Province", sortable: true },
   { key: "fellowship_day", label: "Fellowship Day" },
   { key: "status", label: "Status" },
   { key: "created_by", label: "Created By" },
@@ -38,6 +39,7 @@ export default async function ChaptersPage({ searchParams }: PageProps) {
   const data = result.data.map((chapter) => ({
     name: <TextCell value={chapter.name} />,
     location: <TextCell value={chapter.location} />,
+    province: <TextCell value={chapter.province} />,
     fellowship_day: <TextCell value={chapter.fellowship_day} />,
     status: <StatusBadge isActive={chapter.is_active} />,
     created_by: <UserCell user={chapter.creator} />,
