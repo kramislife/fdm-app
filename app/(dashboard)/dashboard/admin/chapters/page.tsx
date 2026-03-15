@@ -36,8 +36,8 @@ export default async function ChaptersPage({ searchParams }: PageProps) {
   });
 
   const data = result.data.map((chapter) => ({
-    name: chapter.name,
-    location: chapter.location,
+    name: <TextCell value={chapter.name} />,
+    location: <TextCell value={chapter.location} />,
     fellowshipDay: <TextCell value={chapter.fellowship_day} />,
     status: <StatusBadge isActive={chapter.is_active} />,
     createdBy: <UserCell user={chapter.creator} />,

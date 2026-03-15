@@ -48,11 +48,8 @@ export function UserCell({ user, fallback = "System" }: UserCellProps) {
   if (!user) {
     return <span className="text-muted-foreground">{fallback}</span>;
   }
-  return (
-    <>
-      {user.first_name} {user.last_name}
-    </>
-  );
+  const fullName = `${user.first_name} ${user.last_name}`;
+  return <span title={fullName}>{fullName}</span>;
 }
 
 // ------------------------------- Text Cell -----------------------------------------
@@ -62,10 +59,10 @@ interface TextCellProps {
 }
 
 export function TextCell({ value, fallback = "—" }: TextCellProps) {
-  if (!value || value.trim() === "") {
+  if (!value || String(value).trim() === "") {
     return <span className="text-muted-foreground">{fallback}</span>;
   }
-  return <span>{value}</span>;
+  return <span title={value}>{value}</span>;
 }
 
 // ------------------------------- Date Cell -----------------------------------------

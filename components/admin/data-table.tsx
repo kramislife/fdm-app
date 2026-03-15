@@ -77,12 +77,11 @@ export function DataTable({
             <TableHead
               key={col.key}
               style={col.maxWidth ? { maxWidth: col.maxWidth } : undefined}
-              className={cn(
-                "text-left px-4 py-3",
-                col.sortable &&
-                  "cursor-pointer select-none hover:text-foreground",
-              )}
-              onClick={col.sortable ? () => onSort?.(col.key) : undefined}
+              className={
+                col.sortable
+                  ? "cursor-pointer select-none hover:text-foreground"
+                  : undefined
+              }
             >
               {col.label}
               {col.sortable && (
@@ -122,8 +121,9 @@ export function DataTable({
                 return (
                   <TableCell
                     key={col.key}
-                    className="text-left px-4 py-3"
-                    style={col.maxWidth ? { maxWidth: col.maxWidth } : undefined}
+                    style={
+                      col.maxWidth ? { maxWidth: col.maxWidth } : undefined
+                    }
                   >
                     <div
                       className={cn(col.maxWidth && "truncate")}

@@ -35,7 +35,7 @@ export default async function MinistryTypesPage({ searchParams }: PageProps) {
   });
 
   const data = result.data.map((mt) => ({
-    name: mt.name,
+    name: <TextCell value={mt.name} />,
     description: <TextCell value={mt.description} />,
     status: <StatusBadge isActive={mt.is_active} />,
     createdBy: <UserCell user={mt.creator} />,

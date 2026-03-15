@@ -35,7 +35,7 @@ export default async function EventTypesPage({ searchParams }: PageProps) {
   });
 
   const data = result.data.map((et) => ({
-    name: et.name,
+    name: <TextCell value={et.name} />,
     description: <TextCell value={et.description} />,
     status: <StatusBadge isActive={et.is_active} />,
     createdBy: <UserCell user={et.creator} />,

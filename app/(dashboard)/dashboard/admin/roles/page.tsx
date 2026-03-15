@@ -31,8 +31,8 @@ export default async function RolesPage({ searchParams }: PageProps) {
   });
 
   const data = result.data.map((role) => ({
-    name: role.name,
-    scope: role.scope,
+    name: <TextCell value={role.name} />,
+    scope: <TextCell value={role.scope} />,
     description: <TextCell value={role.description} />,
   }));
 
