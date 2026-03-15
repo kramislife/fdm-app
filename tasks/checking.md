@@ -337,3 +337,62 @@ Final
 - [x] `npx tsc --noEmit` — zero errors
 - [x] No console errors on any of the 3 pages
 - [x] All 3 pages tested while logged in as Spiritual Director
+
+---
+
+## Currently Verifying: Phase 10 — Google OAuth
+
+### 10a. Schema
+
+- [x] `contact_number` is nullable in DB (existing rows unchanged)
+- [x] Partial unique index exists — two NULL contact_numbers allowed, two identical non-null values blocked
+- [x] `npx prisma db push` succeeded with no errors
+
+### 10b. Login Page — Google Button
+
+- [x] Google button visible below email/password form
+- [x] "or" divider between form and Google button
+- [x] Button is white with Google G logo + "Continue with Google" text
+- [x] Clicking button redirects to Google consent screen
+
+### 10c. Auth Callback — Case 1 (Provisioned)
+
+- [x] Signing in with Google using an admin-provisioned email redirects to `/login?error=provisioned&date=...`
+- [x] User is NOT logged in after redirect
+- [x] Amber alert shows: "Your account was already created by our admin on [date]."
+- [x] Date is formatted correctly (e.g., "March 14, 2026")
+
+### 10c. Auth Callback — Case 2 (Existing Registered)
+
+- [x] Signing in with Google using an already-registered (non-temp) email succeeds
+- [x] `auth_id` linked to existing user if it was null
+- [x] Member role → redirects to `/`
+- [x] Other roles → redirects to `/dashboard`
+
+### 10c. Auth Callback — Case 3 (New Gmail User)
+
+- [x] New Gmail account not in DB → user row created in `public.users`
+- [x] `first_name` + `last_name` split correctly from Google display name
+- [x] Google avatar uploaded to Cloudinary under `fdm/users/[id]`
+- [x] `photo_url` saved to user row (or null if upload failed)
+- [x] `member` role assigned with SD as `assigned_by`
+- [x] Redirects to `/`
+
+### 10d. Attendance Backfill
+
+- [x] `backfillAttendance` called after Case 2 and Case 3
+- [x] Guest logs with matching email get `linked_user_id` set
+- [x] Attendance records get `user_id` set
+
+### 10f. Error Message
+
+- [x] `/login?error=provisioned&date=...` shows amber alert
+- [x] Alert disappears when navigating to `/login` without params
+- [x] Date is human-readable ("March 14, 2026" format)
+
+### Final
+
+- [x] `npx tsc --noEmit` — zero errors
+- [x] No console errors on login page
+- [x] Tested: email/password login still works
+- [x] Tested: Google button initiates OAuth flow

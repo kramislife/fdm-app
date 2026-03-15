@@ -27,6 +27,7 @@ interface SessionUser {
   initials: string;
   email: string;
   isMember: boolean;
+  photoUrl?: string | null;
 }
 
 interface MobileNavProps {
@@ -100,6 +101,7 @@ export function MobileNav({
             {sessionUser ? (
               <UserAvatar
                 initials={sessionUser.initials}
+                photoUrl={sessionUser.photoUrl}
                 name={sessionUser.name}
                 secondary={sessionUser.email}
               />

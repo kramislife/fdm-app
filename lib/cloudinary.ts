@@ -8,23 +8,43 @@ cloudinary.config({
 
 export default cloudinary;
 
-export type UploadFolder =
-  | "fdm/avatars"
-  | "fdm/qrcodes"
-  | "fdm/posters"
-  | "fdm/enthronements";
-
-export async function uploadImage(
-  file: string,
-  folder: UploadFolder,
-): Promise<string> {
-  const result = await cloudinary.uploader.upload(file, {
-    folder,
-    allowed_formats: ["jpg", "png", "webp"],
-  });
-  return result.secure_url;
+// Universal Cloudinary Upload
+export interface CloudinaryUploadOptions {
+  folder: string;
+  publicId?: string;
+  overwrite?: boolean;
+  invalidate?: boolean;
+  allowedFormats?: string[];
 }
 
-export async function deleteImage(publicId: string): Promise<void> {
-  await cloudinary.uploader.destroy(publicId);
+// Handles URL, Base64, or File path uploads.
+export async function uploadToCloudinary(
+  file: string,
+  options: CloudinaryUploadOptions,
+): Promise<string | null> {
+  try {
+    const result = await cloudinary.uploader.upload(file, {
+      folder: options.folder,
+      public_id: options.publicId,
+      overwrite: options.overwrite ?? true,
+      invalidate: options.invalidate ?? true,
+      allowed_formats: options.allowedFormats ?? ["jpg", "png", "webp", "jpeg"],
+    });
+    return result.secure_url;
+  } catch (err) {
+    console.error(
+      `[uploadToCloudinary] Upload to folder "${options.folder}" failed:`,
+      err,
+    );
+    return null;
+  }
+}
+
+// Delete an image from Cloudinary by its public_id.
+export async function deleteFromCloudinary(publicId: string): Promise<void> {
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (err) {
+    console.error(`[deleteFromCloudinary] Failed to delete ${publicId}:`, err);
+  }
 }

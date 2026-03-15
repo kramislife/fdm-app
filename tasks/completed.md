@@ -103,3 +103,26 @@ Completed: March 14, 2026
 - Event Types page (`/dashboard/admin/event-types`) wired to real data (name, description)
 - Pages restricted to `spiritual_director` and `elder` roles
 - Display only (view data with search/pagination features, no CRUD actions yet)
+
+---
+
+### Phase 10: Google Auth Profile Picture & Optimization ✅
+
+> Completed: March 15, 2026
+
+- **Database Performance**: Added comprehensive indexes across all Prisma models to optimize sorting, filtering, and foreign key lookups.
+- **Google OAuth Integration**:
+  - Implemented Google Sign-In with explicit scopes (`openid`, `email`, `profile`) and `prompt: consent` to ensure profile data retrieval.
+  - Refactored Google Sign-In logic into a secure server action in `app/(auth)/login/actions.ts`.
+- **Avatar Management**:
+  - `lib/cloudinary.ts`: Created a universal, logic-free upload utility supporting overwrite/invalidate to handle CDN caching issues.
+  - Automated avatar syncing in the auth callback: downloads Google profile pictures and stores them in Cloudinary (`fdm/avatars`).
+  - Implemented `referrerPolicy="no-referrer"` on avatars to prevent 403 errors from external providers.
+- **Auth Flow Enhancements**:
+  - Auth callback handles Case 1 (Provisioned User), Case 2 (Existing User), and Case 3 (New User) with specialized redirection and data linking.
+  - Automatic `backfillAttendance` for new Google sign-ins matching existing guest logs.
+  - Updated `BaseUser` and session types to include `photoUrl` across public and dashboard layouts.
+- **UI/UX Polish**:
+  - Loading component updated with optional custom text and refined full-screen/inline layouts.
+  - Responsive `Toaster` positioning (top-center on mobile, top-right on desktop).
+  - Amber alert notices on login for admin-provisioned accounts.

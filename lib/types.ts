@@ -54,6 +54,7 @@ export interface BaseUser {
   name: string;
   initials: string;
   email: string;
+  photoUrl?: string | null;
 }
 
 export interface DashboardSessionUser extends BaseUser {

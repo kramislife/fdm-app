@@ -24,7 +24,7 @@ export interface UserDropdownProps {
 }
 
 export function UserDropdown({
-  user: { name, initials, email },
+  user: { name, initials, email, photoUrl },
   showDashboardLink,
   onSignOut,
   isPending = false,
@@ -32,15 +32,23 @@ export function UserDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="p-0 cursor-pointer hover:bg-transparent">
-          <UserAvatar initials={initials} />
+        <Button
+          variant="ghost"
+          className="p-0 cursor-pointer hover:bg-transparent"
+        >
+          <UserAvatar initials={initials} photoUrl={photoUrl} />
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-52">
         {/* User identity */}
         <DropdownMenuLabel>
-          <UserAvatar initials={initials} name={name} secondary={email} />
+          <UserAvatar
+            initials={initials}
+            photoUrl={photoUrl}
+            name={name}
+            secondary={email}
+          />
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 

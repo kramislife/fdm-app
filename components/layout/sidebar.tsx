@@ -179,6 +179,7 @@ export function Sidebar({
         >
           <UserAvatar
             initials={sessionUser.initials}
+            photoUrl={sessionUser.photoUrl}
             name={isCollapsed ? undefined : sessionUser.name}
             secondary={
               sessionUser.roles[0]

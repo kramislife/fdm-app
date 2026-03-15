@@ -18,6 +18,7 @@ export default async function DashboardLayout({
     name: `${user.first_name} ${user.last_name}`,
     initials: `${user.first_name[0]}${user.last_name[0]}`.toUpperCase(),
     email: user.email,
+    photoUrl: user.photo_url,
     roles,
   };
 

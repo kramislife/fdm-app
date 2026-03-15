@@ -36,6 +36,7 @@ export function buildSessionUser(dbUser: UserWithRoles) {
     name: `${dbUser.first_name} ${dbUser.last_name}`,
     initials: `${dbUser.first_name[0]}${dbUser.last_name[0]}`.toUpperCase(),
     email: dbUser.email,
+    photoUrl: dbUser.photo_url,
     roles,
     isMember: isMemberOnly(roles),
   };

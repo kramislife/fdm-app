@@ -35,17 +35,17 @@
 
 ### Design
 
-- [x] `design/about.pen` — Full About page designed (9 sections)
+- `design/about.pen` — Full About page designed (9 sections)
 
 ### Config & Data
 
-- [x] `config/about.ts` — chapters, pillars, communityStats, heroStats
+- `config/about.ts` — chapters, pillars, communityStats, heroStats
 
 ### Implementation
 
-- [x] `app/(public)/about/page.tsx` — Hero, Mission, Pillars, Chapters, Gallery, Stats, Our Story, CTA, Footer
-- [x] Verify all 6 chapter images load (qc, bataan, cavite, pasau, pasig, tala)
-- [x] `npx tsc --noEmit` — zero errors
+- `app/(public)/about/page.tsx` — Hero, Mission, Pillars, Chapters, Gallery, Stats, Our Story, CTA, Footer
+- Verify all 6 chapter images load (qc, bataan, cavite, pasau, pasig, tala)
+- `npx tsc --noEmit` — zero errors
 
 ---
 
@@ -498,3 +498,64 @@ No row-actions — actions via modal (wired in Phase 9)
   - Fetch via `getEventTypes()`
   - Columns: Key (badge) | Name | Description
   - No add button, no actions column — view only
+
+---
+
+## Phase 10: Google OAuth
+
+> Goal: Members can sign in with Google as an alternative to email + password.
+> Admin-provisioned accounts still go to /first-login.
+> Gmail sign-ins bypass first-login entirely.
+> Duplicate email accounts are blocked with a friendly message.
+>
+> MANUAL SETUP REQUIRED BEFORE STARTING:
+> ✅ Google Cloud Console — OAuth credentials created
+> ✅ Supabase — Google provider enabled with Client ID + Secret
+> (Do these manually first — see setup guide given separately)
+
+### 10a. Schema Update
+
+- Make `contact_number` nullable in `schema.prisma`
+- Remove `@unique` constraint — add `@@index([contact_number])`
+- Partial unique index via Supabase migration (WHERE contact_number IS NOT NULL)
+- `npx prisma generate` + `npx prisma db push`
+
+### 10b. Login Page — Google Button
+
+- `components/auth/google-sign-in-button.tsx` — "use client" button only
+- "or" divider between email form and Google button
+- White button with official Google G SVG icon + "Continue with Google"
+- Calls `supabase.auth.signInWithOAuth({ provider: 'google', ... })`
+
+### 10c. Auth Callback — Full Flow
+
+- `app/auth/callback/route.ts` — all 3 OAuth cases handled
+- Case 1: provisioned → sign out + redirect to `/login?error=provisioned&date=`
+- Case 2: existing user → link auth_id + backfill + role-based redirect
+- Case 3: new Gmail → create user, upload avatar, assign member role, backfill
+
+### 10d. Attendance Backfill Utility
+
+- `lib/auth.ts` — `backfillAttendance(email, userId)` implemented
+
+### 10e. Photo Update Logic
+
+- `lib/cloudinary.ts` — `uploadUserPhoto()` + `replaceUserPhoto()` implemented
+
+### 10f. Error Message on Login Page
+
+- `app/(auth)/login/page.tsx` — server component reads `searchParams`
+- `app/(auth)/login/login-form.tsx` — shows amber Alert for provisioned error
+- Date formatted as "Mar 14, 2026"
+
+---
+
+## Decisions Recorded
+
+- `contact_number` nullable — user completes via profile page
+- Partial unique index on `contact_number` (unique only when not null)
+- Gmail users get `member` role automatically on first sign-up
+- Google avatar uploaded to Cloudinary — stored as `photo_url`
+- Photo update always deletes old Cloudinary asset first
+- One photo source of truth — Gmail and FDM use same stored URL
+- Admin-provisioned email block shows `users.created_at` date
