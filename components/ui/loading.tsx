@@ -5,12 +5,14 @@ interface LoadingProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: "sm" | "md" | "lg" | "xl";
   variant?: "default" | "primary" | "white";
   fullScreen?: boolean;
+  text?: string;
 }
 
 export function Loading({
   size = "md",
   variant = "default",
   fullScreen = false,
+  text,
   className,
   ...props
 }: LoadingProps) {
@@ -28,25 +30,40 @@ export function Loading({
   };
 
   const content = (
-    <div
-      className={cn(
-        "animate-spin rounded-full transition-all duration-300",
-        sizeClasses[size],
-        variantClasses[variant],
-        className,
+    <div className={cn("flex items-center gap-3", className)}>
+      <div
+        className={cn(
+          "animate-spin rounded-full transition-all duration-300",
+          sizeClasses[size],
+          variantClasses[variant],
+        )}
+        {...props}
+      />
+      {text && !fullScreen && (
+        <span className="text-sm font-medium text-muted-foreground animate-pulse">
+          {text}
+        </span>
       )}
-      {...props}
-    />
+    </div>
   );
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-500">
-        <div className="flex flex-col items-center gap-4">
-          {content}
-          <p className="text-xs font-medium tracking-[0.2em] text-muted-foreground uppercase animate-pulse">
-            Loading...
-          </p>
+      <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm animate-in fade-in duration-500">
+        <div className="flex flex-col items-center gap-3">
+          <div
+            className={cn(
+              "animate-spin rounded-full transition-all duration-300",
+              sizeClasses[size],
+              variantClasses[variant],
+            )}
+            {...props}
+          />
+          {text && (
+            <p className="text-xs font-medium text-muted-foreground uppercase animate-pulse">
+              {text}
+            </p>
+          )}
         </div>
       </div>
     );

@@ -89,7 +89,7 @@ export function DataTable({
           <TableRow>
             <TableCell colSpan={columns.length} className="h-32">
               <div className="flex justify-center items-center">
-                <Loading size="md" variant="primary" />
+                <Loading size="md" variant="primary" text="Syncing Data..." />
               </div>
             </TableCell>
           </TableRow>
