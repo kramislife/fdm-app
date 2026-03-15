@@ -31,7 +31,7 @@ export function UserAvatar({
     <div className={cn("flex items-center gap-3", className)}>
       {avatar}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold truncate mb-1">{name}</p>
+        <p className="text-sm font-bold truncate mb-1 capitalize">{name}</p>
         {secondary && (
           <p className="text-xs text-muted-foreground truncate">{secondary}</p>
         )}

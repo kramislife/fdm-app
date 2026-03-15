@@ -40,7 +40,7 @@ export function UserDropdown({
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-52">
+      <DropdownMenuContent align="end" className="w-auto">
         {/* User identity */}
         <DropdownMenuLabel>
           <UserAvatar
