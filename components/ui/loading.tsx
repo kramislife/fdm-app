@@ -29,18 +29,29 @@ export function Loading({
     white: "border-white/30 border-t-white",
   };
 
+  const textVariantClasses = {
+    default: "text-muted-foreground",
+    primary: "text-primary",
+    white: "text-white",
+  };
+
   const content = (
-    <div className={cn("flex items-center gap-3", className)}>
+    <div className={cn("flex items-center gap-2", className)}>
       <div
         className={cn(
-          "animate-spin rounded-full transition-all duration-300",
+          "animate-spin rounded-full transition-all duration-300 shrink-0",
           sizeClasses[size],
           variantClasses[variant],
         )}
         {...props}
       />
       {text && !fullScreen && (
-        <span className="text-sm font-medium text-muted-foreground animate-pulse">
+        <span
+          className={cn(
+            "text-sm font-medium animate-pulse",
+            textVariantClasses[variant],
+          )}
+        >
           {text}
         </span>
       )}
@@ -60,7 +71,12 @@ export function Loading({
             {...props}
           />
           {text && (
-            <p className="text-xs font-medium text-muted-foreground uppercase animate-pulse">
+            <p
+              className={cn(
+                "text-xs font-medium uppercase animate-pulse",
+                textVariantClasses[variant],
+              )}
+            >
               {text}
             </p>
           )}

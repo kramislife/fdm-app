@@ -19,13 +19,14 @@ export async function getEventTypes(params: TableParams = {}) {
 
   const where = search
     ? {
+        deleted_at: null,
         OR: [
           { name: { contains: search, mode: "insensitive" as const } },
           { key: { contains: search, mode: "insensitive" as const } },
           { description: { contains: search, mode: "insensitive" as const } },
         ],
       }
-    : {};
+    : { deleted_at: null };
 
   const [data, total] = await Promise.all([
     prisma.eventType.findMany({

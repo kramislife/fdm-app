@@ -70,6 +70,14 @@ export function buildPaginationMeta(
   return { total, page, perPage, totalPages };
 }
 
+/** Pagination shape used by AdminPage */
+export type Pagination = {
+  page: number;
+  perPage: number;
+  totalPages: number;
+  totalEntries: number;
+};
+
 /** Maps a fetcher result to the AdminPage pagination prop shape and converts `total` → `totalEntries` to match the component interface */
 export function toPagination(result: {
   page: number;

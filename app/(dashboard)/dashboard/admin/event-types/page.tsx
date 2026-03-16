@@ -1,22 +1,7 @@
 import { requireRole } from "@/lib/auth";
 import { getEventTypes } from "@/lib/data/event-types";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
-import { AdminPage, type Column } from "@/components/admin";
-import {
-  StatusBadge,
-  UserCell,
-  DateCell,
-  TextCell,
-} from "@/components/shared/cells";
-
-const columns: Column[] = [
-  { key: "name", label: "Name", sortable: true },
-  { key: "description", label: "Description", maxWidth: "400px" },
-  { key: "status", label: "Status" },
-  { key: "created_by", label: "Created By" },
-  { key: "created_at", label: "Created At", sortable: true },
-  { key: "updated_at", label: "Updated At", sortable: true },
-];
+import { EventTypesClient, type EventTypeRow } from "./event-types-client";
 
 export default async function EventTypesPage({ searchParams }: PageProps) {
   await requireRole(["spiritual_director", "elder"]);
@@ -34,21 +19,19 @@ export default async function EventTypesPage({ searchParams }: PageProps) {
     order,
   });
 
-  const data = result.data.map((et) => ({
-    name: <TextCell value={et.name} />,
-    description: <TextCell value={et.description} />,
-    status: <StatusBadge isActive={et.is_active} />,
-    created_by: <UserCell user={et.creator} />,
-    created_at: <DateCell date={et.created_at} />,
-    updated_at: <DateCell date={et.updated_at} />,
+  const eventTypes: EventTypeRow[] = result.data.map((et) => ({
+    id: et.id,
+    name: et.name,
+    description: et.description ?? null,
+    is_active: et.is_active,
+    created_at: et.created_at.toISOString(),
+    updated_at: et.updated_at.toISOString(),
+    creator: et.creator ?? null,
   }));
 
   return (
-    <AdminPage
-      title="Event Types"
-      description="View and manage all types of events"
-      columns={columns}
-      data={data}
+    <EventTypesClient
+      eventTypes={eventTypes}
       pagination={toPagination(result)}
     />
   );

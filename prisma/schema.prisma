@@ -20,26 +20,32 @@ datasource db {
 // ============================================================
 
 model Role {
-  id          Int     @id @default(autoincrement())
-  key         String  @unique @db.VarChar(50)
-  name        String  @db.VarChar(100)
-  scope       String  @db.VarChar(20)
-  description String? @db.VarChar(255)
+  id          Int      @id @default(autoincrement())
+  key         String   @unique @db.VarChar(50)
+  name        String   @db.VarChar(100)
+  scope       String   @db.VarChar(20)
+  description String?  @db.VarChar(255)
+  updated_by  Int?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
-  user_roles UserRole[]
+  user_roles   UserRole[]
+  updated_by_user User? @relation("RoleUpdatedBy", fields: [updated_by], references: [id])
 
+  @@index([created_at])
   @@map("roles")
 }
 
 model MinistryType {
-  id          Int      @id @default(autoincrement())
-  key         String   @unique @db.VarChar(50)
-  name        String   @db.VarChar(100)
-  description String?  @db.VarChar(255)
-  is_active   Boolean  @default(true)
+  id          Int       @id @default(autoincrement())
+  key         String    @unique @db.VarChar(50)
+  name        String    @db.VarChar(100)
+  description String?   @db.VarChar(255)
+  is_active   Boolean   @default(true)
   created_by  Int?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  deleted_at  DateTime?
 
   creator    User?      @relation("MinistryTypeCreator", fields: [created_by], references: [id])
   ministries Ministry[]
@@ -49,14 +55,15 @@ model MinistryType {
 }
 
 model EventType {
-  id          Int      @id @default(autoincrement())
-  key         String   @unique @db.VarChar(50)
-  name        String   @db.VarChar(100)
-  description String?  @db.VarChar(255)
-  is_active   Boolean  @default(true)
+  id          Int       @id @default(autoincrement())
+  key         String    @unique @db.VarChar(50)
+  name        String    @db.VarChar(100)
+  description String?   @db.VarChar(255)
+  is_active   Boolean   @default(true)
   created_by  Int?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  deleted_at  DateTime?
 
   creator User?   @relation("EventTypeCreator", fields: [created_by], references: [id])
   events  Event[]
@@ -130,6 +137,7 @@ model User {
   finance_records FinanceRecord[]
   announcements   Announcement[]
 
+  roles_updated          Role[]         @relation("RoleUpdatedBy")
   ministry_types_created MinistryType[] @relation("MinistryTypeCreator")
   event_types_created    EventType[]    @relation("EventTypeCreator")
   areas_created          Area[]         @relation("AreaCreator")

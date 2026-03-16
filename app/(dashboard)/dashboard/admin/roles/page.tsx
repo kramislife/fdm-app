@@ -1,18 +1,7 @@
 import { requireRole } from "@/lib/auth";
 import { getRoles } from "@/lib/data/roles";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
-import { AdminPage, type Column } from "@/components/admin";
-import { TextCell } from "@/components/shared/cells";
-
-const columns: Column[] = [
-  { key: "name", label: "Name", sortable: true },
-  { key: "scope", label: "Scope", sortable: true },
-  {
-    key: "description",
-    label: "Description",
-    maxWidth: "250px",
-  },
-];
+import { RolesClient, type RoleRow } from "./roles-client";
 
 export default async function RolesPage({ searchParams }: PageProps) {
   await requireRole(["spiritual_director", "elder"]);
@@ -30,19 +19,15 @@ export default async function RolesPage({ searchParams }: PageProps) {
     order,
   });
 
-  const data = result.data.map((role) => ({
-    name: <TextCell value={role.name} />,
-    scope: <TextCell value={role.scope} />,
-    description: <TextCell value={role.description} />,
+  const roles: RoleRow[] = result.data.map((role) => ({
+    id: role.id,
+    name: role.name,
+    scope: role.scope,
+    description: role.description ?? null,
+    updated_by: role.updated_by_user ?? null,
+    created_at: role.created_at.toISOString(),
+    updated_at: role.updated_at.toISOString(),
   }));
 
-  return (
-    <AdminPage
-      title="Role Management"
-      description="View and manage all community roles"
-      columns={columns}
-      data={data}
-      pagination={toPagination(result)}
-    />
-  );
+  return <RolesClient roles={roles} pagination={toPagination(result)} />;
 }

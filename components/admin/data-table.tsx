@@ -19,6 +19,7 @@ export type Column = {
   label: string;
   sortable?: boolean;
   maxWidth?: string;
+  align?: "left" | "center" | "right";
 };
 
 interface DataTableProps {
@@ -67,14 +68,20 @@ export function DataTable({
             <TableHead
               key={col.key}
               style={col.maxWidth ? { maxWidth: col.maxWidth } : undefined}
-              className={
-                col.sortable
-                  ? "cursor-pointer select-none hover:text-foreground"
-                  : undefined
-              }
+              className={cn(
+                col.sortable && "cursor-pointer select-none hover:text-foreground",
+                col.align === "center" && "text-center",
+                col.align === "right" && "text-right",
+              )}
               onClick={() => col.sortable && onSort?.(col.key)}
             >
-              <div className="flex items-center justify-between gap-2">
+              <div
+                className={cn(
+                  "flex items-center gap-2",
+                  col.align === "center" ? "justify-center" : "justify-between",
+                  col.align === "right" && "justify-end",
+                )}
+              >
                 <span>{col.label}</span>
                 {col.sortable && (
                   <SortIcon active={sort === col.key} order={order} />
@@ -117,6 +124,10 @@ export function DataTable({
                     style={
                       col.maxWidth ? { maxWidth: col.maxWidth } : undefined
                     }
+                    className={cn(
+                      col.align === "center" && "text-center",
+                      col.align === "right" && "text-right",
+                    )}
                   >
                     <div
                       className={cn(col.maxWidth && "truncate")}

@@ -5,6 +5,8 @@ import { buildOrderBy, buildPaginationMeta, type TableParams } from "@/lib/table
 const ORDER_FIELDS: Record<string, string> = {
   name: "name",
   scope: "scope",
+  created_at: "created_at",
+  updated_at: "updated_at",
 };
 
 export async function getRoles(params: TableParams = {}) {
@@ -27,6 +29,11 @@ export async function getRoles(params: TableParams = {}) {
       orderBy: buildOrderBy(sort, order, ORDER_FIELDS, "name"),
       skip: (page - 1) * perPage,
       take: perPage,
+      include: {
+        updated_by_user: {
+          select: { first_name: true, last_name: true },
+        },
+      },
     }),
     prisma.role.count({ where }),
   ]);
