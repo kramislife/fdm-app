@@ -4,10 +4,15 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
 import { toKey } from "@/lib/utils/slugify";
-type RoleForm = { name: string; scope: string; description: string };
+type RoleForm = {
+  name: string;
+  scope: string;
+  description: string;
+  is_active: boolean;
+};
 
 export async function createRole(data: RoleForm) {
-  await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole(["spiritual_director", "elder"]);
 
   if (!data.name.trim()) return { success: false, error: "Name is required." };
   if (!data.scope.trim())
@@ -16,7 +21,13 @@ export async function createRole(data: RoleForm) {
   try {
     const key = toKey(data.name);
 
-    const existing = await prisma.role.findUnique({ where: { key } });
+    const existing = await prisma.role.findFirst({
+      where: {
+        key,
+        deleted_at: null,
+      },
+    });
+
     if (existing) {
       return { success: false, error: "A role with that name already exists." };
     }
@@ -27,6 +38,8 @@ export async function createRole(data: RoleForm) {
         name: data.name.trim(),
         scope: data.scope.trim(),
         description: data.description?.trim() || null,
+        is_active: data.is_active,
+        created_by: currentUser.user.id,
       },
     });
 
@@ -54,6 +67,7 @@ export async function updateRole(id: number, data: RoleForm) {
         name: data.name.trim(),
         scope: data.scope.trim(),
         description: data.description?.trim() || null,
+        is_active: data.is_active,
         updated_by: currentUser.user.id,
       },
     });
@@ -69,16 +83,38 @@ export async function updateRole(id: number, data: RoleForm) {
 }
 
 export async function deleteRole(id: number) {
-  await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole(["spiritual_director", "elder"]);
 
   try {
-    await prisma.role.delete({ where: { id } });
+    // Check if role is assigned to any users
+    const assignmentCount = await prisma.userRole.count({
+      where: {
+        role_id: id,
+        is_active: true,
+      },
+    });
+
+    if (assignmentCount > 0) {
+      return {
+        success: false,
+        error: `Cannot delete role. It is currently assigned to ${assignmentCount} active user(s).`,
+      };
+    }
+
+    await prisma.role.update({
+      where: { id },
+      data: {
+        deleted_at: new Date(),
+        deleted_by: currentUser.user.id,
+      },
+    });
+
     revalidatePath("/dashboard/admin/roles");
     return { success: true };
   } catch {
     return {
       success: false,
-      error: "Failed to delete role. It may still be assigned to users.",
+      error: "Failed to delete role. Please try again.",
     };
   }
 }

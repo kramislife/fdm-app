@@ -8,7 +8,7 @@ export default async function RolesPage({ searchParams }: PageProps) {
 
   const { search, page, perPage, sort, order } = parseTableParams(
     await searchParams,
-    "name",
+    "created_at",
   );
 
   const result = await getRoles({
@@ -24,6 +24,8 @@ export default async function RolesPage({ searchParams }: PageProps) {
     name: role.name,
     scope: role.scope,
     description: role.description ?? null,
+    is_active: role.is_active,
+    creator: role.creator ?? null,
     updated_by: role.updated_by_user ?? null,
     created_at: role.created_at.toISOString(),
     updated_at: role.updated_at.toISOString(),

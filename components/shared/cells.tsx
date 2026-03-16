@@ -62,7 +62,11 @@ export function TextCell({ value, fallback = "—" }: TextCellProps) {
   if (!value || String(value).trim() === "") {
     return <span className="text-muted-foreground">{fallback}</span>;
   }
-  return <span title={value}>{value}</span>;
+  return (
+    <span className="capitalize" title={value}>
+      {value}
+    </span>
+  );
 }
 
 // ------------------------------- Date Cell -----------------------------------------

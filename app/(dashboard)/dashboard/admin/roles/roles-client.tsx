@@ -3,10 +3,16 @@
 import { ReferenceTypeClient } from "@/components/admin/reference-type-client";
 import type { Column } from "@/components/admin/data-table";
 import type { Pagination } from "@/lib/table";
-import { TextCell, UserCell, DateCell } from "@/components/shared/cells";
+import {
+  TextCell,
+  UserCell,
+  DateCell,
+  StatusBadge,
+} from "@/components/shared/cells";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -21,19 +27,33 @@ export type RoleRow = {
   name: string;
   scope: string;
   description: string | null;
+  is_active: boolean;
+  creator: { first_name: string; last_name: string } | null;
   updated_by: { first_name: string; last_name: string } | null;
   created_at: string;
   updated_at: string;
 };
 
-type RoleForm = { name: string; scope: string; description: string };
+type RoleForm = {
+  name: string;
+  scope: string;
+  description: string;
+  is_active: boolean;
+};
 
-const EMPTY_FORM: RoleForm = { name: "", scope: "chapter", description: "" };
+const EMPTY_FORM: RoleForm = {
+  name: "",
+  scope: "chapter",
+  description: "",
+  is_active: true,
+};
 
 const columns: Column[] = [
   { key: "name", label: "Name", sortable: true },
   { key: "scope", label: "Scope", sortable: true },
   { key: "description", label: "Description", maxWidth: "250px" },
+  { key: "status", label: "Status", align: "center" },
+  { key: "created_by", label: "Created By" },
   { key: "updated_by", label: "Updated By" },
   { key: "created_at", label: "Created At", sortable: true },
   { key: "updated_at", label: "Updated At", sortable: true },
@@ -58,6 +78,8 @@ export function RolesClient({ roles, pagination }: Props) {
         name: <TextCell value={row.name} />,
         scope: <TextCell value={row.scope} />,
         description: <TextCell value={row.description} />,
+        status: <StatusBadge isActive={row.is_active} />,
+        created_by: <UserCell user={row.creator} />,
         updated_by: <UserCell user={row.updated_by} />,
         created_at: <DateCell date={row.created_at} />,
         updated_at: <DateCell date={row.updated_at} />,
@@ -67,6 +89,7 @@ export function RolesClient({ roles, pagination }: Props) {
         name: row.name,
         scope: row.scope?.toLowerCase() ?? "chapter",
         description: row.description ?? "",
+        is_active: row.is_active,
       })}
       renderForm={(form, setForm) => (
         <div className="space-y-5">
@@ -76,7 +99,9 @@ export function RolesClient({ roles, pagination }: Props) {
               <Input
                 id="role-name"
                 value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, name: e.target.value }))
+                }
                 placeholder="Enter role name"
               />
             </div>
@@ -101,9 +126,30 @@ export function RolesClient({ roles, pagination }: Props) {
             <Textarea
               id="role-description"
               value={form.description}
-              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, description: e.target.value }))
+              }
               placeholder="Enter description (optional)"
               className="min-h-[120px]"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="role-status" className="text-sm font-medium">
+                Status
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {form.is_active
+                  ? "Active — assigned users have access"
+                  : "Inactive — system features for this role are disabled"}
+              </p>
+            </div>
+            <Switch
+              id="role-status"
+              checked={form.is_active}
+              onCheckedChange={(v: boolean) =>
+                setForm((f) => ({ ...f, is_active: v }))
+              }
             />
           </div>
         </div>
