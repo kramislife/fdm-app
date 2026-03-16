@@ -50,7 +50,7 @@ const EMPTY_FORM: RoleForm = {
 
 const columns: Column[] = [
   { key: "name", label: "Name", sortable: true },
-  { key: "scope", label: "Scope", sortable: true },
+  { key: "scope", label: "Scope" },
   { key: "description", label: "Description", maxWidth: "500px" },
   { key: "status", label: "Status", align: "center" },
   { key: "created_by", label: "Created By" },
@@ -99,6 +99,7 @@ export function RolesClient({ roles, pagination }: Props) {
                   setForm((f) => ({ ...f, name: e.target.value }))
                 }
                 placeholder="Enter role name"
+                required
               />
             </div>
             <div className="space-y-2 col-span-1">

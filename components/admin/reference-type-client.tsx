@@ -101,7 +101,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
 
       if (result.success) {
         toast.success(
-          isEditing ? `${entityLabel} updated.` : `${entityLabel} created.`,
+          isEditing ? `${entityLabel} Updated Successfully.` : `${entityLabel} Created Successfully.`,
         );
         closeSheet();
       } else {

@@ -30,6 +30,7 @@ export default async function MinistryTypesPage({ searchParams }: PageProps) {
     created_at: mt.created_at.toISOString(),
     updated_at: mt.updated_at.toISOString(),
     creator: mt.creator ?? null,
+    updated_by: mt.updated_by_user ?? null,
   }));
 
   return (

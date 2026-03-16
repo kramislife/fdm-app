@@ -46,18 +46,25 @@ model Role {
 }
 
 model MinistryType {
-  id          Int       @id @default(autoincrement())
-  key         String    @unique @db.VarChar(50)
-  name        String    @db.VarChar(100)
-  description String?   @db.VarChar(255)
-  is_active   Boolean   @default(true)
-  created_by  Int?
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-  deleted_at  DateTime?
+  id          Int     @id @default(autoincrement())
+  key         String  @unique @db.VarChar(50)
+  name        String  @db.VarChar(100)
+  description String? @db.VarChar(255)
+  is_active   Boolean @default(true)
 
-  creator    User?      @relation("MinistryTypeCreator", fields: [created_by], references: [id])
-  ministries Ministry[]
+  created_at DateTime @default(now())
+  created_by Int?
+
+  updated_at DateTime @updatedAt
+  updated_by Int?
+
+  deleted_at DateTime?
+  deleted_by Int?
+
+  creator         User?      @relation("MinistryTypeCreator", fields: [created_by], references: [id])
+  updated_by_user User?      @relation("MinistryTypeUpdatedBy", fields: [updated_by], references: [id])
+  deleted_by_user User?      @relation("MinistryTypeDeletedBy", fields: [deleted_by], references: [id])
+  ministries      Ministry[]
 
   @@index([created_at])
   @@map("ministry_types")
@@ -157,6 +164,8 @@ model User {
   roles_updated          Role[]         @relation("RoleUpdatedBy")
   roles_deleted          Role[]         @relation("RoleDeletedBy")
   ministry_types_created MinistryType[] @relation("MinistryTypeCreator")
+  ministry_types_updated MinistryType[] @relation("MinistryTypeUpdatedBy")
+  ministry_types_deleted MinistryType[] @relation("MinistryTypeDeletedBy")
   event_types_created    EventType[]    @relation("EventTypeCreator")
   event_types_updated    EventType[]    @relation("EventTypeUpdatedBy")
   event_types_deleted    EventType[]    @relation("EventTypeDeletedBy")

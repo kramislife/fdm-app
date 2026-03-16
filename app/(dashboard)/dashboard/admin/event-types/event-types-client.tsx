@@ -79,6 +79,7 @@ export function EventTypesClient({ eventTypes, pagination }: Props) {
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               placeholder="Enter event type name"
+              required
             />
           </div>
           <div className="space-y-2">
@@ -107,7 +108,9 @@ export function EventTypesClient({ eventTypes, pagination }: Props) {
             <Switch
               id="et-status"
               checked={form.is_active}
-              onCheckedChange={(v) => setForm((f) => ({ ...f, is_active: v }))}
+              onCheckedChange={(v: boolean) =>
+                setForm((f) => ({ ...f, is_active: v }))
+              }
             />
           </div>
         </div>
