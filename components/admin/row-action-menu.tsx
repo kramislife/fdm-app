@@ -1,6 +1,5 @@
 "use client";
 
-import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,22 +8,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FaEdit } from "react-icons/fa";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { RiDeleteBin2Fill, RiFileEditFill } from "react-icons/ri";
+import { FaEye } from "react-icons/fa";
+import { TfiMoreAlt } from "react-icons/tfi";
 
 export type RowActionMenuProps = {
-  onEdit: () => void;
+  onViewDetails?: () => void;
+  onEdit?: () => void;
   onDelete?: () => void;
   editLabel?: string;
   deleteLabel?: string;
+  viewDetailsLabel?: string;
   disabled?: boolean;
 };
 
 export function RowActionMenu({
   onEdit,
   onDelete,
+  onViewDetails,
   editLabel = "Edit",
   deleteLabel = "Delete",
+  viewDetailsLabel = "View",
   disabled,
 }: RowActionMenuProps) {
   return (
@@ -36,23 +40,36 @@ export function RowActionMenu({
           disabled={disabled}
           className="size-8 cursor-pointer"
         >
-          <MoreHorizontal className="size-4" />
+          <TfiMoreAlt className="size-4" />
           <span className="sr-only">Open menu</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={onEdit} className="cursor-pointer text-sm">
-          <FaEdit className="size-4" />
-          {editLabel}
-        </DropdownMenuItem>
+        {onViewDetails && (
+          <>
+            <DropdownMenuItem
+              onClick={onViewDetails}
+              className="cursor-pointer text-sm"
+            >
+              <FaEye className="size-4" />
+              {viewDetailsLabel}
+            </DropdownMenuItem>
+          </>
+        )}
+        {onEdit && (
+          <DropdownMenuItem onClick={onEdit} className="cursor-pointer text-sm">
+            <RiFileEditFill className="size-4" />
+            {editLabel}
+          </DropdownMenuItem>
+        )}
         {onDelete && (
           <>
-            <DropdownMenuSeparator />
+            {onEdit && <DropdownMenuSeparator />}
             <DropdownMenuItem
               onClick={onDelete}
               className="text-destructive focus:text-destructive"
             >
-              <RiDeleteBin6Line className="size-4" />
+              <RiDeleteBin2Fill className="size-4" />
               {deleteLabel}
             </DropdownMenuItem>
           </>

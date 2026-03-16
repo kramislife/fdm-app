@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { AdminPage } from "./admin-page";
 import { RowActionMenu } from "./row-action-menu";
 import { AdminSheet } from "./admin-sheet";
+import { DetailSheet } from "./detail-sheet";
 import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 import type { Column } from "./data-table";
 import type { Pagination } from "@/lib/table";
@@ -27,6 +28,8 @@ export type ReferenceTypeClientProps<TRow extends BaseRow, TForm> = {
   columns: Column[];
   /** Map a row to table cells — do not include the actions column */
   renderRow: (row: TRow) => Record<string, ReactNode>;
+  /** Render the read-only detail view — receives the row being viewed */
+  renderDetail?: (row: TRow) => ReactNode;
   /** Initial blank form state used when opening the Add sheet */
   initialForm: TForm;
   /** Populate form from an existing row when opening the Edit sheet */
@@ -52,12 +55,14 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
   initialForm,
   getFormFromRow,
   renderForm,
+  renderDetail,
   onCreate,
   onUpdate,
   onDelete,
 }: ReferenceTypeClientProps<TRow, TForm>) {
-  const [editing, setEditing] = useState<TRow | null>(null);
+  const [viewing, setViewing] = useState<TRow | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [editing, setEditing] = useState<TRow | null>(null);
   const [deleting, setDeleting] = useState<TRow | null>(null);
   const [sheetMode, setSheetMode] = useState<"add" | "edit">("add");
 
@@ -75,6 +80,14 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
       ? `Create a new ${entityLabel.toLowerCase()} to organize and manage records.`
       : `Update ${entityLabel.toLowerCase()} details and settings.`;
 
+  function openView(row: TRow) {
+    setViewing(row);
+  }
+
+  function closeView() {
+    setViewing(null);
+  }
+
   function openAdd() {
     setSheetMode("add");
     setForm(initialForm);
@@ -82,6 +95,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
   }
 
   function openEdit(row: TRow) {
+    setViewing(null);
     setSheetMode("edit");
     setEditing(row);
     setForm(getFormFromRow(row));
@@ -101,7 +115,9 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
 
       if (result.success) {
         toast.success(
-          isEditing ? `${entityLabel} Updated Successfully.` : `${entityLabel} Created Successfully.`,
+          isEditing
+            ? `${entityLabel} Updated Successfully.`
+            : `${entityLabel} Created Successfully.`,
         );
         closeSheet();
       } else {
@@ -127,6 +143,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
     ...renderRow(row),
     actions: (
       <RowActionMenu
+        onViewDetails={renderDetail ? () => openView(row) : undefined}
         onEdit={() => openEdit(row)}
         onDelete={() => setDeleting(row)}
       />
@@ -135,6 +152,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
 
   return (
     <>
+    {/* Admin Page - Table and Form */}
       <AdminPage
         title={pageTitle}
         description={pageDescription}
@@ -144,6 +162,18 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
         action={{ label: `Add ${entityLabel}`, onClick: openAdd }}
       />
 
+      {/* View Details Sheet */}
+      <DetailSheet
+        open={!!viewing}
+        onClose={closeView}
+        onEdit={viewing ? () => openEdit(viewing) : undefined}
+        title={`${entityLabel} Details`}
+        description={`View complete details and information about this ${entityLabel.toLowerCase()}`}
+      >
+        {viewing && renderDetail?.(viewing)}
+      </DetailSheet>
+
+      {/* Add and Edit Forms */}
       <AdminSheet
         open={isSheetOpen}
         onClose={closeSheet}
@@ -155,6 +185,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
         {renderForm(form, setForm)}
       </AdminSheet>
 
+      {/* Delete Confirm Dialog */}
       <DeleteConfirmDialog
         open={!!deleting}
         onClose={() => setDeleting(null)}

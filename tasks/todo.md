@@ -559,3 +559,182 @@ No row-actions — actions via modal (wired in Phase 9)
 - Photo update always deletes old Cloudinary asset first
 - One photo source of truth — Gmail and FDM use same stored URL
 - Admin-provisioned email block shows `users.created_at` date
+
+### Phase 11: Admin CRUD — Roles, Ministry Types, Event Types ✅
+
+Goal: Full CRUD on the 3 simplest reference tables using reusable components.
+Key field never shown in table — used internally only.
+All editable via Sheet slide-over. All actions via ellipsis dropdown per row.
+
+### 11a. Reusable Action Column Component
+
+components/admin/row-action-menu.tsx
+
+Props:
+
+ts type RowActionMenuProps = {
+onEdit: () => void
+onDelete: () => void
+editLabel?: string // default: "Edit"
+deleteLabel?: string // default: "Delete"
+disabled?: boolean
+}
+
+Trigger: ellipsis icon button (MoreHorizontal from lucide-react)
+Opens shadcn DropdownMenu with:
+
+Edit item — editLabel
+Separator
+Delete item — deleteLabel, text-destructive color
+
+### 11b. Reusable Admin Sheet Component
+
+components/admin/admin-sheet.tsx
+
+Props:
+
+ts type AdminSheetProps = {
+open: boolean
+onClose: () => void
+title: string // "Add Ministry Type" | "Edit Ministry Type"
+description?: string
+children: ReactNode // form fields — different per table
+onSubmit: () => void
+isSubmitting?: boolean
+submitLabel?: string // default: "Save"
+}
+
+Uses shadcn Sheet, side="right"
+Header: title + description
+Body: scrollable, renders children (the form)
+Footer: Cancel button (outline) + Submit button (bg-primary)
+Submit shows loader when isSubmitting
+Cancel closes sheet without saving
+Closes automatically on successful submit (parent controls open)
+Full screen on mobile (default Sheet behavior)
+
+11c. Reusable Delete Confirm Dialog
+
+components/admin/delete-confirm-dialog.tsx
+
+Props:
+
+ts type DeleteConfirmDialogProps = {
+open: boolean
+onClose: () => void
+onConfirm: () => void
+isDeleting?: boolean
+title?: string // default: "Delete this item?"
+description?: string // default: "This action cannot be undone."
+}
+
+Uses shadcn AlertDialog
+Cancel + Delete (destructive) buttons
+Delete button shows loader when isDeleting
+Used by all admin pages — same dialog everywhere
+
+### 11d. Key Auto-slug Utility
+
+lib/utils/slugify.ts — toKey(name: string): string
+
+Converts name to snake_case key
+"Sacred Heart Ministry" → "sacred_heart_ministry"
+Lowercase, spaces to underscores, strip special chars
+Used in create server actions for ministry types + event types
+
+### 11e. Roles Page — Edit Only (no add/delete)
+
+app/(dashboard)/admin/roles/page.tsx
+
+Add button: none — roles are fixed, no adding
+Actions column: ellipsis → Edit only (no delete option)
+Edit → AdminSheet opens with:
+
+Editable: Name (Input), Description (Textarea)
+
+Server action: updateRole(id, { name, description })
+
+revalidatePath('/dashboard/admin/roles')
+
+app/(dashboard)/admin/roles/actions.ts
+
+updateRole(id: number, data: { name: string; description?: string })
+
+### 11f. Ministry Types Page — Full CRUD
+
+app/(dashboard)/admin/ministry-types/page.tsx
+
+Add button top-right: "+ Add Ministry Type"
+→ AdminSheet opens (empty form, title "Add Ministry Type")
+Actions column: ellipsis → Edit | Delete
+Edit → AdminSheet opens (pre-filled, title "Edit Ministry Type")
+Delete → DeleteConfirmDialog opens
+Form fields in Sheet:
+
+Name (Input, required)
+Description (Textarea, optional)
+Status toggle (Switch — Active/Inactive)
+
+On create: key auto-generated via toKey(name)
+Soft delete: sets deleted_at — record hidden from table but preserved
+
+app/(dashboard)/admin/ministry-types/actions.ts
+
+createMinistryType(data: { name: string; description?: string; is_active: boolean })
+
+Auto-generates key via toKey(name)
+revalidatePath('/dashboard/admin/ministry-types')
+
+updateMinistryType(id: number, data: { name: string; description?: string; is_active: boolean })
+
+Key is never updated — immutable after creation
+revalidatePath('/dashboard/admin/ministry-types')
+
+deleteMinistryType(id: number)
+
+Sets deleted_at = new Date()
+revalidatePath('/dashboard/admin/ministry-types')
+
+### 11g. Event Types Page — Full CRUD
+
+app/(dashboard)/admin/event-types/page.tsx
+
+Same pattern as Ministry Types
+Add button: "+ Add Event Type"
+Form fields: Name, Description, Status toggle, Key preview
+Actions: Edit | Delete via ellipsis
+
+app/(dashboard)/admin/event-types/actions.ts
+
+createEventType(data)
+updateEventType(id, data)
+deleteEventType(id) — soft delete
+
+### 11h. Update Fetchers — Exclude Soft Deleted
+
+lib/data/ministry-types.ts — add deleted_at: null to where clause
+lib/data/event-types.ts — add deleted_at: null to where clause
+lib/data/roles.ts — no change (roles have no deleted_at)
+
+Shared Decisions
+
+Key field never shown in table — internal use only
+Key is auto-generated on create, never editable after
+Roles: edit name + description only, no add/delete
+Ministry Types + Event Types: full CRUD
+Delete is soft delete — sets deleted_at, never hard deletes
+Add button is top-right of page, aligned with page header
+Actions column is always the last column, ellipsis trigger
+Sheet is right-side slide-over, full screen on mobile
+Form is same component for add and edit — title changes only
+
+Build Order
+
+lib/utils/slugify.ts
+components/admin/row-action-menu.tsx
+components/admin/admin-sheet.tsx
+components/admin/delete-confirm-dialog.tsx
+app/(dashboard)/admin/roles/actions.ts + page update
+app/(dashboard)/admin/ministry-types/actions.ts + page update
+app/(dashboard)/admin/event-types/actions.ts + page update
+Update fetchers to exclude soft deleted records

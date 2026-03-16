@@ -396,3 +396,47 @@ Final
 - [x] No console errors on login page
 - [x] Tested: email/password login still works
 - [x] Tested: Google button initiates OAuth flow
+
+## Currently Verifying: Phase 11 — Admin CRUD (Roles, Ministry & Event Types)
+
+### 11a. Row Action Menu
+
+- [x] Trigger is an ellipsis icon button
+- [x] Dropdown opens with Edit and Delete options
+- [x] Delete is styled as destructive (red)
+- [x] Menu is accessible and has proper tap targets
+
+### 11b. Admin Sheet
+
+- [x] Uses slide-over (Sheet) from the right
+- [x] Title and description dynamic based on mode (Add vs Edit)
+- [x] Contains the correct form fields for the entity
+- [x] Submit button shows loading state when processing
+- [x] Cancel button closes sheet without saving
+
+### 11c. Delete Confirm Dialog
+
+- [x] Uses AlertDialog with Cancel and Delete buttons
+- [x] Delete button shows loading state when processing
+- [x] Closes automatically after confirmation
+
+### 11d. Logic & Utilities
+
+- [x] `slugify` utility correctly generates keys (e.g., "Event Name" -> "event_name")
+- [x] Keys are immutable after creation
+- [x] Soft delete implemented (sets `deleted_at` instead of removing row)
+
+### 11e. Roles Page
+
+- [x] View-only detail sheet shows Record ID and Metadata grid
+- [x] Edit form only allows changing Name and Description
+- [x] No "Add Role" or "Delete Role" options visible
+- [x] Metadata (Created At/By, Updated At/By) shows correctly
+
+### 11f. Ministry & Event Types Pages
+
+- [x] Full CRUD functionality working (Add, View, Edit, Soft Delete)
+- [x] "Add" button top-right works
+- [x] Detail view uses flex-wrap for fields + grid for metadata
+- [x] Field labels are consistent via `FIELD_LABELS` constant
+- [x] Table search and pagination work with real DB data

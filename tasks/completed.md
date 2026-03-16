@@ -126,3 +126,16 @@ Completed: March 14, 2026
   - Loading component updated with optional custom text and refined full-screen/inline layouts.
   - Responsive `Toaster` positioning (top-center on mobile, top-right on desktop).
   - Amber alert notices on login for admin-provisioned accounts.
+
+---
+
+## Phase 11: Admin CRUD (Roles, Ministry & Event Types) ✅
+
+> Completed: March 16, 2026
+
+- **Reusable Admin Architecture**: Implemented `RowActionMenu` (ellipsis dropdown), `AdminSheet` (right-side drawer), and `DeleteConfirmDialog` for standardized CRUD operations across all admin tables.
+- **Flexible Detail System**: Transitioned from a rigid grid to a dynamic flexbox layout (`DetailSection`, `DetailField`) that handles varying text lengths gracefully with automatic wrapping.
+- **Unified Labeling**: Centralized all field labels using the `FIELD_LABELS` constant to ensure 100% consistency between tables, forms, and detail views.
+- **Auditing & Metadata**: Implemented a specialized 2-column grid for record metadata (Record ID, Created/Updated At/By), providing a structured audit trail at the bottom of detail sheets.
+- **CRUD Operations**: Successfully wired real Prisma data with server actions for full CRUD (Ministry & Event Types) and optimized Edit-only flows (Roles).
+- **Data Integrity**: Integrated `slugify` for automatic, immutable record keys and implemented a soft-delete pattern (`deleted_at`) across reference tables.

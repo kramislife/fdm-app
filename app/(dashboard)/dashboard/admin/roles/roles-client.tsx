@@ -1,14 +1,5 @@
 "use client";
 
-import { ReferenceTypeClient } from "@/components/admin/reference-type-client";
-import type { Column } from "@/components/admin/data-table";
-import type { Pagination } from "@/lib/table";
-import {
-  TextCell,
-  UserCell,
-  DateCell,
-  StatusBadge,
-} from "@/components/shared/cells";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,6 +11,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import type { Column } from "@/components/admin/data-table";
+import type { Pagination } from "@/lib/table";
+import {
+  TextCell,
+  UserCell,
+  DateCell,
+  StatusBadge,
+} from "@/components/shared/cells";
+import {
+  DetailField,
+  DetailSection,
+  DetailMeta,
+} from "@/components/shared/detail-field";
+import { ReferenceTypeClient } from "@/components/admin/reference-type-client";
 import { createRole, updateRole, deleteRole } from "./actions";
 
 export type RoleRow = {
@@ -41,22 +47,29 @@ type RoleForm = {
   is_active: boolean;
 };
 
+const FIELD_LABELS = {
+  name: "Role",
+  scope: "Scope",
+  description: "Description",
+  status: "Status",
+};
+
+const columns: Column[] = [
+  { key: "name", label: FIELD_LABELS.name, sortable: true },
+  { key: "scope", label: FIELD_LABELS.scope },
+  { key: "description", label: FIELD_LABELS.description, maxWidth: "500px" },
+  { key: "status", label: FIELD_LABELS.status, align: "center" },
+  { key: "created_by", label: "Created By" },
+  { key: "created_at", label: "Created At", sortable: true },
+  { key: "actions", label: "Actions", align: "center" },
+];
+
 const EMPTY_FORM: RoleForm = {
   name: "",
   scope: "chapter",
   description: "",
   is_active: true,
 };
-
-const columns: Column[] = [
-  { key: "name", label: "Name", sortable: true },
-  { key: "scope", label: "Scope" },
-  { key: "description", label: "Description", maxWidth: "500px" },
-  { key: "status", label: "Status", align: "center" },
-  { key: "created_by", label: "Created By" },
-  { key: "created_at", label: "Created At", sortable: true },
-  { key: "actions", label: "Actions", align: "center" },
-];
 
 type Props = {
   roles: RoleRow[];
@@ -80,6 +93,31 @@ export function RolesClient({ roles, pagination }: Props) {
         created_by: <UserCell user={row.creator} />,
         created_at: <DateCell date={row.created_at} />,
       })}
+      renderDetail={(row) => (
+        <>
+          <DetailSection>
+            <DetailField label={FIELD_LABELS.name}>
+              <TextCell value={row.name} />
+            </DetailField>
+            <DetailField label={FIELD_LABELS.scope}>
+              <TextCell value={row.scope} />
+            </DetailField>
+            <DetailField label={FIELD_LABELS.status}>
+              <StatusBadge isActive={row.is_active} />
+            </DetailField>
+            <DetailField label={FIELD_LABELS.description} fullWidth>
+              <TextCell value={row.description} />
+            </DetailField>
+          </DetailSection>
+          <DetailMeta
+            id={row.id}
+            createdAt={row.created_at}
+            updatedAt={row.updated_at}
+            createdBy={row.creator}
+            updatedBy={row.updated_by}
+          />
+        </>
+      )}
       initialForm={EMPTY_FORM}
       getFormFromRow={(row) => ({
         name: row.name,
@@ -91,25 +129,27 @@ export function RolesClient({ roles, pagination }: Props) {
         <div className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-2">
             <div className="col-span-1 md:col-span-2 space-y-2">
-              <Label htmlFor="role-name">Role Name</Label>
+              <Label htmlFor="role-name">{FIELD_LABELS.name}</Label>
               <Input
                 id="role-name"
                 value={form.name}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, name: e.target.value }))
                 }
-                placeholder="Enter role name"
+                placeholder={`Enter ${FIELD_LABELS.name.toLowerCase()}`}
                 required
               />
             </div>
             <div className="col-span-1 space-y-2">
-              <Label htmlFor="role-scope">Scope</Label>
+              <Label htmlFor="role-scope">{FIELD_LABELS.scope}</Label>
               <Select
                 value={form.scope}
                 onValueChange={(v) => setForm((f) => ({ ...f, scope: v }))}
               >
                 <SelectTrigger id="role-scope" className="w-full">
-                  <SelectValue placeholder="Select scope" />
+                  <SelectValue
+                    placeholder={`Select ${FIELD_LABELS.scope.toLowerCase()}`}
+                  />
                 </SelectTrigger>
                 <SelectContent position="popper">
                   <SelectItem value="global">Global</SelectItem>
@@ -119,20 +159,20 @@ export function RolesClient({ roles, pagination }: Props) {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="role-description">Description</Label>
+            <Label htmlFor="role-description">{FIELD_LABELS.description}</Label>
             <Textarea
               id="role-description"
               value={form.description}
               onChange={(e) =>
                 setForm((f) => ({ ...f, description: e.target.value }))
               }
-              placeholder="Enter description (optional)"
+              placeholder={`Enter ${FIELD_LABELS.description.toLowerCase()} (optional)`}
               className="min-h-[120px]"
             />
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="role-status">Status</Label>
+              <Label htmlFor="role-status">{FIELD_LABELS.status}</Label>
               <Switch
                 id="role-status"
                 checked={form.is_active}

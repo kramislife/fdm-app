@@ -137,7 +137,7 @@ export function Sidebar({
                         isCollapsed ? "justify-center px-0" : "gap-3 px-3",
                         isActive
                           ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                          : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent",
+                          : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent",
                       )}
                     >
                       <item.icon className="h-5 w-5 shrink-0" />
