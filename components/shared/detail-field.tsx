@@ -12,7 +12,7 @@ interface DetailSectionProps {
 
 export function DetailSection({ children, className }: DetailSectionProps) {
   return (
-    <div className={cn("flex flex-wrap gap-x-10 gap-y-5", className)}>
+    <div className={cn("flex flex-wrap gap-x-10 gap-y-8", className)}>
       {children}
     </div>
   );
@@ -39,7 +39,7 @@ export function DetailField({
     <div
       className={cn("space-y-2", fullWidth ? "w-full" : "min-w-[150px]", className)}
     >
-      <Label htmlFor={label}>{label}</Label>
+      <Label htmlFor={label} className="font-bold">{label}</Label>
       <div className={cn("text-sm", contentClassName)}>{children}</div>
     </div>
   );
@@ -63,7 +63,7 @@ export function DetailMeta({
   updatedBy,
 }: DetailMetaProps) {
   return (
-    <DetailSection className="pt-5 border-t">
+    <DetailSection className="pt-5 border-t gap-5">
       <div className="flex items-center gap-1 w-full">
         <p className="text-xs font-semibold uppercase">Record ID</p>
         <span className="font-mono text-primary bg-muted/50 p-1 rounded text-xs">

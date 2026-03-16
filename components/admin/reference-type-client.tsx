@@ -168,7 +168,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
         onClose={closeView}
         onEdit={viewing ? () => openEdit(viewing) : undefined}
         title={`${entityLabel} Details`}
-        description={`View complete details and information about this ${entityLabel.toLowerCase()}`}
+        description={`View complete information about this ${entityLabel.toLowerCase()}`}
       >
         {viewing && renderDetail?.(viewing)}
       </DetailSheet>

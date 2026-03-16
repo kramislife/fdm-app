@@ -69,7 +69,7 @@ export function TextCell({ value, fallback = "—" }: TextCellProps) {
   const displayValue = String(value);
 
   return (
-    <span className="capitalize" title={displayValue}>
+    <span className="capitalize wrap-break-word" title={displayValue}>
       {displayValue}
     </span>
   );
@@ -110,7 +110,7 @@ export function LinkCell({ href, label, fallback = "—" }: LinkCellProps) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-primary underline underline-offset-2"
+      className="text-primary underline underline-offset-2 break-all"
       title={href}
     >
       {label || href}
