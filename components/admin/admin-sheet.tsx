@@ -38,7 +38,7 @@ export function AdminSheet({
       <SheetContent
         side="right"
         showCloseButton={false}
-        className="data-[side=right]:sm:max-w-lg gap-0"
+        className="data-[side=right]:w-5/6 data-[side=right]:md:max-w-xl gap-0"
       >
         <form
           className="flex flex-col h-full"

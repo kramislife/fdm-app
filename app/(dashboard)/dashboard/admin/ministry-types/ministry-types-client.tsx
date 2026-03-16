@@ -102,24 +102,22 @@ export function MinistryTypesClient({ ministryTypes, pagination }: Props) {
               className="min-h-[120px]"
             />
           </div>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="mt-status" className="text-sm font-medium">
-                Status
-              </Label>
-              <p className="text-xs text-muted-foreground">
-                {form.is_active
-                  ? "Active — visible in selections"
-                  : "Inactive — hidden from selections"}
-              </p>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="mt-status">Status</Label>
+              <Switch
+                id="mt-status"
+                checked={form.is_active}
+                onCheckedChange={(v: boolean) =>
+                  setForm((f) => ({ ...f, is_active: v }))
+                }
+              />
             </div>
-            <Switch
-              id="mt-status"
-              checked={form.is_active}
-              onCheckedChange={(v: boolean) =>
-                setForm((f) => ({ ...f, is_active: v }))
-              }
-            />
+            <p className="text-xs text-muted-foreground">
+              {form.is_active
+                ? "Active — visible in selections"
+                : "Inactive — hidden from selections"}
+            </p>
           </div>
         </div>
       )}

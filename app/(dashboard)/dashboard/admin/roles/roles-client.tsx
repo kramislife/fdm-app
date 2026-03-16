@@ -89,8 +89,8 @@ export function RolesClient({ roles, pagination }: Props) {
       })}
       renderForm={(form, setForm) => (
         <div className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            <div className="space-y-2 col-span-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-2">
+            <div className="col-span-1 md:col-span-2 space-y-2">
               <Label htmlFor="role-name">Role Name</Label>
               <Input
                 id="role-name"
@@ -102,7 +102,7 @@ export function RolesClient({ roles, pagination }: Props) {
                 required
               />
             </div>
-            <div className="space-y-2 col-span-1">
+            <div className="col-span-1 space-y-2">
               <Label htmlFor="role-scope">Scope</Label>
               <Select
                 value={form.scope}
@@ -130,24 +130,22 @@ export function RolesClient({ roles, pagination }: Props) {
               className="min-h-[120px]"
             />
           </div>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="role-status" className="text-sm font-medium">
-                Status
-              </Label>
-              <p className="text-xs text-muted-foreground">
-                {form.is_active
-                  ? "Active — assigned users have access"
-                  : "Inactive — system features for this role are disabled"}
-              </p>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="role-status">Status</Label>
+              <Switch
+                id="role-status"
+                checked={form.is_active}
+                onCheckedChange={(v: boolean) =>
+                  setForm((f) => ({ ...f, is_active: v }))
+                }
+              />
             </div>
-            <Switch
-              id="role-status"
-              checked={form.is_active}
-              onCheckedChange={(v: boolean) =>
-                setForm((f) => ({ ...f, is_active: v }))
-              }
-            />
+            <p className="text-xs text-muted-foreground">
+              {form.is_active
+                ? "Active — assigned users have access"
+                : "Inactive — system features for this role are disabled"}
+            </p>
           </div>
         </div>
       )}
