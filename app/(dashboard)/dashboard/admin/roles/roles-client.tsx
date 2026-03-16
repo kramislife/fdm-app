@@ -51,12 +51,10 @@ const EMPTY_FORM: RoleForm = {
 const columns: Column[] = [
   { key: "name", label: "Name", sortable: true },
   { key: "scope", label: "Scope", sortable: true },
-  { key: "description", label: "Description", maxWidth: "250px" },
+  { key: "description", label: "Description", maxWidth: "500px" },
   { key: "status", label: "Status", align: "center" },
   { key: "created_by", label: "Created By" },
-  { key: "updated_by", label: "Updated By" },
   { key: "created_at", label: "Created At", sortable: true },
-  { key: "updated_at", label: "Updated At", sortable: true },
   { key: "actions", label: "Actions", align: "center" },
 ];
 
@@ -80,9 +78,7 @@ export function RolesClient({ roles, pagination }: Props) {
         description: <TextCell value={row.description} />,
         status: <StatusBadge isActive={row.is_active} />,
         created_by: <UserCell user={row.creator} />,
-        updated_by: <UserCell user={row.updated_by} />,
         created_at: <DateCell date={row.created_at} />,
-        updated_at: <DateCell date={row.updated_at} />,
       })}
       initialForm={EMPTY_FORM}
       getFormFromRow={(row) => ({

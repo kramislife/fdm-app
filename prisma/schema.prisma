@@ -64,18 +64,25 @@ model MinistryType {
 }
 
 model EventType {
-  id          Int       @id @default(autoincrement())
-  key         String    @unique @db.VarChar(50)
-  name        String    @db.VarChar(100)
-  description String?   @db.VarChar(255)
-  is_active   Boolean   @default(true)
-  created_by  Int?
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-  deleted_at  DateTime?
+  id          Int     @id @default(autoincrement())
+  key         String  @unique @db.VarChar(50)
+  name        String  @db.VarChar(100)
+  description String? @db.VarChar(255)
+  is_active   Boolean @default(true)
 
-  creator User?   @relation("EventTypeCreator", fields: [created_by], references: [id])
-  events  Event[]
+  created_at DateTime @default(now())
+  created_by Int?
+
+  updated_at DateTime @updatedAt
+  updated_by Int?
+
+  deleted_at DateTime?
+  deleted_by Int?
+
+  creator         User?   @relation("EventTypeCreator", fields: [created_by], references: [id])
+  updated_by_user User?   @relation("EventTypeUpdatedBy", fields: [updated_by], references: [id])
+  deleted_by_user User?   @relation("EventTypeDeletedBy", fields: [deleted_by], references: [id])
+  events          Event[]
 
   @@index([created_at])
   @@map("event_types")
@@ -151,6 +158,8 @@ model User {
   roles_deleted          Role[]         @relation("RoleDeletedBy")
   ministry_types_created MinistryType[] @relation("MinistryTypeCreator")
   event_types_created    EventType[]    @relation("EventTypeCreator")
+  event_types_updated    EventType[]    @relation("EventTypeUpdatedBy")
+  event_types_deleted    EventType[]    @relation("EventTypeDeletedBy")
   areas_created          Area[]         @relation("AreaCreator")
   chapters_created       Chapter[]      @relation("ChapterCreator")
   clusters_created       Cluster[]      @relation("ClusterCreator")

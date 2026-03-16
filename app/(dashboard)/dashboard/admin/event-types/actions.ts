@@ -14,35 +14,38 @@ type EventTypeData = {
 };
 
 export async function createEventType(data: EventTypeData) {
-  await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole(["spiritual_director", "elder"]);
 
   if (!data.name.trim()) {
     return { success: false, error: "Name is required." };
   }
 
-  const currentUser = await getUser();
-
   try {
+    const key = toKey(data.name);
+    const existing = await prisma.eventType.findFirst({
+      where: { key, deleted_at: null },
+    });
+
+    if (existing) {
+      return {
+        success: false,
+        error: "An event type with this name already exists.",
+      };
+    }
+
     await prisma.eventType.create({
       data: {
-        key: toKey(data.name),
+        key,
         name: data.name.trim(),
         description: data.description?.trim() || null,
         is_active: data.is_active,
-        created_by: currentUser?.user.id ?? null,
+        created_by: currentUser.user.id,
       },
     });
 
     revalidatePath(REVALIDATE_PATH);
     return { success: true };
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : "";
-    if (msg.includes("Unique constraint") || msg.includes("unique")) {
-      return {
-        success: false,
-        error: "An event type with this name already exists.",
-      };
-    }
     return {
       success: false,
       error: "Failed to create event type. Please try again.",
@@ -51,7 +54,7 @@ export async function createEventType(data: EventTypeData) {
 }
 
 export async function updateEventType(id: number, data: EventTypeData) {
-  await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole(["spiritual_director", "elder"]);
 
   if (!data.name.trim()) {
     return { success: false, error: "Name is required." };
@@ -64,7 +67,7 @@ export async function updateEventType(id: number, data: EventTypeData) {
         name: data.name.trim(),
         description: data.description?.trim() || null,
         is_active: data.is_active,
-        // key is never updated after creation
+        updated_by: currentUser.user.id,
       },
     });
 
@@ -79,12 +82,27 @@ export async function updateEventType(id: number, data: EventTypeData) {
 }
 
 export async function deleteEventType(id: number) {
-  await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole(["spiritual_director", "elder"]);
 
   try {
+    // Check if event type is being used by any events
+    const eventCount = await prisma.event.count({
+      where: { event_type_id: id },
+    });
+
+    if (eventCount > 0) {
+      return {
+        success: false,
+        error: `Cannot delete event type. it is currently being used by ${eventCount} event(s).`,
+      };
+    }
+
     await prisma.eventType.update({
       where: { id },
-      data: { deleted_at: new Date() },
+      data: {
+        deleted_at: new Date(),
+        deleted_by: currentUser.user.id,
+      },
     });
 
     revalidatePath(REVALIDATE_PATH);

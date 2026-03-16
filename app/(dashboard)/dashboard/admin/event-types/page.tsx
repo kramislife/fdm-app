@@ -27,6 +27,7 @@ export default async function EventTypesPage({ searchParams }: PageProps) {
     created_at: et.created_at.toISOString(),
     updated_at: et.updated_at.toISOString(),
     creator: et.creator ?? null,
+    updated_by: et.updated_by_user ?? null,
   }));
 
   return (
