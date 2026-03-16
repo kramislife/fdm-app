@@ -60,3 +60,25 @@ export interface BaseUser {
 export interface DashboardSessionUser extends BaseUser {
   roles: AppRole[];
 }
+
+// ---------------------------- Address Types ----------------------------
+
+export type AddressValue = {
+  region: string;
+  province: string;
+  city: string;
+  barangay: string;
+  street: string;
+  google_maps_url: string;
+  landmark: string;
+};
+
+export type AddressLabels = {
+  region: string;
+  province: string;
+  city: string;
+  barangay: string;
+  street: string;
+  gmaps: string;
+  landmark: string;
+};
