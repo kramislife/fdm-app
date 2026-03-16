@@ -1,24 +1,20 @@
+import type { ComponentType } from "react";
+import { BsCalendar2DateFill, BsCalendar2HeartFill } from "react-icons/bs";
+import { GoPasskeyFill } from "react-icons/go";
 import {
-  LayoutDashboard,
-  Users,
-  UserCheck,
-  Network,
-  Church,
-  CalendarDays,
-  ClipboardList,
-  UserPlus,
-  Heart,
-  DollarSign,
-  Megaphone,
-  FileBarChart,
-  UserCog,
-  Building2,
-  MapPin,
-  Tag,
-  Calendar,
-  ShieldCheck,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+  FaChurch,
+  FaCodeBranch,
+  FaHandHoldingMedical,
+  FaUserCheck,
+  FaUsers,
+  FaUserSecret,
+} from "react-icons/fa";
+import { RiHandCoinFill, RiMapPinFill } from "react-icons/ri";
+import { FaBuildingUser, FaPeopleGroup, FaUsersGear } from "react-icons/fa6";
+import { BiSolidCalendarCheck } from "react-icons/bi";
+import { IoMdMegaphone } from "react-icons/io";
+import { GiCrownOfThorns } from "react-icons/gi";
+import { MdChurch, MdDashboardCustomize } from "react-icons/md";
 
 export type AppRole =
   | "spiritual_director"
@@ -48,7 +44,7 @@ export const ROLE_LABELS: Record<AppRole, string> = {
 export interface NavItem {
   label: string;
   href: string;
-  icon: LucideIcon;
+  icon: ComponentType<{ className?: string }>;
   roles: AppRole[];
 }
 
@@ -64,7 +60,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         label: "Dashboard",
         href: "/dashboard",
-        icon: LayoutDashboard,
+        icon: MdDashboardCustomize,
         roles: [
           "spiritual_director",
           "elder",
@@ -85,7 +81,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         label: "Members",
         href: "/dashboard/members",
-        icon: Users,
+        icon: FaPeopleGroup,
         roles: [
           "spiritual_director",
           "elder",
@@ -97,7 +93,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         label: "Guests",
         href: "/dashboard/guests",
-        icon: UserCheck,
+        icon: FaUsersGear,
         roles: [
           "spiritual_director",
           "elder",
@@ -108,7 +104,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         label: "Clusters",
         href: "/dashboard/clusters",
-        icon: Network,
+        icon: FaCodeBranch,
         roles: [
           "spiritual_director",
           "elder",
@@ -121,7 +117,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         label: "Ministries",
         href: "/dashboard/ministries",
-        icon: Church,
+        icon: MdChurch,
         roles: [
           "spiritual_director",
           "elder",
@@ -138,7 +134,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         label: "Events",
         href: "/dashboard/events",
-        icon: CalendarDays,
+        icon: BsCalendar2DateFill,
         roles: [
           "spiritual_director",
           "elder",
@@ -149,7 +145,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         label: "Attendance",
         href: "/dashboard/attendance",
-        icon: ClipboardList,
+        icon: FaUserCheck,
         roles: [
           "spiritual_director",
           "elder",
@@ -160,7 +156,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         label: "Guest Encode",
         href: "/dashboard/encode",
-        icon: UserPlus,
+        icon: FaUserSecret,
         roles: ["asst_head_servant"],
       },
     ],
@@ -171,7 +167,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         label: "Enthronements",
         href: "/dashboard/enthronements",
-        icon: Heart,
+        icon: GiCrownOfThorns,
         roles: [
           "spiritual_director",
           "elder",
@@ -183,13 +179,13 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         label: "Finance",
         href: "/dashboard/finance",
-        icon: DollarSign,
+        icon: RiHandCoinFill,
         roles: ["spiritual_director", "elder", "head_servant", "finance"],
       },
       {
         label: "Announcements",
         href: "/dashboard/announcements",
-        icon: Megaphone,
+        icon: IoMdMegaphone,
         roles: [
           "spiritual_director",
           "elder",
@@ -205,7 +201,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         label: "General Assembly",
         href: "/dashboard/reports",
-        icon: FileBarChart,
+        icon: BiSolidCalendarCheck,
         roles: ["spiritual_director", "elder", "head_servant"],
       },
     ],
@@ -216,7 +212,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         label: "Users",
         href: "/dashboard/admin/users",
-        icon: UserCog,
+        icon: FaUsers,
         roles: [
           "spiritual_director",
           "elder",
@@ -227,13 +223,13 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         label: "Chapters",
         href: "/dashboard/admin/chapters",
-        icon: Building2,
+        icon: FaBuildingUser,
         roles: ["spiritual_director", "elder"],
       },
       {
         label: "Areas & Clusters",
         href: "/dashboard/admin/areas",
-        icon: MapPin,
+        icon: RiMapPinFill,
         roles: [
           "spiritual_director",
           "elder",
@@ -244,25 +240,25 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         label: "Ministries",
         href: "/dashboard/admin/ministries",
-        icon: Church,
+        icon: FaChurch,
         roles: ["spiritual_director", "elder", "head_servant"],
       },
       {
         label: "Ministry Types",
         href: "/dashboard/admin/ministry-types",
-        icon: Tag,
+        icon: FaHandHoldingMedical,
         roles: ["spiritual_director", "elder"],
       },
       {
         label: "Event Types",
         href: "/dashboard/admin/event-types",
-        icon: Calendar,
+        icon: BsCalendar2HeartFill,
         roles: ["spiritual_director", "elder"],
       },
       {
         label: "Roles",
         href: "/dashboard/admin/roles",
-        icon: ShieldCheck,
+        icon: GoPasskeyFill,
         roles: ["spiritual_director", "elder"],
       },
     ],
