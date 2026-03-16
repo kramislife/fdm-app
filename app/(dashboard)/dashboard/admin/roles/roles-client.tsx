@@ -146,12 +146,12 @@ export function RolesClient({ roles, pagination }: Props) {
                 value={form.scope}
                 onValueChange={(v) => setForm((f) => ({ ...f, scope: v }))}
               >
-                <SelectTrigger id="role-scope" className="w-full">
+                <SelectTrigger id="role-scope">
                   <SelectValue
                     placeholder={`Select ${FIELD_LABELS.scope.toLowerCase()}`}
                   />
                 </SelectTrigger>
-                <SelectContent position="popper">
+                <SelectContent>
                   <SelectItem value="global">Global</SelectItem>
                   <SelectItem value="chapter">Chapter</SelectItem>
                 </SelectContent>

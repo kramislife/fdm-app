@@ -184,13 +184,10 @@ export default function ContactPage() {
                         Inquiry Type
                       </Label>
                       <Select name="inquiry-type">
-                        <SelectTrigger
-                          id="inquiry-type"
-                          className="w-full h-12"
-                        >
+                        <SelectTrigger id="inquiry-type" className="h-12">
                           <SelectValue placeholder="Select inquiry type" />
                         </SelectTrigger>
-                        <SelectContent position="popper">
+                        <SelectContent>
                           {inquiryTypes.map(({ label, value }) => (
                             <SelectItem key={value} value={value}>
                               {label}

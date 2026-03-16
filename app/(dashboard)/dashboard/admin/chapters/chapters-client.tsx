@@ -220,10 +220,10 @@ export function ChaptersClient({ chapters, pagination }: Props) {
                   setForm((f) => ({ ...f, fellowship_day: v }))
                 }
               >
-                <SelectTrigger id="ch-fellowship-day" className="w-full">
+                <SelectTrigger id="ch-fellowship-day">
                   <SelectValue placeholder="Select Schedule" />
                 </SelectTrigger>
-                <SelectContent position="popper">
+                <SelectContent>
                   {DAYS_OF_WEEK.map((day) => (
                     <SelectItem key={day} value={day}>
                       {day}

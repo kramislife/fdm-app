@@ -218,10 +218,10 @@ export function ChapterAddressForm({ value, onChange, labels }: Props) {
         <div className="space-y-2">
           <Label htmlFor="ch-region">{labels.region}</Label>
           <Select value={selectedRegionCode} onValueChange={handleRegionChange}>
-            <SelectTrigger id="ch-region" className="w-full">
+            <SelectTrigger id="ch-region">
               <SelectValue placeholder="Select region" />
             </SelectTrigger>
-            <SelectContent position="popper">
+            <SelectContent>
               {regionList.map((r) => (
                 <SelectItem key={r.region_code} value={r.region_code}>
                   {r.region_name}
@@ -239,7 +239,7 @@ export function ChapterAddressForm({ value, onChange, labels }: Props) {
             onValueChange={handleProvinceChange}
             disabled={!regionCode && !selectedRegionCode}
           >
-            <SelectTrigger id="ch-province" className="w-full">
+            <SelectTrigger id="ch-province">
               <SelectValue
                 placeholder={
                   provinceList.length
@@ -248,7 +248,7 @@ export function ChapterAddressForm({ value, onChange, labels }: Props) {
                 }
               />
             </SelectTrigger>
-            <SelectContent position="popper">
+            <SelectContent>
               {provinceList.map((p) => (
                 <SelectItem key={p.province_code} value={p.province_code}>
                   {p.province_name}
@@ -268,14 +268,14 @@ export function ChapterAddressForm({ value, onChange, labels }: Props) {
             onValueChange={handleCityChange}
             disabled={!provinceCode && !selectedProvinceCode}
           >
-            <SelectTrigger id="ch-city" className="w-full">
+            <SelectTrigger id="ch-city">
               <SelectValue
                 placeholder={
                   cityList.length ? "Select City" : "Select Province First"
                 }
               />
             </SelectTrigger>
-            <SelectContent position="popper">
+            <SelectContent>
               {cityList.map((c) => (
                 <SelectItem key={c.city_code} value={c.city_code}>
                   {c.city_name}
@@ -292,14 +292,14 @@ export function ChapterAddressForm({ value, onChange, labels }: Props) {
             onValueChange={handleBarangayChange}
             disabled={!cityCode && !selectedCityCode}
           >
-            <SelectTrigger id="ch-barangay" className="w-full">
+            <SelectTrigger id="ch-barangay">
               <SelectValue
                 placeholder={
                   barangayList.length ? "Select Barangay" : "Select City First"
                 }
               />
             </SelectTrigger>
-            <SelectContent position="popper">
+            <SelectContent>
               {barangayList.map((b) => (
                 <SelectItem key={b.brgy_code} value={b.brgy_code}>
                   {b.brgy_name}
