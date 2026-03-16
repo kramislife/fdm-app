@@ -281,8 +281,10 @@ async function main() {
       update: {},
       create: {
         name: "Quezon City",
-        location: "Quezon City, Metro Manila",
+        region: "National Capital Region (NCR)",
         province: "Metro Manila",
+        city: "Quezon City",
+        barangay: "Commonwealth",
         fellowship_day: "Saturday",
         is_active: true,
       },
@@ -292,8 +294,10 @@ async function main() {
       update: {},
       create: {
         name: "Bataan",
-        location: "Balanga City, Bataan",
+        region: "Region III (Central Luzon)",
         province: "Bataan",
+        city: "Balanga City",
+        barangay: "Poblacion",
         fellowship_day: "Saturday",
         is_active: true,
       },
@@ -303,8 +307,10 @@ async function main() {
       update: {},
       create: {
         name: "Cavite",
-        location: "Imus, Cavite",
+        region: "Region IV-A (CALABARZON)",
         province: "Cavite",
+        city: "Imus City",
+        barangay: "Poblacion I-A",
         fellowship_day: "Friday",
         is_active: true,
       },
@@ -314,8 +320,10 @@ async function main() {
       update: {},
       create: {
         name: "Pasay",
-        location: "Pasay City, Metro Manila",
+        region: "National Capital Region (NCR)",
         province: "Metro Manila",
+        city: "Pasay City",
+        barangay: "Baclaran",
         fellowship_day: "Thursday",
         is_active: true,
       },
@@ -325,8 +333,10 @@ async function main() {
       update: {},
       create: {
         name: "Pasig",
-        location: "Pasig City, Metro Manila",
+        region: "National Capital Region (NCR)",
         province: "Metro Manila",
+        city: "Pasig City",
+        barangay: "Santa Clara",
         fellowship_day: "Saturday",
         is_active: true,
       },
@@ -336,8 +346,10 @@ async function main() {
       update: {},
       create: {
         name: "Tala",
-        location: "Tala, Caloocan City",
+        region: "National Capital Region (NCR)",
         province: "Metro Manila",
+        city: "Caloocan City",
+        barangay: "Tala",
         fellowship_day: "Wednesday",
         is_active: true,
       },
@@ -368,70 +380,33 @@ async function main() {
   }
 
   // ============================================================
-  // [6] AREAS
-  // created_by is null — seeded before users exist
-  // ============================================================
-  console.log("→ Areas...");
-  const areasData = [
-    { name: "Commonwealth", chapter: "Quezon City" },
-    { name: "Balanga", chapter: "Bataan" },
-    { name: "Mariveles", chapter: "Bataan" },
-    { name: "Imus", chapter: "Cavite" },
-    { name: "Bacoor", chapter: "Cavite" },
-    { name: "Baclaran", chapter: "Pasay" },
-    { name: "Malibay", chapter: "Pasay" },
-    { name: "Sta. Clara", chapter: "Pasig" },
-    { name: "Sta. Martha", chapter: "Pasig" },
-    { name: "Tala", chapter: "Tala" },
-  ];
-
-  const createdAreas: Record<
-    string,
-    { id: number; name: string; chapter_id: number }
-  > = {};
-  for (const area of areasData) {
-    const chapterId = chapterMap[area.chapter].id;
-    const created = await prisma.area.upsert({
-      where: { name_chapter_id: { name: area.name, chapter_id: chapterId } },
-      update: {},
-      create: { name: area.name, chapter_id: chapterId },
-    });
-    createdAreas[`${area.chapter}-${area.name}`] = created;
-  }
-
-  // ============================================================
-  // [7] CLUSTERS
+  // [6] CLUSTERS
   // created_by is null — seeded before users exist
   // ============================================================
   console.log("→ Clusters...");
   const clustersData = [
-    {
-      name: "Commonwealth Alpha",
-      area: "Commonwealth",
-      chapter: "Quezon City",
-    },
-    { name: "Commonwealth Beta", area: "Commonwealth", chapter: "Quezon City" },
-    { name: "Balanga Alpha", area: "Balanga", chapter: "Bataan" },
-    { name: "Balanga Beta", area: "Balanga", chapter: "Bataan" },
-    { name: "Mariveles Alpha", area: "Mariveles", chapter: "Bataan" },
-    { name: "Imus Alpha", area: "Imus", chapter: "Cavite" },
-    { name: "Bacoor Alpha", area: "Bacoor", chapter: "Cavite" },
-    { name: "Baclaran Alpha", area: "Baclaran", chapter: "Pasay" },
-    { name: "Malibay Alpha", area: "Malibay", chapter: "Pasay" },
-    { name: "Sta. Clara Alpha", area: "Sta. Clara", chapter: "Pasig" },
-    { name: "Sta. Clara Beta", area: "Sta. Clara", chapter: "Pasig" },
-    { name: "Sta. Martha Alpha", area: "Sta. Martha", chapter: "Pasig" },
-    { name: "Tala Alpha", area: "Tala", chapter: "Tala" },
+    { name: "Commonwealth Alpha", chapter: "Quezon City" },
+    { name: "Commonwealth Beta", chapter: "Quezon City" },
+    { name: "Balanga Alpha", chapter: "Bataan" },
+    { name: "Balanga Beta", chapter: "Bataan" },
+    { name: "Mariveles Alpha", chapter: "Bataan" },
+    { name: "Imus Alpha", chapter: "Cavite" },
+    { name: "Bacoor Alpha", chapter: "Cavite" },
+    { name: "Baclaran Alpha", chapter: "Pasay" },
+    { name: "Malibay Alpha", chapter: "Pasay" },
+    { name: "Sta. Clara Alpha", chapter: "Pasig" },
+    { name: "Sta. Clara Beta", chapter: "Pasig" },
+    { name: "Sta. Martha Alpha", chapter: "Pasig" },
+    { name: "Tala Alpha", chapter: "Tala" },
   ];
 
   const createdClusters: Record<string, { id: number }> = {};
   for (const cluster of clustersData) {
     const chapterId = chapterMap[cluster.chapter].id;
-    const area = createdAreas[`${cluster.chapter}-${cluster.area}`];
     const created = await prisma.cluster.upsert({
       where: { name_chapter_id: { name: cluster.name, chapter_id: chapterId } },
       update: {},
-      create: { name: cluster.name, area_id: area.id, chapter_id: chapterId },
+      create: { name: cluster.name, chapter_id: chapterId },
     });
     createdClusters[cluster.name] = created;
   }

@@ -3,7 +3,7 @@
 
 // ============================================================
 // FDM — Friends of the Divine Mercy
-// Community Management System — Prisma Schema v9
+// Community Management System — Prisma Schema v10
 // ============================================================
 
 generator client {
@@ -95,24 +95,6 @@ model EventType {
   @@map("event_types")
 }
 
-model Area {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(100)
-  chapter_id Int
-  created_by Int?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  chapter  Chapter   @relation(fields: [chapter_id], references: [id])
-  creator  User?     @relation("AreaCreator", fields: [created_by], references: [id])
-  clusters Cluster[]
-
-  @@unique([name, chapter_id])
-  @@index([chapter_id])
-  @@index([created_at])
-  @@map("areas")
-}
-
 // ============================================================
 // [2] CORE ENTITY TABLES
 // ============================================================
@@ -169,9 +151,12 @@ model User {
   event_types_created    EventType[]    @relation("EventTypeCreator")
   event_types_updated    EventType[]    @relation("EventTypeUpdatedBy")
   event_types_deleted    EventType[]    @relation("EventTypeDeletedBy")
-  areas_created          Area[]         @relation("AreaCreator")
   chapters_created       Chapter[]      @relation("ChapterCreator")
+  chapters_updated       Chapter[]      @relation("ChapterUpdatedBy")
+  chapters_deleted       Chapter[]      @relation("ChapterDeletedBy")
   clusters_created       Cluster[]      @relation("ClusterCreator")
+  clusters_updated       Cluster[]      @relation("ClusterUpdatedBy")
+  clusters_deleted       Cluster[]      @relation("ClusterDeletedBy")
 
   @@index([auth_id])
   @@index([email])
@@ -181,18 +166,30 @@ model User {
 }
 
 model Chapter {
-  id             Int      @id @default(autoincrement())
-  name           String   @unique @db.VarChar(100)
-  location       String   @db.VarChar(255)
-  province       String   @db.VarChar(100)
-  fellowship_day String?  @db.VarChar(20)
-  is_active      Boolean  @default(true)
-  created_by     Int?
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+  id              Int     @id @default(autoincrement())
+  name            String  @unique @db.VarChar(100)
+  fellowship_day  String? @db.VarChar(20)
+  region          String  @db.VarChar(100)
+  province        String  @db.VarChar(100)
+  city            String  @db.VarChar(100)
+  barangay        String  @db.VarChar(100)
+  street          String? @db.VarChar(255)
+  google_maps_url String? @db.VarChar(500)
+  landmark        String? @db.VarChar(255)
+  is_active       Boolean @default(true)
+
+  created_at DateTime @default(now())
+  created_by Int?
+
+  updated_at DateTime @updatedAt
+  updated_by Int?
+
+  deleted_at DateTime?
+  deleted_by Int?
 
   creator         User?           @relation("ChapterCreator", fields: [created_by], references: [id])
-  areas           Area[]
+  updated_by_user User?           @relation("ChapterUpdatedBy", fields: [updated_by], references: [id])
+  deleted_by_user User?           @relation("ChapterDeletedBy", fields: [deleted_by], references: [id])
   ministries      Ministry[]
   clusters        Cluster[]
   user_roles      UserRole[]
@@ -202,7 +199,9 @@ model Chapter {
   finance_records FinanceRecord[]
   announcements   Announcement[]
 
+  @@index([region])
   @@index([province])
+  @@index([city])
   @@index([created_at])
   @@map("chapters")
 }
@@ -227,24 +226,32 @@ model Ministry {
 }
 
 model Cluster {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(100)
-  area_id    Int
-  chapter_id Int
-  created_by Int?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id              Int     @id @default(autoincrement())
+  name            String  @db.VarChar(100)
+  chapter_id      Int
+  street          String? @db.VarChar(255)
+  google_maps_url String? @db.VarChar(500)
+  landmark        String? @db.VarChar(255)
 
-  area    Area    @relation(fields: [area_id], references: [id])
-  chapter Chapter @relation(fields: [chapter_id], references: [id])
-  creator User?   @relation("ClusterCreator", fields: [created_by], references: [id])
+  created_at DateTime @default(now())
+  created_by Int?
+
+  updated_at DateTime @updatedAt
+  updated_by Int?
+
+  deleted_at DateTime?
+  deleted_by Int?
+
+  chapter         Chapter @relation(fields: [chapter_id], references: [id])
+  creator         User?   @relation("ClusterCreator", fields: [created_by], references: [id])
+  updated_by_user User?   @relation("ClusterUpdatedBy", fields: [updated_by], references: [id])
+  deleted_by_user User?   @relation("ClusterDeletedBy", fields: [deleted_by], references: [id])
 
   user_roles      UserRole[]
   cluster_members ClusterMember[]
   enthronements   EnthronementRecord[]
 
   @@unique([name, chapter_id])
-  @@index([area_id])
   @@index([chapter_id])
   @@index([created_at])
   @@map("clusters")

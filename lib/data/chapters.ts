@@ -1,11 +1,16 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import { buildOrderBy, buildPaginationMeta, type TableParams } from "@/lib/table";
+import {
+  buildOrderBy,
+  buildPaginationMeta,
+  type TableParams,
+} from "@/lib/table";
 
 const ORDER_FIELDS: Record<string, string> = {
   name: "name",
-  location: "location",
-  province: "province",
+  city: "city",
+  street: "street",
+  fellowship_day: "fellowship_day",
   created_at: "created_at",
   updated_at: "updated_at",
 };
@@ -19,20 +24,32 @@ export async function getChapters(params: TableParams = {}) {
     order = "desc",
   } = params;
 
-  const where = search
-    ? {
-        OR: [
-          { name: { contains: search, mode: "insensitive" as const } },
-          { location: { contains: search, mode: "insensitive" as const } },
-        ],
-      }
-    : {};
+  const where = {
+    deleted_at: null,
+    ...(search
+      ? {
+          OR: [
+            { name: { contains: search, mode: "insensitive" as const } },
+            { city: { contains: search, mode: "insensitive" as const } },
+            { street: { contains: search, mode: "insensitive" as const } },
+            {
+              fellowship_day: {
+                contains: search,
+                mode: "insensitive" as const,
+              },
+            },
+          ],
+        }
+      : {}),
+  };
 
   const [data, total] = await Promise.all([
     prisma.chapter.findMany({
       where,
       include: {
         creator: { select: { first_name: true, last_name: true } },
+        updated_by_user: { select: { first_name: true, last_name: true } },
+        _count: { select: { clusters: true, user_chapters: true } },
       },
       orderBy: buildOrderBy(sort, order, ORDER_FIELDS),
       skip: (page - 1) * perPage,

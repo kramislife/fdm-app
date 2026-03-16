@@ -139,3 +139,17 @@ Completed: March 14, 2026
 - **Auditing & Metadata**: Implemented a specialized 2-column grid for record metadata (Record ID, Created/Updated At/By), providing a structured audit trail at the bottom of detail sheets.
 - **CRUD Operations**: Successfully wired real Prisma data with server actions for full CRUD (Ministry & Event Types) and optimized Edit-only flows (Roles).
 - **Data Integrity**: Integrated `slugify` for automatic, immutable record keys and implemented a soft-delete pattern (`deleted_at`) across reference tables.
+
+---
+
+## Phase 12: Schema Update + Chapters CRUD ✅
+
+> Completed: March 17, 2026
+
+- **Schema Restructure**: Cleaned up the database by removing the excessive `Areas` model. Chapters and clusters now directly use structured address fields for better data management.
+- **Philippine Address Integration**: Integrated `select-philippines-address` to provide a robust, cascading address selection system (Region → Province → City → Barangay).
+- **Advanced Chapter Form**: Refined the chapter form layout with horizontal grouping for chapter names/schedules and address components, significantly improving vertical space usage.
+- **Reliable Data Handling**: Implemented data deduplication and "prettification" for Philippine regions, provinces, and cities to provide a premium, professional UI.
+- **Interactive Table**: Added clickable "Address Link" columns using a new reusable `LinkCell` component, allowing admins to jump directly to Google Maps coordinates.
+- **Validation & Clarity**: Enforced mandatory field validation (server+client) and implemented clear visual cues (asterisks and optional placeholders) to guide user input.
+- **Enhanced Search/Sort**: Optimized data fetchers in `lib/data/chapters.ts` to support targeted search and sorting across key identifiers like name, city, and schedule.

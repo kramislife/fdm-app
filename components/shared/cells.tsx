@@ -54,17 +54,23 @@ export function UserCell({ user, fallback = "System" }: UserCellProps) {
 
 // ------------------------------- Text Cell -----------------------------------------
 interface TextCellProps {
-  value: string | null | undefined;
+  value: string | number | null | undefined;
   fallback?: string;
 }
 
 export function TextCell({ value, fallback = "—" }: TextCellProps) {
-  if (!value || String(value).trim() === "") {
+  const isEmpty =
+    value === null || value === undefined || String(value).trim() === "";
+
+  if (isEmpty) {
     return <span className="text-muted-foreground">{fallback}</span>;
   }
+
+  const displayValue = String(value);
+
   return (
-    <span className="capitalize" title={value}>
-      {value}
+    <span className="capitalize" title={displayValue}>
+      {displayValue}
     </span>
   );
 }
@@ -86,4 +92,28 @@ export function DateCell({
   }
   const formatted = dateOnly ? formatDate(date) : formatDateTime(date);
   return <span title={formatted}>{formatted}</span>;
+}
+
+// ------------------------------- Link Cell -----------------------------------------
+interface LinkCellProps {
+  href: string | null | undefined;
+  label?: string;
+  fallback?: string;
+}
+
+export function LinkCell({ href, label, fallback = "—" }: LinkCellProps) {
+  if (!href) {
+    return <span className="text-muted-foreground">{fallback}</span>;
+  }
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary underline underline-offset-2"
+      title={href}
+    >
+      {label || href}
+    </a>
+  );
 }

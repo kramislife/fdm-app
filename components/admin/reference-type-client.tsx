@@ -77,8 +77,8 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
     sheetMode === "add" ? `Add ${entityLabel}` : `Edit ${entityLabel}`;
   const sheetDescription =
     sheetMode === "add"
-      ? `Create a new ${entityLabel.toLowerCase()} to organize and manage records.`
-      : `Update ${entityLabel.toLowerCase()} details and settings.`;
+      ? `Create a new ${entityLabel.toLowerCase()} to organize and manage records`
+      : `Update ${entityLabel.toLowerCase()} details and settings`;
 
   function openView(row: TRow) {
     setViewing(row);

@@ -1,24 +1,7 @@
 import { requireRole } from "@/lib/auth";
 import { getChapters } from "@/lib/data/chapters";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
-import { AdminPage, type Column } from "@/components/admin";
-import {
-  StatusBadge,
-  UserCell,
-  DateCell,
-  TextCell,
-} from "@/components/shared/cells";
-
-const columns: Column[] = [
-  { key: "name", label: "Name", sortable: true },
-  { key: "location", label: "Location", sortable: true },
-  { key: "province", label: "Province", sortable: true },
-  { key: "fellowship_day", label: "Fellowship Day" },
-  { key: "status", label: "Status" },
-  { key: "created_by", label: "Created By" },
-  { key: "created_at", label: "Created At", sortable: true },
-  { key: "updated_at", label: "Updated At", sortable: true },
-];
+import { ChaptersClient, type ChapterRow } from "./chapters-client";
 
 export default async function ChaptersPage({ searchParams }: PageProps) {
   await requireRole(["spiritual_director", "elder"]);
@@ -36,24 +19,27 @@ export default async function ChaptersPage({ searchParams }: PageProps) {
     order,
   });
 
-  const data = result.data.map((chapter) => ({
-    name: <TextCell value={chapter.name} />,
-    location: <TextCell value={chapter.location} />,
-    province: <TextCell value={chapter.province} />,
-    fellowship_day: <TextCell value={chapter.fellowship_day} />,
-    status: <StatusBadge isActive={chapter.is_active} />,
-    created_by: <UserCell user={chapter.creator} />,
-    created_at: <DateCell date={chapter.created_at} />,
-    updated_at: <DateCell date={chapter.updated_at} />,
+  const chapters: ChapterRow[] = result.data.map((ch) => ({
+    id: ch.id,
+    name: ch.name,
+    region: ch.region,
+    province: ch.province,
+    city: ch.city,
+    barangay: ch.barangay,
+    street: ch.street ?? null,
+    google_maps_url: ch.google_maps_url ?? null,
+    landmark: ch.landmark ?? null,
+    fellowship_day: ch.fellowship_day ?? null,
+    is_active: ch.is_active,
+    cluster_count: ch._count.clusters,
+    member_count: ch._count.user_chapters,
+    created_at: ch.created_at.toISOString(),
+    updated_at: ch.updated_at.toISOString(),
+    creator: ch.creator ?? null,
+    updated_by: ch.updated_by_user ?? null,
   }));
 
   return (
-    <AdminPage
-      title="Chapters"
-      description="View all FDM chapters across Metro Manila and nearby provinces"
-      columns={columns}
-      data={data}
-      pagination={toPagination(result)}
-    />
+    <ChaptersClient chapters={chapters} pagination={toPagination(result)} />
   );
 }

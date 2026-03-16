@@ -9,7 +9,7 @@ import {
   FaUsers,
   FaUserSecret,
 } from "react-icons/fa";
-import { RiHandCoinFill, RiMapPinFill } from "react-icons/ri";
+import { RiHandCoinFill } from "react-icons/ri";
 import { FaBuildingUser, FaPeopleGroup, FaUsersGear } from "react-icons/fa6";
 import { BiSolidCalendarCheck } from "react-icons/bi";
 import { IoMdMegaphone } from "react-icons/io";
@@ -225,17 +225,6 @@ export const SIDEBAR_NAV: NavGroup[] = [
         href: "/dashboard/admin/chapters",
         icon: FaBuildingUser,
         roles: ["spiritual_director", "elder"],
-      },
-      {
-        label: "Areas & Clusters",
-        href: "/dashboard/admin/areas",
-        icon: RiMapPinFill,
-        roles: [
-          "spiritual_director",
-          "elder",
-          "head_servant",
-          "asst_head_servant",
-        ],
       },
       {
         label: "Ministries",
