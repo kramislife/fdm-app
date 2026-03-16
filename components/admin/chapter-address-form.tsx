@@ -30,10 +30,7 @@ export function ChapterAddressForm({ value, onChange, labels }: Props) {
     regionCode,
     provinceCode,
     cityCode,
-    selectedRegionCode,
-    selectedProvinceCode,
-    selectedCityCode,
-    selectedBarangayCode,
+    barangayCode,
     showLandmark,
     handleRegionChange,
     handleProvinceChange,
@@ -48,7 +45,7 @@ export function ChapterAddressForm({ value, onChange, labels }: Props) {
         {/* Region */}
         <div className="space-y-2">
           <Label htmlFor="ch-region">{labels.region}</Label>
-          <Select value={selectedRegionCode} onValueChange={handleRegionChange}>
+          <Select value={regionCode} onValueChange={handleRegionChange}>
             <SelectTrigger id="ch-region">
               <SelectValue placeholder="Select region" />
             </SelectTrigger>
@@ -66,9 +63,9 @@ export function ChapterAddressForm({ value, onChange, labels }: Props) {
         <div className="space-y-2">
           <Label htmlFor="ch-province">{labels.province}</Label>
           <Select
-            value={selectedProvinceCode}
+            value={provinceCode}
             onValueChange={handleProvinceChange}
-            disabled={!regionCode && !selectedRegionCode}
+            disabled={!regionCode}
           >
             <SelectTrigger id="ch-province">
               <SelectValue
@@ -95,9 +92,9 @@ export function ChapterAddressForm({ value, onChange, labels }: Props) {
         <div className="space-y-2">
           <Label htmlFor="ch-city">{labels.city}</Label>
           <Select
-            value={selectedCityCode}
+            value={cityCode}
             onValueChange={handleCityChange}
-            disabled={!provinceCode && !selectedProvinceCode}
+            disabled={!provinceCode}
           >
             <SelectTrigger id="ch-city">
               <SelectValue
@@ -119,9 +116,9 @@ export function ChapterAddressForm({ value, onChange, labels }: Props) {
         <div className="space-y-2">
           <Label htmlFor="ch-barangay">{labels.barangay}</Label>
           <Select
-            value={selectedBarangayCode}
+            value={barangayCode}
             onValueChange={handleBarangayChange}
-            disabled={!cityCode && !selectedCityCode}
+            disabled={!cityCode}
           >
             <SelectTrigger id="ch-barangay">
               <SelectValue

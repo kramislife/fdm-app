@@ -15,19 +15,21 @@ export function useChapterAddress(
   value: AddressValue,
   onChange: (value: AddressValue) => void,
 ) {
+  // Lists fetched from the library
   const [regionList, setRegionList] = useState<Region[]>([]);
   const [provinceList, setProvinceList] = useState<Province[]>([]);
   const [cityList, setCityList] = useState<City[]>([]);
   const [barangayList, setBarangayList] = useState<Barangay[]>([]);
 
-  // Track codes separately for cascading — codes drive dropdowns, names are stored
+  // Internal selection state (always use codes as keys for ShadCN Select)
   const [regionCode, setRegionCode] = useState("");
   const [provinceCode, setProvinceCode] = useState("");
   const [cityCode, setCityCode] = useState("");
+  const [barangayCode, setBarangayCode] = useState("");
 
   const [showLandmark, setShowLandmark] = useState(!!value.landmark);
 
-  // Load regions on mount
+  // 1. Initial Load: Regions
   useEffect(() => {
     regions().then((list) => {
       const cleanList = (list || []).map((r) => ({
@@ -38,95 +40,120 @@ export function useChapterAddress(
     });
   }, []);
 
-  // When editing an existing chapter, pre-populate cascading dropdowns by name-matching
+  // 2. Cascade Level 1: Region -> Province
+  // Also handles Edit Mode: Sync regionCode from value
   useEffect(() => {
-    if (!value.region || regionList.length === 0) return;
-    const found = regionList.find((r) => r.region_name === value.region);
-    if (found && found.region_code !== regionCode) {
-      setRegionCode(found.region_code);
-    }
-  }, [value.region, regionList, regionCode]);
+    if (regionList.length === 0) return;
 
-  useEffect(() => {
+    // Use code first, fall back to name-matching for backward compatibility
+    const initialCode = value.region_code || regionList.find(r => r.region_name === value.region)?.region_code;
+    
+    if (initialCode && initialCode !== regionCode) {
+      setRegionCode(initialCode);
+      return; // Wait for the next effect to fetch province list
+    }
+
     if (!regionCode) {
       setProvinceList([]);
       setProvinceCode("");
       return;
     }
+
     provinces(regionCode).then((list) => {
-      // Deduplicate by province_code and prettify names (especially for NCR)
+      // Deduplicate and prettify (especially for NCR districts)
       const cleanList = (list || [])
-        .filter(
-          (item, index, self) =>
-            index ===
-            self.findIndex((t) => t.province_code === item.province_code),
-        )
+        .filter((item, index, self) => index === self.findIndex((t) => t.province_code === item.province_code))
         .map((item) => ({
           ...item,
-          province_name: item.province_name
-            .replace(/Ncr, /g, "")
-            .replace(/City Of Manila, /g, ""),
+          province_name: item.province_name.replace(/Ncr, /g, "").replace(/City Of Manila, /g, ""),
         }));
-
       setProvinceList(cleanList);
-
-      if (value.province) {
-        const found = cleanList.find((p) => p.province_name === value.province);
-        if (found) setProvinceCode(found.province_code);
-      }
     });
-  }, [regionCode, value.province]);
+  }, [regionList, regionCode, value.region, value.region_code]);
 
+  // 3. Cascade Level 2: Province -> City
+  // Also handles Edit Mode: Sync provinceCode from value
   useEffect(() => {
+    if (provinceList.length === 0) return;
+
+    const initialCode = value.province_code || provinceList.find(p => p.province_name === value.province)?.province_code;
+    
+    if (initialCode && initialCode !== provinceCode) {
+      setProvinceCode(initialCode);
+      return;
+    }
+
     if (!provinceCode) {
       setCityList([]);
       setCityCode("");
       return;
     }
+
     cities(provinceCode).then((list) => {
       const cleanList = (list || [])
-        .filter(
-          (item, index, self) =>
-            index === self.findIndex((t) => t.city_code === item.city_code),
-        )
+        .filter((item, index, self) => index === self.findIndex((t) => t.city_code === item.city_code))
         .map((item) => ({
           ...item,
           city_name: item.city_name.replace(/City Of /g, ""),
         }));
-
       setCityList(cleanList);
-      if (value.city) {
-        const found = cleanList.find((c) => c.city_name === value.city);
-        if (found) setCityCode(found.city_code);
-      }
     });
-  }, [provinceCode, value.city]);
+  }, [provinceList, provinceCode, value.province, value.province_code]);
 
+  // 4. Cascade Level 3: City -> Barangay
+  // Also handles Edit Mode: Sync cityCode from value
   useEffect(() => {
-    if (!cityCode) {
-      setBarangayList([]);
+    if (cityList.length === 0) return;
+
+    const initialCode = value.city_code || cityList.find(c => c.city_name === value.city)?.city_code;
+    
+    if (initialCode && initialCode !== cityCode) {
+      setCityCode(initialCode);
       return;
     }
+
+    if (!cityCode) {
+      setBarangayList([]);
+      setBarangayCode("");
+      return;
+    }
+
     barangays(cityCode).then((list) => {
-      const cleanList = (list || []).filter(
-        (item, index, self) =>
-          index === self.findIndex((t) => t.brgy_code === item.brgy_code),
-      );
+      const cleanList = (list || [])
+        .filter((item, index, self) => index === self.findIndex((t) => t.brgy_code === item.brgy_code));
       setBarangayList(cleanList);
     });
-  }, [cityCode]);
+  }, [cityList, cityCode, value.city, value.city_code]);
 
+  // 5. Cascade Level 4: Barangay
+  // Sync barangayCode from value
+  useEffect(() => {
+    if (barangayList.length === 0) return;
+    const initialCode = value.barangay_code || barangayList.find(b => b.brgy_name === value.barangay)?.brgy_code;
+    if (initialCode && initialCode !== barangayCode) {
+      setBarangayCode(initialCode);
+    }
+  }, [barangayList, barangayCode, value.barangay, value.barangay_code]);
+
+
+  // Event Handlers
   function handleRegionChange(code: string) {
     const found = regionList.find((r) => r.region_code === code);
     setRegionCode(code);
-    setProvinceCode("");
+    setProvinceCode(""); // Clear codes instantly
     setCityCode("");
+    setBarangayCode("");
+    
     onChange({
       ...value,
       region: found?.region_name ?? "",
+      region_code: code,
       province: "",
+      province_code: "",
       city: "",
+      city_code: "",
       barangay: "",
+      barangay_code: "",
     });
   }
 
@@ -134,23 +161,41 @@ export function useChapterAddress(
     const found = provinceList.find((p) => p.province_code === code);
     setProvinceCode(code);
     setCityCode("");
+    setBarangayCode("");
+    
     onChange({
       ...value,
       province: found?.province_name ?? "",
+      province_code: code,
       city: "",
+      city_code: "",
       barangay: "",
+      barangay_code: "",
     });
   }
 
   function handleCityChange(code: string) {
     const found = cityList.find((c) => c.city_code === code);
     setCityCode(code);
-    onChange({ ...value, city: found?.city_name ?? "", barangay: "" });
+    setBarangayCode("");
+    
+    onChange({
+      ...value,
+      city: found?.city_name ?? "",
+      city_code: code,
+      barangay: "",
+      barangay_code: "",
+    });
   }
 
   function handleBarangayChange(code: string) {
     const found = barangayList.find((b) => b.brgy_code === code);
-    onChange({ ...value, barangay: found?.brgy_name ?? "" });
+    setBarangayCode(code);
+    onChange({
+      ...value,
+      barangay: found?.brgy_name ?? "",
+      barangay_code: code,
+    });
   }
 
   function handleLandmarkToggle(checked: boolean) {
@@ -158,35 +203,23 @@ export function useChapterAddress(
     if (!checked) onChange({ ...value, landmark: "" });
   }
 
-  const selectedRegionCode =
-    regionCode ||
-    regionList.find((r) => r.region_name === value.region)?.region_code ||
-    "";
-  const selectedProvinceCode =
-    provinceCode ||
-    provinceList.find((p) => p.province_name === value.province)
-      ?.province_code ||
-    "";
-  const selectedCityCode =
-    cityCode ||
-    cityList.find((c) => c.city_name === value.city)?.city_code ||
-    "";
-  const selectedBarangayCode =
-    barangayList.find((b) => b.brgy_name === value.barangay)?.brgy_code || "";
-
   return {
+    // Dropdown Data
     regionList,
     provinceList,
     cityList,
     barangayList,
+    
+    // Selection State (use these for Select value prop)
     regionCode,
     provinceCode,
     cityCode,
-    selectedRegionCode,
-    selectedProvinceCode,
-    selectedCityCode,
-    selectedBarangayCode,
+    barangayCode,
+    
+    // UI Helpers
     showLandmark,
+    
+    // Handlers
     handleRegionChange,
     handleProvinceChange,
     handleCityChange,

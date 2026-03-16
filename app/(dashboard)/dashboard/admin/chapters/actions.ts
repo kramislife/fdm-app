@@ -9,9 +9,13 @@ const REVALIDATE_PATH = "/dashboard/admin/chapters";
 type ChapterData = {
   name: string;
   region: string;
+  region_code: string;
   province: string;
+  province_code: string;
   city: string;
+  city_code: string;
   barangay: string;
+  barangay_code: string;
   street?: string;
   google_maps_url?: string;
   landmark?: string;
@@ -49,9 +53,13 @@ export async function createChapter(data: ChapterData) {
       data: {
         name: data.name.trim(),
         region: data.region,
+        region_code: data.region_code,
         province: data.province,
+        province_code: data.province_code,
         city: data.city,
+        city_code: data.city_code,
         barangay: data.barangay,
+        barangay_code: data.barangay_code,
         street: data.street?.trim() || null,
         google_maps_url: data.google_maps_url?.trim() || null,
         landmark: data.landmark?.trim() || null,
@@ -88,9 +96,13 @@ export async function updateChapter(id: number, data: ChapterData) {
       data: {
         name: data.name.trim(),
         region: data.region,
+        region_code: data.region_code,
         province: data.province,
+        province_code: data.province_code,
         city: data.city,
+        city_code: data.city_code,
         barangay: data.barangay,
+        barangay_code: data.barangay_code,
         street: data.street?.trim() || null,
         google_maps_url: data.google_maps_url?.trim() || null,
         landmark: data.landmark?.trim() || null,

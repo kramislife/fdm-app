@@ -65,9 +65,13 @@ export interface DashboardSessionUser extends BaseUser {
 
 export type AddressValue = {
   region: string;
+  region_code: string;
   province: string;
+  province_code: string;
   city: string;
+  city_code: string;
   barangay: string;
+  barangay_code: string;
   street: string;
   google_maps_url: string;
   landmark: string;

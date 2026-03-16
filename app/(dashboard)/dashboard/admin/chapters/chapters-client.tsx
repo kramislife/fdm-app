@@ -33,13 +33,19 @@ const DAYS_OF_WEEK = [
   "Sunday",
 ];
 
+import type { AddressValue } from "@/lib/types";
+
 export type ChapterRow = {
   id: number;
   name: string;
   region: string;
+  region_code?: string;
   province: string;
+  province_code?: string;
   city: string;
+  city_code?: string;
   barangay: string;
+  barangay_code?: string;
   street: string | null;
   google_maps_url: string | null;
   landmark: string | null;
@@ -55,23 +61,20 @@ export type ChapterRow = {
 
 type ChapterForm = {
   name: string;
-  region: string;
-  province: string;
-  city: string;
-  barangay: string;
-  street: string;
-  google_maps_url: string;
-  landmark: string;
   fellowship_day: string;
   is_active: boolean;
-};
+} & AddressValue;
 
 const EMPTY_FORM: ChapterForm = {
   name: "",
   region: "",
+  region_code: "",
   province: "",
+  province_code: "",
   city: "",
+  city_code: "",
   barangay: "",
+  barangay_code: "",
   street: "",
   google_maps_url: "",
   landmark: "",
@@ -183,9 +186,13 @@ export function ChaptersClient({ chapters, pagination }: Props) {
       getFormFromRow={(row) => ({
         name: row.name,
         region: row.region,
+        region_code: row.region_code ?? "",
         province: row.province,
+        province_code: row.province_code ?? "",
         city: row.city,
+        city_code: row.city_code ?? "",
         barangay: row.barangay,
+        barangay_code: row.barangay_code ?? "",
         street: row.street ?? "",
         google_maps_url: row.google_maps_url ?? "",
         landmark: row.landmark ?? "",
@@ -202,7 +209,7 @@ export function ChaptersClient({ chapters, pagination }: Props) {
                 id="ch-name"
                 value={form.name}
                 onChange={(e) =>
-                  setForm((f) => ({ ...f, name: e.target.value }))
+                    setForm((f) => ({ ...f, name: e.target.value }))
                 }
                 placeholder={`Enter ${FIELD_LABELS.name.toLowerCase()}`}
                 required
@@ -237,15 +244,7 @@ export function ChaptersClient({ chapters, pagination }: Props) {
           {/* Cascading Address Selects */}
           <ChapterAddressForm
             labels={FIELD_LABELS}
-            value={{
-              region: form.region,
-              province: form.province,
-              city: form.city,
-              barangay: form.barangay,
-              street: form.street,
-              google_maps_url: form.google_maps_url,
-              landmark: form.landmark,
-            }}
+            value={form}
             onChange={(address) => setForm((f) => ({ ...f, ...address }))}
           />
 
