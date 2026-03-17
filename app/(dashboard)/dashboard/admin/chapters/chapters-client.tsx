@@ -30,7 +30,6 @@ const DAYS_OF_WEEK = [
   "Thursday",
   "Friday",
   "Saturday",
-  "Sunday",
 ];
 
 export type ChapterRow = {
@@ -49,7 +48,6 @@ export type ChapterRow = {
   landmark: string | null;
   fellowship_day: string | null;
   is_active: boolean;
-  cluster_count: number;
   member_count: number;
   created_at: string;
   updated_at: string;
@@ -96,14 +94,18 @@ const FIELD_LABELS = {
 
 const columns: Column[] = [
   { key: "name", label: FIELD_LABELS.name, sortable: true },
-  { key: "address", label: FIELD_LABELS.street, maxWidth: "350px" },
+  { key: "address", label: FIELD_LABELS.street, maxWidth: "300px" },
   { key: "gmaps", label: FIELD_LABELS.gmaps, maxWidth: "200px" },
   {
     key: "fellowship_day",
     label: FIELD_LABELS.fellowship_day,
     align: "center",
   },
-  { key: "members", label: FIELD_LABELS.members, align: "center" },
+  {
+    key: "members",
+    label: FIELD_LABELS.members,
+    align: "center",
+  },
   { key: "status", label: FIELD_LABELS.status, align: "center" },
   { key: "created_at", label: "Created At", sortable: true },
   { key: "actions", label: "Actions", align: "center" },

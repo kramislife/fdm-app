@@ -44,7 +44,7 @@ interface UserCellProps {
   fallback?: string;
 }
 
-export function UserCell({ user, fallback = "System" }: UserCellProps) {
+export function UserCell({ user, fallback = "—" }: UserCellProps) {
   if (!user) {
     return <span className="text-muted-foreground">{fallback}</span>;
   }
@@ -106,7 +106,7 @@ export function LinkCell({ href, label, fallback = "—" }: LinkCellProps) {
     return <span className="text-muted-foreground">{fallback}</span>;
   }
 
-  const displayText = label || "Link URL";
+  const displayText = label || href;
 
   return (
     <a

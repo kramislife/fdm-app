@@ -69,7 +69,8 @@ export function DataTable({
               key={col.key}
               style={col.maxWidth ? { maxWidth: col.maxWidth } : undefined}
               className={cn(
-                col.sortable && "cursor-pointer select-none hover:text-foreground",
+                col.sortable &&
+                  "cursor-pointer select-none hover:text-foreground",
                 col.align === "center" && "text-center",
                 col.align === "right" && "text-right",
               )}
@@ -77,14 +78,28 @@ export function DataTable({
             >
               <div
                 className={cn(
-                  "flex items-center gap-2",
+                  "relative flex items-center w-full",
                   col.align === "center" ? "justify-center" : "justify-between",
                   col.align === "right" && "justify-end",
                 )}
               >
-                <span>{col.label}</span>
+                <span
+                  className={cn(
+                    col.align === "center" && "text-center w-full px-5",
+                    col.align === "right" && "text-right",
+                  )}
+                >
+                  {col.label}
+                </span>
                 {col.sortable && (
-                  <SortIcon active={sort === col.key} order={order} />
+                  <div
+                    className={cn(
+                      "flex items-center",
+                      col.align === "center" && "absolute right-0",
+                    )}
+                  >
+                    <SortIcon active={sort === col.key} order={order} />
+                  </div>
                 )}
               </div>
             </TableHead>
@@ -96,7 +111,7 @@ export function DataTable({
           <TableRow>
             <TableCell colSpan={columns.length} className="h-32">
               <div className="flex justify-center items-center">
-                <Loading size="md" variant="primary" text="Syncing Data..." />
+                <Loading size="md" text="Syncing Data..." />
               </div>
             </TableCell>
           </TableRow>

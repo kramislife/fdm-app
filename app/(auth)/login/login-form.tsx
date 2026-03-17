@@ -27,7 +27,8 @@ export function LoginForm({ provisionedDate }: LoginFormProps) {
     if (provisionedDate) {
       const date = formatDate(provisionedDate);
       sileo.warning({
-        title: `Your account was created by our admin on ${date}. Check your email for login credentials.`,
+        title: "Account Provisioned",
+        description: `Your account was created by our admin on ${date}. Check your email for login credentials.`,
       });
     }
   }, [provisionedDate]);

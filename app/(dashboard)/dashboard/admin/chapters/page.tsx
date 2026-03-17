@@ -35,7 +35,6 @@ export default async function ChaptersPage({ searchParams }: PageProps) {
     landmark: ch.landmark ?? null,
     fellowship_day: ch.fellowship_day ?? null,
     is_active: ch.is_active,
-    cluster_count: ch._count.clusters,
     member_count: ch._count.user_chapters,
     created_at: ch.created_at.toISOString(),
     updated_at: ch.updated_at.toISOString(),

@@ -158,6 +158,10 @@ model User {
   clusters_updated       Cluster[]      @relation("ClusterUpdatedBy")
   clusters_deleted       Cluster[]      @relation("ClusterDeletedBy")
 
+  ministries_created Ministry[] @relation("MinistryCreator")
+  ministries_updated Ministry[] @relation("MinistryUpdater")
+  ministries_deleted Ministry[] @relation("MinistryDeleter")
+
   @@index([auth_id])
   @@index([email])
   @@index([contact_number])
@@ -211,14 +215,22 @@ model Chapter {
 }
 
 model Ministry {
-  id               Int      @id @default(autoincrement())
+  id               Int       @id @default(autoincrement())
   chapter_id       Int
   ministry_type_id Int
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
+  created_at       DateTime  @default(now())
+  created_by       Int?
+  updated_at       DateTime  @updatedAt
+  updated_by       Int?
+  deleted_at       DateTime?
+  deleted_by       Int?
 
   chapter       Chapter      @relation(fields: [chapter_id], references: [id])
   ministry_type MinistryType @relation(fields: [ministry_type_id], references: [id])
+
+  creator    User? @relation("MinistryCreator", fields: [created_by], references: [id])
+  updater    User? @relation("MinistryUpdater", fields: [updated_by], references: [id])
+  deleter    User? @relation("MinistryDeleter", fields: [deleted_by], references: [id])
 
   user_roles       UserRole[]
   ministry_members MinistryMember[]

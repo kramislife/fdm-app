@@ -221,16 +221,16 @@ export const SIDEBAR_NAV: NavGroup[] = [
         ],
       },
       {
-        label: "Chapters",
-        href: "/dashboard/admin/chapters",
-        icon: FaBuildingUser,
-        roles: ["spiritual_director", "elder"],
-      },
-      {
         label: "Ministries",
         href: "/dashboard/admin/ministries",
         icon: FaChurch,
         roles: ["spiritual_director", "elder", "head_servant"],
+      },
+      {
+        label: "Chapters",
+        href: "/dashboard/admin/chapters",
+        icon: FaBuildingUser,
+        roles: ["spiritual_director", "elder"],
       },
       {
         label: "Ministry Types",

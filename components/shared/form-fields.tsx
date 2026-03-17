@@ -182,11 +182,17 @@ export function FormSelect({
           <SelectValue placeholder={placeholder ?? defaultPlaceholder} />
         </SelectTrigger>
         <SelectContent>
-          {options.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
+          {options.length > 0 ? (
+            options.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </SelectItem>
+            ))
+          ) : (
+            <div className="p-5 text-center text-sm text-muted-foreground">
+              No results found
+            </div>
+          )}
         </SelectContent>
       </Select>
     </FieldWrapper>

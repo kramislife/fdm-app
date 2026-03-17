@@ -36,7 +36,8 @@ export function AuthFormCard({
   useEffect(() => {
     if (error) {
       sileo.error({
-        title: error,
+        title: "Action failed",
+        description: error,
       });
     }
     // errorId changes on every new error — guarantees the toast fires even

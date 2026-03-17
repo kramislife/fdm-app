@@ -73,7 +73,7 @@ export function DetailMeta({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
         <DetailField
-          label="Created At"
+          label="Date Created"
           contentClassName="text-xs text-muted-foreground"
         >
           <DateCell date={createdAt} />

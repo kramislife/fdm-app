@@ -17,7 +17,7 @@ import type { Column } from "./data-table";
 import type { Pagination } from "@/lib/table";
 
 type BaseRow = { id: number; name: string };
-type ActionResult = { success: boolean; error?: string };
+type ActionResult = { success: boolean; error?: string; description?: string };
 
 export type ReferenceTypeClientProps<TRow extends BaseRow, TForm> = {
   entityLabel: string;
@@ -39,9 +39,9 @@ export type ReferenceTypeClientProps<TRow extends BaseRow, TForm> = {
     form: TForm,
     setForm: Dispatch<SetStateAction<TForm>>,
   ) => ReactNode;
-  onCreate: (data: TForm) => Promise<ActionResult>;
-  onUpdate: (id: number, data: TForm) => Promise<ActionResult>;
-  onDelete: (id: number) => Promise<ActionResult>;
+  onCreate?: (data: TForm) => Promise<ActionResult>;
+  onUpdate?: (id: number, data: TForm) => Promise<ActionResult>;
+  onDelete?: (id: number) => Promise<ActionResult>;
 };
 
 export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
@@ -75,10 +75,11 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
   // stable throughout the close animation
   const sheetTitle =
     sheetMode === "add" ? `Add ${entityLabel}` : `Edit ${entityLabel}`;
+
   const sheetDescription =
     sheetMode === "add"
-      ? `Create a new ${entityLabel.toLowerCase()} to organize and manage records`
-      : `Update ${entityLabel.toLowerCase()} details and settings`;
+      ? `Fill in the details to create a new ${entityLabel.toLowerCase()}.`
+      : `Update the details and settings for this ${entityLabel.toLowerCase()}.`;
 
   function openView(row: TRow) {
     setViewing(row);
@@ -108,22 +109,29 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
 
   function handleSubmit() {
     const isEditing = !!editing;
+
     startTransition(async () => {
       const result = editing
-        ? await onUpdate(editing.id, form)
-        : await onCreate(form);
+        ? await onUpdate?.(editing.id, form)
+        : await onCreate?.(form);
+
+      if (!result) return;
 
       if (result.success) {
         sileo.success({
-          title: isEditing
-            ? `${entityLabel} has been successfully updated.`
-            : `${entityLabel} has been successfully created.`,
+          title: isEditing ? "Changes saved!" : "All set!",
+          description:
+            result.description ??
+            (isEditing
+              ? `${entityLabel} has been updated successfully.`
+              : `${entityLabel} has been created and is ready to use.`),
         });
         closeSheet();
       } else {
         sileo.error({
-          title:
-            result.error ??
+          title: "Something went wrong",
+          description:
+            result.description ??
             `We couldn't save the ${entityLabel.toLowerCase()}. Please try again.`,
         });
       }
@@ -131,17 +139,23 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
   }
 
   function handleDelete() {
-    if (!deleting) return;
+    if (!deleting || !onDelete) return;
+
     startDeleteTransition(async () => {
       const result = await onDelete(deleting.id);
+
       if (result.success) {
         sileo.success({
-          title: `${entityLabel} has been successfully deleted.`,
+          title: "Deleted successfully",
+          description: result.description ?? `${entityLabel} has been removed.`,
         });
         setDeleting(null);
       } else {
         sileo.error({
-          title: result.error ?? "Something went wrong. Please try again.",
+          title: "Couldn't delete",
+          description:
+            result.description ??
+            `We couldn't delete the ${entityLabel.toLowerCase()}. Please try again.`,
         });
       }
     });
@@ -152,8 +166,8 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
     actions: (
       <RowActionMenu
         onViewDetails={renderDetail ? () => openView(row) : undefined}
-        onEdit={() => openEdit(row)}
-        onDelete={() => setDeleting(row)}
+        onEdit={onUpdate ? () => openEdit(row) : undefined}
+        onDelete={onDelete ? () => setDeleting(row) : undefined}
       />
     ),
   }));
@@ -167,14 +181,18 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
         columns={columns}
         data={data}
         pagination={pagination}
-        action={{ label: `Add ${entityLabel}`, onClick: openAdd }}
+        action={
+          onCreate
+            ? { label: `Add ${entityLabel}`, onClick: openAdd }
+            : undefined
+        }
       />
 
       {/* View Details Sheet */}
       <DetailSheet
         open={!!viewing}
         onClose={closeView}
-        onEdit={viewing ? () => openEdit(viewing) : undefined}
+        onEdit={viewing && onUpdate ? () => openEdit(viewing) : undefined}
         title={`${entityLabel} Details`}
         description={`View complete information about this ${entityLabel.toLowerCase()}`}
       >
@@ -189,26 +207,29 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
         description={sheetDescription}
         onSubmit={handleSubmit}
         isSubmitting={isPending}
+        submitLabel={sheetMode === "add" ? "Save" : "Update"}
       >
         {renderForm(form, setForm)}
       </AdminSheet>
 
       {/* Delete Confirm Dialog */}
-      <DeleteConfirmDialog
-        open={!!deleting}
-        onClose={() => setDeleting(null)}
-        onConfirm={handleDelete}
-        isDeleting={isDeleting}
-        title={`Delete ${entityLabel}?`}
-        description={
-          <>
-            <span className="font-semibold text-foreground">
-              {deleting?.name}
-            </span>{" "}
-            will be permanently removed. This action cannot be undone.
-          </>
-        }
-      />
+      {onDelete && (
+        <DeleteConfirmDialog
+          open={!!deleting}
+          onClose={() => setDeleting(null)}
+          onConfirm={handleDelete}
+          isDeleting={isDeleting}
+          title={`Delete ${entityLabel}?`}
+          description={
+            <>
+              <span className="font-semibold text-foreground">
+                {deleting?.name}
+              </span>{" "}
+              will be permanently removed. This action cannot be undone.
+            </>
+          }
+        />
+      )}
     </>
   );
 }

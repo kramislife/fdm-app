@@ -33,7 +33,7 @@ export async function createMinistryType(data: MinistryTypeData) {
       };
     }
 
-    await prisma.ministryType.create({
+    const newType = await prisma.ministryType.create({
       data: {
         key,
         name: data.name.trim(),
@@ -42,6 +42,29 @@ export async function createMinistryType(data: MinistryTypeData) {
         created_by: currentUser.user.id,
       },
     });
+
+    // Auto-create ministry for existing chapters
+    try {
+      const chapters = await prisma.chapter.findMany({
+        where: { is_active: true, deleted_at: null },
+        select: { id: true },
+      });
+
+      if (chapters.length > 0) {
+        await prisma.ministry.createMany({
+          data: chapters.map((c) => ({
+            chapter_id: c.id,
+            ministry_type_id: newType.id,
+          })),
+          skipDuplicates: true,
+        });
+      }
+    } catch (error) {
+      console.error(
+        "Failed to auto-create ministries for new ministry type:",
+        error,
+      );
+    }
 
     revalidatePath(REVALIDATE_PATH);
     return { success: true };
@@ -85,18 +108,43 @@ export async function deleteMinistryType(id: number) {
   const currentUser = await requireRole(["spiritual_director", "elder"]);
 
   try {
-    // Check if ministry type is used in any ministries
-    const ministryCount = await prisma.ministry.count({
-      where: { ministry_type_id: id },
+    // 1. Check if any ministry of this type is in use
+    const activeInUse = await prisma.ministry.findFirst({
+      where: {
+        ministry_type_id: id,
+        deleted_at: null,
+        OR: [
+          { ministry_members: { some: {} } },
+          {
+            user_roles: {
+              some: {
+                role: { key: "ministry_head" },
+                is_active: true,
+              },
+            },
+          },
+        ],
+      },
     });
 
-    if (ministryCount > 0) {
+    if (activeInUse) {
       return {
         success: false,
-        error: `Cannot delete ministry type. It is currently being used by ${ministryCount} ministry(ies).`,
+        error:
+          "Cannot delete. This ministry type has active members or heads assigned across chapters. Remove them first.",
       };
     }
 
+    // 2. Soft delete all ministry rows for this type
+    await prisma.ministry.updateMany({
+      where: { ministry_type_id: id, deleted_at: null },
+      data: {
+        deleted_at: new Date(),
+        deleted_by: currentUser.user.id,
+      },
+    });
+
+    // 3. Soft delete the ministry type
     await prisma.ministryType.update({
       where: { id },
       data: {
@@ -107,7 +155,8 @@ export async function deleteMinistryType(id: number) {
 
     revalidatePath(REVALIDATE_PATH);
     return { success: true };
-  } catch {
+  } catch (error) {
+    console.error("Failed to delete ministry type:", error);
     return {
       success: false,
       error: "Failed to delete ministry type. Please try again.",

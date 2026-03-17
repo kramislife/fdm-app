@@ -49,7 +49,7 @@ export async function createChapter(data: ChapterData) {
       };
     }
 
-    await prisma.chapter.create({
+    const newChapter = await prisma.chapter.create({
       data: {
         name: data.name.trim(),
         region: data.region,
@@ -68,6 +68,26 @@ export async function createChapter(data: ChapterData) {
         created_by: currentUser.user.id,
       },
     });
+
+    // Auto-create ministries from existing types
+    try {
+      const types = await prisma.ministryType.findMany({
+        where: { is_active: true, deleted_at: null },
+        select: { id: true },
+      });
+
+      if (types.length > 0) {
+        await prisma.ministry.createMany({
+          data: types.map((t) => ({
+            chapter_id: newChapter.id,
+            ministry_type_id: t.id,
+          })),
+          skipDuplicates: true,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to auto-create ministries for new chapter:", error);
+    }
 
     revalidatePath(REVALIDATE_PATH);
     return { success: true };
@@ -126,6 +146,7 @@ export async function deleteChapter(id: number) {
   const currentUser = await requireRole(["spiritual_director", "elder"]);
 
   try {
+    // 1. Check if chapter has active clusters
     const clusterCount = await prisma.cluster.count({
       where: { chapter_id: id, deleted_at: null },
     });
@@ -133,20 +154,33 @@ export async function deleteChapter(id: number) {
     if (clusterCount > 0) {
       return {
         success: false,
-        error: `Cannot delete chapter. It has ${clusterCount} active cluster(s).`,
+        error: `Cannot delete. This chapter has ${clusterCount} active cluster(s) assigned. Remove them first.`,
       };
     }
 
+    // 2. Check if chapter has active members
     const memberCount = await prisma.userChapter.count({
       where: { chapter_id: id },
     });
+
     if (memberCount > 0) {
       return {
         success: false,
-        error: `Cannot delete chapter. It has ${memberCount} member(s) assigned.`,
+        error:
+          "Cannot delete. This chapter has active members assigned. Remove them first.",
       };
     }
 
+    // 3. Soft delete all ministry rows for this chapter
+    await prisma.ministry.updateMany({
+      where: { chapter_id: id, deleted_at: null },
+      data: {
+        deleted_at: new Date(),
+        deleted_by: currentUser.user.id,
+      },
+    });
+
+    // 4. Soft delete the chapter
     await prisma.chapter.update({
       where: { id },
       data: {
@@ -157,7 +191,8 @@ export async function deleteChapter(id: number) {
 
     revalidatePath(REVALIDATE_PATH);
     return { success: true };
-  } catch {
+  } catch (error) {
+    console.error("Failed to delete chapter:", error);
     return {
       success: false,
       error: "Failed to delete chapter. Please try again.",

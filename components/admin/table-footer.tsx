@@ -34,6 +34,7 @@ export function AdminTableFooter({
           onClick={onPrevious}
           disabled={currentPage <= 1}
           aria-label="Previous page"
+          className="cursor-pointer"
         >
           <ChevronLeft className="size-4" />
         </Button>
@@ -43,6 +44,7 @@ export function AdminTableFooter({
           onClick={onNext}
           disabled={currentPage >= totalPages}
           aria-label="Next page"
+          className="cursor-pointer"
         >
           <ChevronRight className="size-4" />
         </Button>

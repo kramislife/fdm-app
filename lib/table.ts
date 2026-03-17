@@ -26,17 +26,19 @@ export type PageProps = {
 
 /**
  * Builds a Prisma-compatible orderBy object from a sort key and direction.
- * Pass all valid sort keys in fieldMap (key → DB field name). Any unrecognised
- * sort key falls back to defaultField, preventing arbitrary field injection.
+ * Supports nested fields with dot notation (e.g. "ministry_type.name").
  */
 export function buildOrderBy(
   sort: string,
   order: "asc" | "desc",
   fieldMap: Record<string, string>,
   defaultField = "created_at",
-): Record<string, "asc" | "desc"> {
+): any {
   const field = fieldMap[sort] ?? defaultField;
-  return { [field]: order };
+
+  return field.split(".").reduceRight((acc, part, index, arr) => ({
+    [part]: index === arr.length - 1 ? order : acc,
+  }), {} as any);
 }
 
 export function parseTableParams(
