@@ -51,7 +51,7 @@ export async function createMinistryType(data: MinistryTypeData) {
       });
 
       if (chapters.length > 0) {
-        await prisma.ministry.createMany({
+        await prisma.ministryHead.createMany({
           data: chapters.map((c) => ({
             chapter_id: c.id,
             ministry_type_id: newType.id,
@@ -109,7 +109,7 @@ export async function deleteMinistryType(id: number) {
 
   try {
     // 1. Check if any ministry of this type is in use
-    const activeInUse = await prisma.ministry.findFirst({
+    const activeInUse = await prisma.ministryHead.findFirst({
       where: {
         ministry_type_id: id,
         deleted_at: null,
@@ -135,8 +135,8 @@ export async function deleteMinistryType(id: number) {
       };
     }
 
-    // 2. Soft delete all ministry rows for this type
-    await prisma.ministry.updateMany({
+    // 2. Soft delete all ministry head rows for this type
+    await prisma.ministryHead.updateMany({
       where: { ministry_type_id: id, deleted_at: null },
       data: {
         deleted_at: new Date(),

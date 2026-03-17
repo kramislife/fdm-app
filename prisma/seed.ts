@@ -361,12 +361,12 @@ async function main() {
   );
 
   // ============================================================
-  // [5] MINISTRIES
+  // [5] MINISTRY HEADS
   // ============================================================
-  console.log("→ Ministries...");
+  console.log("→ Ministry heads...");
   for (const chapter of chapters) {
     for (const ministryType of ministryTypes) {
-      await prisma.ministry.upsert({
+      await prisma.ministryHead.upsert({
         where: {
           chapter_id_ministry_type_id: {
             chapter_id: chapter.id,
@@ -712,11 +712,11 @@ async function main() {
   for (const a of userRoleAssignments) {
     await prisma.userRole.upsert({
       where: {
-        user_id_role_id_chapter_id_ministry_id_cluster_id: {
+        user_id_role_id_chapter_id_ministry_head_id_cluster_id: {
           user_id: a.user.id,
           role_id: roleMap[a.role].id,
           chapter_id: a.chapter_id ?? 0,
-          ministry_id: 0,
+          ministry_head_id: 0,
           cluster_id: a.cluster_id ?? 0,
         },
       },
@@ -725,7 +725,7 @@ async function main() {
         user_id: a.user.id,
         role_id: roleMap[a.role].id,
         chapter_id: a.chapter_id,
-        ministry_id: undefined,
+        ministry_head_id: undefined,
         cluster_id: a.cluster_id,
         assigned_by: sd.id,
         is_active: true,

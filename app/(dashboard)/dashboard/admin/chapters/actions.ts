@@ -77,7 +77,7 @@ export async function createChapter(data: ChapterData) {
       });
 
       if (types.length > 0) {
-        await prisma.ministry.createMany({
+        await prisma.ministryHead.createMany({
           data: types.map((t) => ({
             chapter_id: newChapter.id,
             ministry_type_id: t.id,
@@ -171,8 +171,8 @@ export async function deleteChapter(id: number) {
       };
     }
 
-    // 3. Soft delete all ministry rows for this chapter
-    await prisma.ministry.updateMany({
+    // 3. Soft delete all ministry head rows for this chapter
+    await prisma.ministryHead.updateMany({
       where: { chapter_id: id, deleted_at: null },
       data: {
         deleted_at: new Date(),

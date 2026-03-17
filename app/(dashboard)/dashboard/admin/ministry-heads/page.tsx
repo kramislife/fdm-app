@@ -1,10 +1,10 @@
 import { requireAuth } from "@/lib/auth";
 import { getUserWithRole } from "@/lib/roles";
-import { getMinistries } from "@/lib/data/ministries";
+import { getMinistryHeads } from "@/lib/data/ministry-heads";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
-import { MinistriesClient, type MinistryRow } from "./ministries-client";
+import { MinistryHeadsClient, type MinistryHeadRow } from "./ministry-heads-client";
 
-export default async function MinistriesPage({ searchParams }: PageProps) {
+export default async function MinistryHeadsPage({ searchParams }: PageProps) {
   const authUser = await requireAuth();
   const userData = await getUserWithRole(authUser.id);
 
@@ -20,7 +20,7 @@ export default async function MinistriesPage({ searchParams }: PageProps) {
     "created_at",
   );
 
-  const result = await getMinistries({
+  const result = await getMinistryHeads({
     search: search || undefined,
     page,
     perPage,
@@ -28,8 +28,8 @@ export default async function MinistriesPage({ searchParams }: PageProps) {
     order,
   });
 
-  const ministries: MinistryRow[] = result.data.map((m) => {
-    const activeHead = m.user_roles[0];
+  const ministryHeads: MinistryHeadRow[] = (result.data as any[]).map((m) => {
+    const activeHead = m.user_roles?.[0];
     return {
       id: m.id,
       name: m.ministry_type.name,
@@ -51,8 +51,8 @@ export default async function MinistriesPage({ searchParams }: PageProps) {
   });
 
   return (
-    <MinistriesClient
-      ministries={ministries}
+    <MinistryHeadsClient
+      ministryHeads={ministryHeads}
       pagination={toPagination(result)}
       isSuperAdmin={isSuperAdmin}
       userChapter={userChapter}

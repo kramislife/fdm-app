@@ -4,16 +4,16 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
 
-import { getChapterActiveUsers } from "@/lib/data/ministries";
+import { getChapterActiveUsers } from "@/lib/data/ministry-heads";
 
-const REVALIDATE_PATH = "/dashboard/admin/ministries";
+const REVALIDATE_PATH = "/dashboard/admin/ministry-heads";
 
 export async function getActiveUsersForChapter(chapterId: number) {
   await requireRole(["spiritual_director", "elder", "head_servant"]);
   return await getChapterActiveUsers(chapterId);
 }
 
-export async function updateMinistry(id: number, data: { userId: string }) {
+export async function updateMinistryHead(id: number, data: { userId: string }) {
   const currentUser = await requireRole([
     "spiritual_director",
     "elder",
@@ -25,16 +25,16 @@ export async function updateMinistry(id: number, data: { userId: string }) {
   }
 
   try {
-    const ministryId = id;
+    const ministryHeadId = id;
     const userId = Number(data.userId);
 
-    const ministry = await prisma.ministry.findUnique({
-      where: { id: ministryId },
+    const ministryHead = await prisma.ministryHead.findUnique({
+      where: { id: ministryHeadId },
       select: { chapter_id: true },
     });
 
-    if (!ministry) {
-      return { success: false, error: "Ministry not found." };
+    if (!ministryHead) {
+      return { success: false, error: "Ministry head record not found." };
     }
 
     const role = await prisma.role.findUnique({
@@ -45,10 +45,10 @@ export async function updateMinistry(id: number, data: { userId: string }) {
       return { success: false, error: "Ministry Head role not found." };
     }
 
-    // 1. Deactivate existing ministry_head role for this ministry
+    // 1. Deactivate existing ministry_head role for this ministry head record
     await prisma.userRole.updateMany({
       where: {
-        ministry_id: ministryId,
+        ministry_head_id: ministryHeadId,
         role: { key: "ministry_head" },
         is_active: true,
       },
@@ -60,8 +60,8 @@ export async function updateMinistry(id: number, data: { userId: string }) {
       data: {
         user_id: userId,
         role_id: role.id,
-        chapter_id: ministry.chapter_id,
-        ministry_id: ministryId,
+        chapter_id: ministryHead.chapter_id,
+        ministry_head_id: ministryHeadId,
         assigned_by: currentUser.user.id,
         is_active: true,
       },

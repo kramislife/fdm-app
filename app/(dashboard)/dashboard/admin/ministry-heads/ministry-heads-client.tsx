@@ -12,9 +12,9 @@ import {
   DetailField,
   DetailMeta,
 } from "@/components/shared/detail-field";
-import { updateMinistry, getActiveUsersForChapter } from "./actions";
+import { updateMinistryHead, getActiveUsersForChapter } from "./actions";
 
-export type MinistryRow = {
+export type MinistryHeadRow = {
   id: number;
   name: string;
   ministryTypeKey: string;
@@ -32,19 +32,19 @@ export type MinistryRow = {
 };
 
 type Props = {
-  ministries: MinistryRow[];
+  ministryHeads: MinistryHeadRow[];
   pagination: Pagination;
   isSuperAdmin: boolean;
   userChapter: { id: number; name: string } | null;
 };
 
-type MinistryForm = {
+type MinistryHeadForm = {
   userId: string;
   chapterName: string;
   ministryName: string;
 };
 
-const EMPTY_FORM: MinistryForm = {
+const EMPTY_FORM: MinistryHeadForm = {
   userId: "",
   chapterName: "",
   ministryName: "",
@@ -71,7 +71,7 @@ const columns: Column[] = [
   { key: "actions", label: "Actions", align: "center" },
 ];
 
-export function MinistriesClient({ ministries, pagination }: Props) {
+export function MinistryHeadsClient({ ministryHeads, pagination }: Props) {
   const [activeChapterId, setActiveChapterId] = useState<number | null>(null);
   const [users, setUsers] = useState<
     { id: number; first_name: string; last_name: string }[]
@@ -89,11 +89,11 @@ export function MinistriesClient({ ministries, pagination }: Props) {
   }, [activeChapterId]);
 
   return (
-    <ReferenceTypeClient<MinistryRow, MinistryForm>
+    <ReferenceTypeClient<MinistryHeadRow, MinistryHeadForm>
       entityLabel="Ministry Head"
-      pageTitle="Ministry Management"
-      pageDescription="View and manage ministry leadership assignments"
-      rows={ministries}
+      pageTitle="Ministry Heads"
+      pageDescription="View and manage chapter ministry heads"
+      rows={ministryHeads}
       pagination={pagination}
       columns={columns}
       renderRow={(row) => ({
@@ -169,7 +169,7 @@ export function MinistriesClient({ ministries, pagination }: Props) {
           />
         </div>
       )}
-      onUpdate={updateMinistry}
+      onUpdate={updateMinistryHead}
     />
   );
 }

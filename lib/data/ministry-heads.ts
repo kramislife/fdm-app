@@ -14,10 +14,10 @@ const ORDER_FIELDS: Record<string, string> = {
 };
 
 /**
- * Fetches ministries with pagination, sorting, and filtering.
+ * Fetches ministry heads with pagination, sorting, and filtering.
  * includes ministry type, chapter, and active ministry head.
  */
-export async function getMinistries(
+export async function getMinistryHeads(
   params: TableParams & { chapterId?: number } = {},
 ) {
   const {
@@ -75,7 +75,7 @@ export async function getMinistries(
   };
 
   const [data, total] = await Promise.all([
-    prisma.ministry.findMany({
+    prisma.ministryHead.findMany({
       where,
         include: {
         ministry_type: { select: { name: true, key: true } },
@@ -104,7 +104,7 @@ export async function getMinistries(
       skip: (page - 1) * perPage,
       take: perPage,
     }),
-    prisma.ministry.count({ where }),
+    prisma.ministryHead.count({ where }),
   ]);
 
   return { data, ...buildPaginationMeta(total, page, perPage) };
