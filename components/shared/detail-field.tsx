@@ -51,7 +51,7 @@ interface DetailMetaProps {
   id: number;
   createdAt: string;
   updatedAt?: string | null;
-  createdBy: { first_name: string; last_name: string } | null;
+  createdBy?: { first_name: string; last_name: string } | null;
   updatedBy?: { first_name: string; last_name: string } | null;
 }
 
@@ -78,12 +78,14 @@ export function DetailMeta({
         >
           <DateCell date={createdAt} />
         </DetailField>
-        <DetailField
-          label="Created By"
-          contentClassName="text-xs text-muted-foreground"
-        >
-          <UserCell user={createdBy} />
-        </DetailField>
+        {createdBy && (
+          <DetailField
+            label="Created By"
+            contentClassName="text-xs text-muted-foreground"
+          >
+            <UserCell user={createdBy} />
+          </DetailField>
+        )}
 
         {updatedAt && (
           <DetailField

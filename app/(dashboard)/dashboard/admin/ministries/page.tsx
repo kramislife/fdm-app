@@ -46,7 +46,6 @@ export default async function MinistriesPage({ searchParams }: PageProps) {
         : null,
       created_at: m.created_at.toISOString(),
       updated_at: m.updated_at.toISOString(),
-      creator: m.creator,
       updated_by: m.updater,
     };
   });

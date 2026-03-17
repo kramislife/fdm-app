@@ -28,7 +28,6 @@ export type MinistryRow = {
   } | null;
   created_at: string;
   updated_at: string;
-  creator: { first_name: string; last_name: string } | null;
   updated_by: { first_name: string; last_name: string } | null;
 };
 
@@ -124,7 +123,6 @@ export function MinistriesClient({ ministries, pagination }: Props) {
             id={row.id}
             createdAt={row.created_at}
             updatedAt={row.updated_at}
-            createdBy={row.creator}
             updatedBy={row.updated_by}
           />
         </>

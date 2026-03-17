@@ -77,11 +77,10 @@ export async function getMinistries(
   const [data, total] = await Promise.all([
     prisma.ministry.findMany({
       where,
-      include: {
+        include: {
         ministry_type: { select: { name: true, key: true } },
         chapter: { select: { id: true, name: true } },
         _count: { select: { ministry_members: true } },
-        creator: { select: { first_name: true, last_name: true } },
         updater: { select: { first_name: true, last_name: true } },
         user_roles: {
           where: {
