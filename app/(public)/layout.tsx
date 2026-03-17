@@ -22,9 +22,13 @@ export default async function PublicLayout({
 
   return (
     <>
-      <PublicHeader sessionUser={sessionUser} />
-      {children}
-      <PublicFooter />
+      <div className="flex flex-col min-h-screen max-w-[1920px] mx-auto">
+        <PublicHeader sessionUser={sessionUser} />
+        <main className="flex-1 pt-15 border-x">
+          {children}
+        </main>
+        <PublicFooter />
+      </div>
     </>
   );
 }

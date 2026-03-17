@@ -42,8 +42,8 @@ export function PublicHeader({ sessionUser }: PublicHeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background shadow-sm">
-      <div className="mx-auto flex h-16 items-center justify-between px-5">
+    <header className="fixed top-0 left-1/2 -translate-x-1/2 z-50 max-w-[1920px] w-full border-b bg-background shadow-sm">
+      <div className="mx-auto flex h-15 items-center justify-between px-5">
         <Logo size="w-20" />
 
         {/* Desktop Navigation */}

@@ -31,7 +31,7 @@ export function DashboardLayoutClient({
 
   return (
     <UserProvider user={effectiveUser}>
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex h-screen max-w-[1920px] mx-auto overflow-hidden border-x">
         {/* Admin Sidebar for Desktop */}
         <div className="hidden lg:flex shrink-0">
           <Sidebar sessionUser={effectiveUser} />
