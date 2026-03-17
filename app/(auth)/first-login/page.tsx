@@ -1,12 +1,14 @@
 "use client";
 
 import { useActionState } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { AuthFormCard } from "@/components/auth/auth-form-card";
+import { FormInput } from "@/components/shared/form-fields";
 import { setPasswordAction, type SetPasswordState } from "./actions";
 
 const initialState: SetPasswordState = { error: null };
+
+const AUTH_LABEL_STYLE =
+  "text-xs font-bold tracking-wider uppercase text-muted-foreground";
 
 export default function FirstLoginPage() {
   const [state, formAction, isPending] = useActionState(
@@ -35,41 +37,29 @@ export default function FirstLoginPage() {
         </div>
       }
     >
-      <div className="flex flex-col gap-2">
-        <Label
-          htmlFor="new_password"
-          className="text-xs font-bold tracking-wider uppercase text-muted-foreground"
-        >
-          New Password
-        </Label>
-        <Input
-          id="new_password"
-          name="new_password"
-          type="password"
-          autoComplete="new-password"
-          required
-          minLength={8}
-          placeholder="••••••••"
-          className="h-12"
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label
-          htmlFor="confirm_password"
-          className="text-xs font-bold tracking-wider uppercase text-muted-foreground"
-        >
-          Confirm Password
-        </Label>
-        <Input
-          id="confirm_password"
-          name="confirm_password"
-          type="password"
-          autoComplete="new-password"
-          required
-          placeholder="••••••••"
-          className="h-12"
-        />
-      </div>
+      <FormInput
+        label="New Password"
+        id="new_password"
+        name="new_password"
+        type="password"
+        autoComplete="new-password"
+        required
+        minLength={8}
+        placeholder="••••••••"
+        className="h-12"
+        labelClassName={AUTH_LABEL_STYLE}
+      />
+      <FormInput
+        label="Confirm Password"
+        id="confirm_password"
+        name="confirm_password"
+        type="password"
+        autoComplete="new-password"
+        required
+        placeholder="••••••••"
+        className="h-12"
+        labelClassName={AUTH_LABEL_STYLE}
+      />
     </AuthFormCard>
   );
 }

@@ -1,17 +1,5 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
 import type { Column } from "@/components/admin/data-table";
 import type { Pagination } from "@/lib/table";
 import {
@@ -20,6 +8,12 @@ import {
   DateCell,
   StatusBadge,
 } from "@/components/shared/cells";
+import {
+  FormInput,
+  FormSelect,
+  FormTextarea,
+  FormSwitch,
+} from "@/components/shared/form-fields";
 import {
   DetailField,
   DetailSection,
@@ -66,7 +60,7 @@ const columns: Column[] = [
 
 const EMPTY_FORM: RoleForm = {
   name: "",
-  scope: "chapter",
+  scope: "",
   description: "",
   is_active: true,
 };
@@ -121,72 +115,52 @@ export function RolesClient({ roles, pagination }: Props) {
       initialForm={EMPTY_FORM}
       getFormFromRow={(row) => ({
         name: row.name,
-        scope: row.scope?.toLowerCase() ?? "chapter",
+        scope: row.scope?.toLowerCase() ?? "",
         description: row.description ?? "",
         is_active: row.is_active,
       })}
       renderForm={(form, setForm) => (
         <div className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-2">
-            <div className="col-span-1 md:col-span-2 space-y-2">
-              <Label htmlFor="role-name">{FIELD_LABELS.name}</Label>
-              <Input
-                id="role-name"
-                value={form.name}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, name: e.target.value }))
-                }
-                placeholder={`Enter ${FIELD_LABELS.name.toLowerCase()}`}
-                required
-              />
-            </div>
-            <div className="col-span-1 space-y-2">
-              <Label htmlFor="role-scope">{FIELD_LABELS.scope}</Label>
-              <Select
-                value={form.scope}
-                onValueChange={(v) => setForm((f) => ({ ...f, scope: v }))}
-              >
-                <SelectTrigger id="role-scope">
-                  <SelectValue
-                    placeholder={`Select ${FIELD_LABELS.scope.toLowerCase()}`}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="global">Global</SelectItem>
-                  <SelectItem value="chapter">Chapter</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="role-description">{FIELD_LABELS.description}</Label>
-            <Textarea
-              id="role-description"
-              value={form.description}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, description: e.target.value }))
-              }
-              placeholder={`Enter ${FIELD_LABELS.description.toLowerCase()} (optional)`}
-              className="min-h-[120px]"
+            <FormInput
+              label={FIELD_LABELS.name}
+              id="role-name"
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              wrapperClassName="col-span-1 md:col-span-2"
+              required
+            />
+            <FormSelect
+              label={FIELD_LABELS.scope}
+              id="role-scope"
+              value={form.scope}
+              onValueChange={(v) => setForm((f) => ({ ...f, scope: v }))}
+              options={[
+                { value: "global", label: "Global" },
+                { value: "chapter", label: "Chapter" },
+              ]}
+              wrapperClassName="col-span-1"
+              required
             />
           </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="role-status">{FIELD_LABELS.status}</Label>
-              <Switch
-                id="role-status"
-                checked={form.is_active}
-                onCheckedChange={(v: boolean) =>
-                  setForm((f) => ({ ...f, is_active: v }))
-                }
-              />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {form.is_active
-                ? "Active — assigned users have access"
-                : "Inactive — system features for this role are disabled"}
-            </p>
-          </div>
+
+          <FormTextarea
+            label={FIELD_LABELS.description}
+            id="role-description"
+            value={form.description}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, description: e.target.value }))
+            }
+          />
+
+          <FormSwitch
+            label={FIELD_LABELS.status}
+            id="role-status"
+            checked={form.is_active}
+            onCheckedChange={(v) => setForm((f) => ({ ...f, is_active: v }))}
+            activeDescription="assigned users have access"
+            inactiveDescription="system features for this role are disabled"
+          />
         </div>
       )}
       onCreate={createRole}

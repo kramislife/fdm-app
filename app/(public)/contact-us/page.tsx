@@ -13,16 +13,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+  FormInput,
+  FormSelect,
+  FormTextarea,
+} from "@/components/shared/form-fields";
 
 import {
   useScrollAnimation,
@@ -40,6 +35,9 @@ import {
   mapContent,
   formContent,
 } from "@/config/contact";
+
+const FIELD_LABEL_STYLE =
+  "text-xs font-bold tracking-wider uppercase text-muted-foreground";
 
 export default function ContactPage() {
   const { getAnimationProps } = useScrollAnimation();
@@ -158,79 +156,58 @@ export default function ContactPage() {
                 <form className="flex flex-col gap-5">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-2">
                     {/* Full Name */}
-                    <div className="flex flex-col md:col-span-2 gap-2">
-                      <Label
-                        htmlFor="full-name"
-                        className="text-xs font-bold tracking-wider uppercase text-muted-foreground"
-                      >
-                        Full Name
-                      </Label>
-                      <Input
-                        id="full-name"
-                        name="full-name"
-                        type="text"
-                        autoComplete="name"
-                        placeholder="Your full name"
-                        className="h-12"
-                      />
-                    </div>
+                    <FormInput
+                      label="Full Name"
+                      id="full-name"
+                      name="full-name"
+                      type="text"
+                      autoComplete="name"
+                      placeholder="Your full name"
+                      className="h-12"
+                      wrapperClassName="md:col-span-2"
+                      labelClassName={FIELD_LABEL_STYLE}
+                      required
+                    />
 
                     {/* Inquiry Type */}
-                    <div className="flex flex-col gap-2">
-                      <Label
-                        htmlFor="inquiry-type"
-                        className="text-xs font-bold tracking-wider uppercase text-muted-foreground"
-                      >
-                        Inquiry Type
-                      </Label>
-                      <Select name="inquiry-type">
-                        <SelectTrigger id="inquiry-type" className="h-12">
-                          <SelectValue placeholder="Select inquiry type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {inquiryTypes.map(({ label, value }) => (
-                            <SelectItem key={value} value={value}>
-                              {label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <FormSelect
+                      label="Inquiry Type"
+                      id="inquiry-type"
+                      onValueChange={() => {}} // Handle change if needed
+                      value="" // Bind to state if needed
+                      placeholder="Select inquiry type"
+                      options={inquiryTypes.map(({ label, value }) => ({
+                        label,
+                        value,
+                      }))}
+                      className="h-12"
+                      labelClassName={FIELD_LABEL_STYLE}
+                      required
+                    />
                   </div>
 
                   {/* Email */}
-                  <div className="flex flex-col gap-2">
-                    <Label
-                      htmlFor="email"
-                      className="text-xs font-bold tracking-wider uppercase text-muted-foreground"
-                    >
-                      Email Address
-                    </Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      placeholder="you@gmail.com"
-                      className="h-12"
-                    />
-                  </div>
+                  <FormInput
+                    label="Email Address"
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@gmail.com"
+                    className="h-12"
+                    labelClassName={FIELD_LABEL_STYLE}
+                    required
+                  />
 
                   {/* Message */}
-                  <div className="flex flex-col gap-2">
-                    <Label
-                      htmlFor="message"
-                      className="text-xs font-bold tracking-wider uppercase text-muted-foreground"
-                    >
-                      Message
-                    </Label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      placeholder="Write your message here..."
-                      className="min-h-[120px]"
-                    />
-                  </div>
+                  <FormTextarea
+                    label="Message"
+                    id="message"
+                    name="message"
+                    placeholder="Write your message here..."
+                    labelClassName={FIELD_LABEL_STYLE}
+                    required
+                  />
 
                   {/* Submit */}
                   <Button type="submit" className="h-12 cursor-pointer">

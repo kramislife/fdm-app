@@ -21,7 +21,7 @@ export function GoogleSignInButton() {
       variant="outline"
       onClick={handleGoogleSignIn}
       disabled={loading}
-      className="h-12 w-full cursor-pointer bg-white hover:bg-gray-100"
+      className="h-12 w-full cursor-pointer bg-white hover:bg-gray-50"
     >
       {loading ? (
         <Loading size="sm" variant="primary" text="Signing in..." />

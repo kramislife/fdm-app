@@ -1,10 +1,5 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-
 import type { Column } from "@/components/admin/data-table";
 import type { Pagination } from "@/lib/table";
 import {
@@ -13,6 +8,11 @@ import {
   DateCell,
   TextCell,
 } from "@/components/shared/cells";
+import {
+  FormInput,
+  FormTextarea,
+  FormSwitch,
+} from "@/components/shared/form-fields";
 import {
   DetailField,
   DetailSection,
@@ -106,45 +106,29 @@ export function EventTypesClient({ eventTypes, pagination }: Props) {
       })}
       renderForm={(form, setForm) => (
         <div className="space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="et-name">{FIELD_LABELS.name}</Label>
-            <Input
-              id="et-name"
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              placeholder={`Enter ${FIELD_LABELS.name.toLowerCase()}`}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="et-description">{FIELD_LABELS.description}</Label>
-            <Textarea
-              id="et-description"
-              value={form.description}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, description: e.target.value }))
-              }
-              placeholder={`Enter ${FIELD_LABELS.description.toLowerCase()} (optional)`}
-              className="min-h-[120px]"
-            />
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="et-status">{FIELD_LABELS.status}</Label>
-              <Switch
-                id="et-status"
-                checked={form.is_active}
-                onCheckedChange={(v: boolean) =>
-                  setForm((f) => ({ ...f, is_active: v }))
-                }
-              />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {form.is_active
-                ? "Active — visible in selections"
-                : "Inactive — hidden from selections"}
-            </p>
-          </div>
+          <FormInput
+            label={FIELD_LABELS.name}
+            id="et-name"
+            value={form.name}
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+            required
+          />
+
+          <FormTextarea
+            label={FIELD_LABELS.description}
+            id="et-description"
+            value={form.description}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, description: e.target.value }))
+            }
+          />
+
+          <FormSwitch
+            label={FIELD_LABELS.status}
+            id="et-status"
+            checked={form.is_active}
+            onCheckedChange={(v) => setForm((f) => ({ ...f, is_active: v }))}
+          />
         </div>
       )}
       onCreate={createEventType}

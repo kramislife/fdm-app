@@ -71,7 +71,7 @@ export function DetailMeta({
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-5 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
         <DetailField
           label="Created At"
           contentClassName="text-xs text-muted-foreground"

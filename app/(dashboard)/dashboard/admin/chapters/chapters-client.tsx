@@ -1,19 +1,19 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
 import type { Column } from "@/components/admin/data-table";
 import type { Pagination } from "@/lib/table";
-import { StatusBadge, TextCell, LinkCell } from "@/components/shared/cells";
+import type { AddressValue } from "@/lib/types";
+import {
+  StatusBadge,
+  TextCell,
+  LinkCell,
+  DateCell,
+} from "@/components/shared/cells";
+import {
+  FormInput,
+  FormSelect,
+  FormSwitch,
+} from "@/components/shared/form-fields";
 import {
   DetailField,
   DetailSection,
@@ -32,8 +32,6 @@ const DAYS_OF_WEEK = [
   "Saturday",
   "Sunday",
 ];
-
-import type { AddressValue } from "@/lib/types";
 
 export type ChapterRow = {
   id: number;
@@ -98,12 +96,16 @@ const FIELD_LABELS = {
 
 const columns: Column[] = [
   { key: "name", label: FIELD_LABELS.name, sortable: true },
-  { key: "city", label: FIELD_LABELS.city, sortable: true },
-  { key: "address", label: FIELD_LABELS.street, maxWidth: "400px" },
+  { key: "address", label: FIELD_LABELS.street, maxWidth: "350px" },
   { key: "gmaps", label: FIELD_LABELS.gmaps, maxWidth: "200px" },
-  { key: "fellowship_day", label: FIELD_LABELS.fellowship_day, sortable: true },
+  {
+    key: "fellowship_day",
+    label: FIELD_LABELS.fellowship_day,
+    align: "center",
+  },
   { key: "members", label: FIELD_LABELS.members, align: "center" },
   { key: "status", label: FIELD_LABELS.status, align: "center" },
+  { key: "created_at", label: "Created At", sortable: true },
   { key: "actions", label: "Actions", align: "center" },
 ];
 
@@ -116,19 +118,19 @@ export function ChaptersClient({ chapters, pagination }: Props) {
   return (
     <ReferenceTypeClient
       entityLabel="Chapter"
-      pageTitle="Chapters"
-      pageDescription="View and manage all FDM chapters across Metro Manila and nearby provinces"
+      pageTitle="Chapter Management"
+      pageDescription="View and manage all community chapters"
       rows={chapters}
       pagination={pagination}
       columns={columns}
       renderRow={(row) => ({
         name: <TextCell value={row.name} />,
-        city: <TextCell value={row.city} />,
         address: <TextCell value={row.street} />,
         gmaps: <LinkCell href={row.google_maps_url} />,
         fellowship_day: <TextCell value={row.fellowship_day} />,
         members: <TextCell value={row.member_count} />,
         status: <StatusBadge isActive={row.is_active} />,
+        created_at: <DateCell date={row.created_at} />,
       })}
       renderDetail={(row) => (
         <>
@@ -202,70 +204,45 @@ export function ChaptersClient({ chapters, pagination }: Props) {
       renderForm={(form, setForm) => (
         <div className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-2">
-            {/* Chapter Name */}
-            <div className="col-span-1 md:col-span-2 space-y-2">
-              <Label htmlFor="ch-name">{FIELD_LABELS.name}</Label>
-              <Input
-                id="ch-name"
-                value={form.name}
-                onChange={(e) =>
-                    setForm((f) => ({ ...f, name: e.target.value }))
-                }
-                placeholder={`Enter ${FIELD_LABELS.name.toLowerCase()}`}
-                required
-              />
-            </div>
+            <FormInput
+              label={FIELD_LABELS.name}
+              id="ch-name"
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              wrapperClassName="col-span-1 md:col-span-2"
+              required
+            />
 
-            {/* Fellowship Day */}
-            <div className="col-span-1 space-y-2">
-              <Label htmlFor="ch-fellowship-day">
-                {FIELD_LABELS.fellowship_day}
-              </Label>
-              <Select
-                value={form.fellowship_day}
-                onValueChange={(v) =>
-                  setForm((f) => ({ ...f, fellowship_day: v }))
-                }
-              >
-                <SelectTrigger id="ch-fellowship-day">
-                  <SelectValue placeholder="Select Schedule" />
-                </SelectTrigger>
-                <SelectContent>
-                  {DAYS_OF_WEEK.map((day) => (
-                    <SelectItem key={day} value={day}>
-                      {day}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <FormSelect
+              label={FIELD_LABELS.fellowship_day}
+              id="ch-fellowship-day"
+              value={form.fellowship_day}
+              onValueChange={(v) =>
+                setForm((f) => ({ ...f, fellowship_day: v }))
+              }
+              options={DAYS_OF_WEEK.map((day) => ({
+                value: day,
+                label: day,
+              }))}
+              wrapperClassName="col-span-1"
+              required
+            />
           </div>
 
-          {/* Cascading Address Selects */}
           <ChapterAddressForm
             labels={FIELD_LABELS}
             value={form}
             onChange={(address) => setForm((f) => ({ ...f, ...address }))}
           />
 
-          {/* Is Active */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="ch-status">{FIELD_LABELS.status}</Label>
-              <Switch
-                id="ch-status"
-                checked={form.is_active}
-                onCheckedChange={(v: boolean) =>
-                  setForm((f) => ({ ...f, is_active: v }))
-                }
-              />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {form.is_active
-                ? "Active — chapter is operational"
-                : "Inactive — chapter is not operational"}
-            </p>
-          </div>
+          <FormSwitch
+            label={FIELD_LABELS.status}
+            id="ch-status"
+            checked={form.is_active}
+            onCheckedChange={(v) => setForm((f) => ({ ...f, is_active: v }))}
+            activeDescription="This chapter is visible and operational"
+            inactiveDescription="This chapter is currently inactive"
+          />
         </div>
       )}
       onCreate={createChapter}

@@ -2,15 +2,16 @@
 
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
 import { AuthFormCard } from "@/components/auth/auth-form-card";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
+import { FormInput } from "@/components/shared/form-fields";
 import { formatDate } from "@/lib/format";
 import { loginAction, type LoginState } from "./actions";
 
 const initialState: LoginState = { error: null };
+
+const AUTH_LABEL_STYLE =
+  "text-xs font-bold tracking-wider uppercase text-muted-foreground";
 
 interface LoginFormProps {
   provisionedDate?: string;
@@ -43,40 +44,28 @@ export function LoginForm({ provisionedDate }: LoginFormProps) {
         submitLabel="Sign In"
         pendingLabel="Signing in…"
       >
-        <div className="flex flex-col gap-2">
-          <Label
-            htmlFor="email"
-            className="text-xs font-bold tracking-wider uppercase text-muted-foreground"
-          >
-            Email address
-          </Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            placeholder="you@gmail.com"
-            className="h-12"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label
-            htmlFor="password"
-            className="text-xs font-bold tracking-wider uppercase text-muted-foreground"
-          >
-            Password
-          </Label>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            placeholder="••••••••"
-            className="h-12"
-          />
-        </div>
+        <FormInput
+          label="Email address"
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          required
+          placeholder="you@gmail.com"
+          className="h-12"
+          labelClassName={AUTH_LABEL_STYLE}
+        />
+        <FormInput
+          label="Password"
+          id="password"
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          required
+          placeholder="••••••••"
+          className="h-12"
+          labelClassName={AUTH_LABEL_STYLE}
+        />
       </AuthFormCard>
 
       <div className="flex items-center gap-5">

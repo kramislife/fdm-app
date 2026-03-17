@@ -1,27 +1,20 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-
-import type { AddressValue, AddressLabels } from "@/lib/types";
-
 import { useChapterAddress } from "@/hooks/use-chapter-address";
+import type { AddressLabels, AddressValue } from "@/lib/types";
+import { FormInput, FormSelect } from "@/components/shared/form-fields";
 
-type Props = {
+interface ChapterAddressFormProps {
+  labels: AddressLabels;
   value: AddressValue;
   onChange: (value: AddressValue) => void;
-  labels: AddressLabels;
-};
+}
 
-export function ChapterAddressForm({ value, onChange, labels }: Props) {
+export function ChapterAddressForm({
+  labels,
+  value,
+  onChange,
+}: ChapterAddressFormProps) {
   const {
     regionList,
     provinceList,
@@ -31,156 +24,104 @@ export function ChapterAddressForm({ value, onChange, labels }: Props) {
     provinceCode,
     cityCode,
     barangayCode,
-    showLandmark,
     handleRegionChange,
     handleProvinceChange,
     handleCityChange,
     handleBarangayChange,
-    handleLandmarkToggle,
+    handleStreetChange,
+    handleMapsUrlChange,
+    handleLandmarkChange,
   } = useChapterAddress(value, onChange);
 
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-2">
         {/* Region */}
-        <div className="space-y-2">
-          <Label htmlFor="ch-region">{labels.region}</Label>
-          <Select value={regionCode} onValueChange={handleRegionChange}>
-            <SelectTrigger id="ch-region">
-              <SelectValue placeholder="Select region" />
-            </SelectTrigger>
-            <SelectContent>
-              {regionList.map((r) => (
-                <SelectItem key={r.region_code} value={r.region_code}>
-                  {r.region_name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <FormSelect
+          label={labels.region}
+          id="ch-region"
+          value={regionCode}
+          onValueChange={handleRegionChange}
+          options={regionList.map((r) => ({
+            value: r.region_code,
+            label: r.region_name,
+          }))}
+          required
+        />
 
         {/* Province */}
-        <div className="space-y-2">
-          <Label htmlFor="ch-province">{labels.province}</Label>
-          <Select
-            value={provinceCode}
-            onValueChange={handleProvinceChange}
-            disabled={!regionCode}
-          >
-            <SelectTrigger id="ch-province">
-              <SelectValue
-                placeholder={
-                  provinceList.length
-                    ? "Select Province"
-                    : "Select Region First"
-                }
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {provinceList.map((p) => (
-                <SelectItem key={p.province_code} value={p.province_code}>
-                  {p.province_name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+        <FormSelect
+          label={labels.province}
+          id="ch-province"
+          value={provinceCode}
+          onValueChange={handleProvinceChange}
+          placeholder={
+            provinceList.length ? "Select province" : "Select region first"
+          }
+          options={provinceList.map((p) => ({
+            value: p.province_code,
+            label: p.province_name,
+          }))}
+          disabled={!provinceList.length}
+          required
+        />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-2">
-        {/* City / Municipality */}
-        <div className="space-y-2">
-          <Label htmlFor="ch-city">{labels.city}</Label>
-          <Select
-            value={cityCode}
-            onValueChange={handleCityChange}
-            disabled={!provinceCode}
-          >
-            <SelectTrigger id="ch-city">
-              <SelectValue
-                placeholder={
-                  cityList.length ? "Select City" : "Select Province First"
-                }
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {cityList.map((c) => (
-                <SelectItem key={c.city_code} value={c.city_code}>
-                  {c.city_name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {/* City */}
+        <FormSelect
+          label={labels.city}
+          id="ch-city"
+          value={cityCode}
+          onValueChange={handleCityChange}
+          placeholder={
+            cityList.length ? "Select city" : "Select province first"
+          }
+          options={cityList.map((c) => ({
+            value: c.city_code,
+            label: c.city_name,
+          }))}
+          disabled={!provinceCode}
+          required
+        />
+
         {/* Barangay */}
-        <div className="space-y-2">
-          <Label htmlFor="ch-barangay">{labels.barangay}</Label>
-          <Select
-            value={barangayCode}
-            onValueChange={handleBarangayChange}
-            disabled={!cityCode}
-          >
-            <SelectTrigger id="ch-barangay">
-              <SelectValue
-                placeholder={
-                  barangayList.length ? "Select Barangay" : "Select City First"
-                }
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {barangayList.map((b) => (
-                <SelectItem key={b.brgy_code} value={b.brgy_code}>
-                  {b.brgy_name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <FormSelect
+          label={labels.barangay}
+          id="ch-barangay"
+          value={barangayCode}
+          onValueChange={handleBarangayChange}
+          placeholder={
+            barangayList.length ? "Select barangay" : "Select city first"
+          }
+          options={barangayList.map((b) => ({
+            value: b.brgy_code,
+            label: b.brgy_name,
+          }))}
+          disabled={!cityCode}
+          required
+        />
       </div>
 
-      {/* Street Address */}
-      <div className="space-y-2">
-        <Label htmlFor="ch-street">{labels.street}</Label>
-        <Input
+      <div className="space-y-5">
+        <FormInput
+          label={labels.street}
           id="ch-street"
           value={value.street}
-          onChange={(e) => onChange({ ...value, street: e.target.value })}
-          placeholder={`Enter ${labels.street} (optional)`}
+          onChange={(e) => handleStreetChange(e.target.value)}
         />
-      </div>
 
-      {/* Address Link */}
-      <div className="space-y-2">
-        <Label htmlFor="ch-gmaps">{labels.gmaps}</Label>
-        <Input
+        <FormInput
+          label={labels.gmaps}
           id="ch-gmaps"
-          type="url"
           value={value.google_maps_url}
-          onChange={(e) =>
-            onChange({ ...value, google_maps_url: e.target.value })
-          }
-          placeholder={`Enter ${labels.gmaps} (optional)`}
+          onChange={(e) => handleMapsUrlChange(e.target.value)}
         />
-      </div>
 
-      {/* Landmark Toggle */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="ch-landmark-toggle">{`Add ${labels.landmark}`}</Label>
-          <Switch
-            id="ch-landmark-toggle"
-            checked={showLandmark}
-            onCheckedChange={handleLandmarkToggle}
-          />
-        </div>
-        {showLandmark && (
-          <Input
-            id="ch-landmark"
-            value={value.landmark}
-            onChange={(e) => onChange({ ...value, landmark: e.target.value })}
-            placeholder={`Enter Nearby ${labels.landmark}`}
-          />
-        )}
+        <FormInput
+          label={labels.landmark}
+          id="ch-landmark"
+          value={value.landmark}
+          onChange={(e) => handleLandmarkChange(e.target.value)}
+        />
       </div>
     </div>
   );

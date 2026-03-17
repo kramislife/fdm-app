@@ -203,6 +203,18 @@ export function useChapterAddress(
     if (!checked) onChange({ ...value, landmark: "" });
   }
 
+  function handleStreetChange(val: string) {
+    onChange({ ...value, street: val });
+  }
+
+  function handleMapsUrlChange(val: string) {
+    onChange({ ...value, google_maps_url: val });
+  }
+
+  function handleLandmarkChange(val: string) {
+    onChange({ ...value, landmark: val });
+  }
+
   return {
     // Dropdown Data
     regionList,
@@ -225,5 +237,8 @@ export function useChapterAddress(
     handleCityChange,
     handleBarangayChange,
     handleLandmarkToggle,
+    handleStreetChange,
+    handleMapsUrlChange,
+    handleLandmarkChange,
   };
 }
