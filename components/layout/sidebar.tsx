@@ -110,12 +110,12 @@ export function Sidebar({
         </div>
 
         {/* Nav items */}
-        <div className="flex-1 min-h-0 overflow-y-auto px-2 py-3">
-          <nav className="flex flex-col gap-1">
+        <div className="flex-1 min-h-0 overflow-y-auto px-2 py-2">
+          <nav className="flex flex-col gap-3">
             {visibleGroups.map((group) => (
-              <div key={group.group} className="">
+              <div key={group.group}>
                 {!isCollapsed ? (
-                  <p className="px-3 mb-2 text-xs font-medium uppercase tracking-wider text-sidebar-foreground/50">
+                  <p className="px-3 my-2 text-xs font-medium uppercase tracking-wider text-sidebar-foreground/50">
                     {group.group}
                   </p>
                 ) : (

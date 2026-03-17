@@ -42,7 +42,7 @@ export default async function UsersPage({ searchParams }: PageProps) {
   });
 
   const data = result.data.map((user) => ({
-    name: <UserCell user={user} fallback="Unknown" />,
+    name: <UserCell user={user} />,
     email: <TextCell value={user.email} />,
     contact_number: <TextCell value={user.contact_number} />,
     birthday: <DateCell date={user.birthday} dateOnly />,

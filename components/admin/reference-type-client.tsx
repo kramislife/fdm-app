@@ -78,8 +78,8 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
 
   const sheetDescription =
     sheetMode === "add"
-      ? `Fill in the details to create a new ${entityLabel.toLowerCase()}.`
-      : `Update the details and settings for this ${entityLabel.toLowerCase()}.`;
+      ? `Fill in the details to create a new ${entityLabel.toLowerCase()}`
+      : `Update the details and settings for this ${entityLabel.toLowerCase()}`;
 
   function openView(row: TRow) {
     setViewing(row);

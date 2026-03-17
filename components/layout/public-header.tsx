@@ -42,7 +42,7 @@ export function PublicHeader({ sessionUser }: PublicHeaderProps) {
   }
 
   return (
-    <header className="fixed top-0 left-1/2 -translate-x-1/2 z-50 max-w-[1920px] w-full border-b bg-background shadow-sm">
+    <header className="fixed top-0 left-1/2 -translate-x-1/2 z-50 max-w-480 w-full border-b bg-background shadow-sm">
       <div className="mx-auto flex h-15 items-center justify-between px-5">
         <Logo size="w-20" />
 

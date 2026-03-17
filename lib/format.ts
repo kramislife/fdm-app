@@ -19,3 +19,8 @@ export function formatDate(date: Date | string): string {
     year: "numeric",
   });
 }
+
+// Capitalize first letter of each word (for names/titles)
+export function capitalizeWords(str: string) {
+  return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}

@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { formatDateTime, formatDate } from "@/lib/format";
+import { formatDateTime, formatDate, capitalizeWords } from "@/lib/format";
 
 // ------------------------------- Status Badge -----------------------------------------
 interface StatusBadgeProps {
@@ -48,7 +48,7 @@ export function UserCell({ user, fallback = "—" }: UserCellProps) {
   if (!user) {
     return <span className="text-muted-foreground">{fallback}</span>;
   }
-  const fullName = `${user.first_name} ${user.last_name}`;
+  const fullName = capitalizeWords(`${user.first_name} ${user.last_name}`);
   return <span title={fullName}>{fullName}</span>;
 }
 
@@ -56,9 +56,14 @@ export function UserCell({ user, fallback = "—" }: UserCellProps) {
 interface TextCellProps {
   value: string | number | null | undefined;
   fallback?: string;
+  capitalize?: boolean;
 }
 
-export function TextCell({ value, fallback = "—" }: TextCellProps) {
+export function TextCell({
+  value,
+  fallback = "—",
+  capitalize = false,
+}: TextCellProps) {
   const isEmpty =
     value === null || value === undefined || String(value).trim() === "";
 
@@ -66,10 +71,13 @@ export function TextCell({ value, fallback = "—" }: TextCellProps) {
     return <span className="text-muted-foreground">{fallback}</span>;
   }
 
-  const displayValue = String(value);
+  let displayValue = String(value);
+  if (capitalize) {
+    displayValue = capitalizeWords(displayValue);
+  }
 
   return (
-    <span className="capitalize wrap-break-word" title={displayValue}>
+    <span className="wrap-break-word" title={displayValue}>
       {displayValue}
     </span>
   );

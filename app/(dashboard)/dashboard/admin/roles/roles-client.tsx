@@ -80,8 +80,8 @@ export function RolesClient({ roles, pagination }: Props) {
       pagination={pagination}
       columns={columns}
       renderRow={(row) => ({
-        name: <TextCell value={row.name} />,
-        scope: <TextCell value={row.scope} />,
+        name: <TextCell value={row.name} capitalize/>,
+        scope: <TextCell value={row.scope} capitalize />,
         description: <TextCell value={row.description} />,
         status: <StatusBadge isActive={row.is_active} />,
         created_by: <UserCell user={row.creator} />,
@@ -91,10 +91,10 @@ export function RolesClient({ roles, pagination }: Props) {
         <>
           <DetailSection>
             <DetailField label={FIELD_LABELS.name}>
-              <TextCell value={row.name} />
+              <TextCell value={row.name} capitalize/>
             </DetailField>
             <DetailField label={FIELD_LABELS.scope}>
-              <TextCell value={row.scope} />
+              <TextCell value={row.scope} capitalize />
             </DetailField>
             <DetailField label={FIELD_LABELS.status}>
               <StatusBadge isActive={row.is_active} />
@@ -158,8 +158,8 @@ export function RolesClient({ roles, pagination }: Props) {
             id="role-status"
             checked={form.is_active}
             onCheckedChange={(v) => setForm((f) => ({ ...f, is_active: v }))}
-            activeDescription="assigned users have access"
-            inactiveDescription="system features for this role are disabled"
+            activeDescription="Assigned users have access"
+            inactiveDescription="System features for this role are disabled"
           />
         </div>
       )}

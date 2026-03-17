@@ -126,10 +126,10 @@ export function ChaptersClient({ chapters, pagination }: Props) {
       pagination={pagination}
       columns={columns}
       renderRow={(row) => ({
-        name: <TextCell value={row.name} />,
+        name: <TextCell value={row.name} capitalize />,
         address: <TextCell value={row.street} />,
         gmaps: <LinkCell href={row.google_maps_url} label="Location Link" />,
-        fellowship_day: <TextCell value={row.fellowship_day} />,
+        fellowship_day: <TextCell value={row.fellowship_day} capitalize />,
         members: <TextCell value={row.member_count} />,
         status: <StatusBadge isActive={row.is_active} />,
         created_at: <DateCell date={row.created_at} />,
@@ -138,25 +138,25 @@ export function ChaptersClient({ chapters, pagination }: Props) {
         <>
           <DetailSection>
             <DetailField label={FIELD_LABELS.name}>
-              <TextCell value={row.name} />
+              <TextCell value={row.name} capitalize />
             </DetailField>
             <DetailField label={FIELD_LABELS.fellowship_day}>
-              <TextCell value={row.fellowship_day} />
+              <TextCell value={row.fellowship_day} capitalize />
             </DetailField>
             <DetailField label={FIELD_LABELS.status}>
               <StatusBadge isActive={row.is_active} />
             </DetailField>
             <DetailField label={FIELD_LABELS.region}>
-              <TextCell value={row.region} />
+              <TextCell value={row.region} capitalize />
             </DetailField>
             <DetailField label={FIELD_LABELS.province}>
-              <TextCell value={row.province} />
+              <TextCell value={row.province} capitalize />
             </DetailField>
             <DetailField label={FIELD_LABELS.city}>
-              <TextCell value={row.city} />
+              <TextCell value={row.city} capitalize />
             </DetailField>
             <DetailField label={FIELD_LABELS.barangay}>
-              <TextCell value={row.barangay} />
+              <TextCell value={row.barangay} capitalize />
             </DetailField>
             {row.street && (
               <DetailField label={FIELD_LABELS.street} fullWidth>

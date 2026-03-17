@@ -98,7 +98,7 @@ export function MinistryHeadsClient({ ministryHeads, pagination }: Props) {
       columns={columns}
       renderRow={(row) => ({
         name: <TextCell value={row.name} />,
-        chapter: <TextCell value={row.chapter_name} />,
+        chapter: <TextCell value={row.chapter_name} capitalize />,
         head: <UserCell user={row.head} />,
         members: <TextCell value={row.member_count} />,
         created_at: <DateCell date={row.created_at} />,
@@ -110,7 +110,7 @@ export function MinistryHeadsClient({ ministryHeads, pagination }: Props) {
               <TextCell value={row.name} />
             </DetailField>
             <DetailField label={FIELD_LABELS.chapter}>
-              <TextCell value={row.chapter_name} />
+              <TextCell value={row.chapter_name} capitalize />
             </DetailField>
             <DetailField label={FIELD_LABELS.head}>
               <UserCell user={row.head} />

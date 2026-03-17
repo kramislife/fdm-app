@@ -37,7 +37,7 @@ export function DetailField({
 }: DetailFieldProps) {
   return (
     <div
-      className={cn("space-y-2", fullWidth ? "w-full" : "min-w-[150px]", className)}
+      className={cn("space-y-2", fullWidth ? "w-full" : "min-w-50", className)}
     >
       <Label htmlFor={label} className="font-bold">{label}</Label>
       <div className={cn("text-sm", contentClassName)}>{children}</div>

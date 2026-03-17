@@ -207,7 +207,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
     ],
   },
   {
-    group: "ADMIN",
+    group: "CONFIGURATION",
     items: [
       {
         label: "Users",
@@ -221,16 +221,16 @@ export const SIDEBAR_NAV: NavGroup[] = [
         ],
       },
       {
-        label: "Ministry Heads",
-        href: "/dashboard/admin/ministry-heads",
-        icon: FaChurch,
-        roles: ["spiritual_director", "elder", "head_servant"],
-      },
-      {
         label: "Chapters",
         href: "/dashboard/admin/chapters",
         icon: FaBuildingUser,
         roles: ["spiritual_director", "elder"],
+      },
+      {
+        label: "Ministry Heads",
+        href: "/dashboard/admin/ministry-heads",
+        icon: FaChurch,
+        roles: ["spiritual_director", "elder", "head_servant"],
       },
       {
         label: "Ministry Types",
