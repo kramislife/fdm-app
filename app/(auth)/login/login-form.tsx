@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
-import { toast } from "sonner";
+import { sileo } from "sileo";
 import { AuthFormCard } from "@/components/auth/auth-form-card";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { FormInput } from "@/components/shared/form-fields";
@@ -26,9 +26,9 @@ export function LoginForm({ provisionedDate }: LoginFormProps) {
   useEffect(() => {
     if (provisionedDate) {
       const date = formatDate(provisionedDate);
-      toast.warning(
-        `Your account was already created by our admin on ${date}. Check your email for your login credentials.`,
-      );
+      sileo.warning({
+        title: `Your account was created by our admin on ${date}. Check your email for login credentials.`,
+      });
     }
   }, [provisionedDate]);
 

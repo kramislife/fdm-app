@@ -7,7 +7,7 @@ import {
   useState,
   useTransition,
 } from "react";
-import { toast } from "sonner";
+import { sileo } from "sileo";
 import { AdminPage } from "./admin-page";
 import { RowActionMenu } from "./row-action-menu";
 import { AdminSheet } from "./admin-sheet";
@@ -114,14 +114,18 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
         : await onCreate(form);
 
       if (result.success) {
-        toast.success(
-          isEditing
-            ? `${entityLabel} Updated Successfully.`
-            : `${entityLabel} Created Successfully.`,
-        );
+        sileo.success({
+          title: isEditing
+            ? `${entityLabel} has been successfully updated.`
+            : `${entityLabel} has been successfully created.`,
+        });
         closeSheet();
       } else {
-        toast.error(result.error ?? "Something went wrong.");
+        sileo.error({
+          title:
+            result.error ??
+            `We couldn't save the ${entityLabel.toLowerCase()}. Please try again.`,
+        });
       }
     });
   }
@@ -131,10 +135,14 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
     startDeleteTransition(async () => {
       const result = await onDelete(deleting.id);
       if (result.success) {
-        toast.success(`${entityLabel} deleted.`);
+        sileo.success({
+          title: `${entityLabel} has been successfully deleted.`,
+        });
         setDeleting(null);
       } else {
-        toast.error(result.error ?? "Something went wrong.");
+        sileo.error({
+          title: result.error ?? "Something went wrong. Please try again.",
+        });
       }
     });
   }
@@ -152,7 +160,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
 
   return (
     <>
-    {/* Admin Page - Table and Form */}
+      {/* Admin Page - Table and Form */}
       <AdminPage
         title={pageTitle}
         description={pageDescription}

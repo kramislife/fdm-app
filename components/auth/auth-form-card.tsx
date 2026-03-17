@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { toast } from "sonner";
+import { sileo } from "sileo";
 import { Button } from "@/components/ui/button";
 import { Loading } from "@/components/ui/loading";
 import { Logo } from "@/components/ui/logo";
@@ -34,7 +34,11 @@ export function AuthFormCard({
   children,
 }: AuthFormCardProps) {
   useEffect(() => {
-    if (error) toast.error(error);
+    if (error) {
+      sileo.error({
+        title: error,
+      });
+    }
     // errorId changes on every new error — guarantees the toast fires even
     // when the same message is returned on consecutive attempts.
     // eslint-disable-next-line react-hooks/exhaustive-deps
