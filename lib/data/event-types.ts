@@ -1,11 +1,14 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import { buildOrderBy, buildPaginationMeta, type TableParams } from "@/lib/table";
+import {
+  buildOrderBy,
+  buildPaginationMeta,
+  type TableParams,
+} from "@/lib/table";
 
 const ORDER_FIELDS: Record<string, string> = {
   name: "name",
   created_at: "created_at",
-  updated_at: "updated_at",
 };
 
 export async function getEventTypes(params: TableParams = {}) {
@@ -23,7 +26,6 @@ export async function getEventTypes(params: TableParams = {}) {
       ? {
           OR: [
             { name: { contains: search, mode: "insensitive" as const } },
-            { key: { contains: search, mode: "insensitive" as const } },
             { description: { contains: search, mode: "insensitive" as const } },
           ],
         }

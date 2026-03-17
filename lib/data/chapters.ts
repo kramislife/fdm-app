@@ -8,11 +8,9 @@ import {
 
 const ORDER_FIELDS: Record<string, string> = {
   name: "name",
-  city: "city",
   street: "street",
   fellowship_day: "fellowship_day",
   created_at: "created_at",
-  updated_at: "updated_at",
 };
 
 export async function getChapters(params: TableParams = {}) {
@@ -30,7 +28,6 @@ export async function getChapters(params: TableParams = {}) {
       ? {
           OR: [
             { name: { contains: search, mode: "insensitive" as const } },
-            { city: { contains: search, mode: "insensitive" as const } },
             { street: { contains: search, mode: "insensitive" as const } },
             {
               fellowship_day: {

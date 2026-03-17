@@ -10,7 +10,6 @@ const ORDER_FIELDS: Record<string, string> = {
   name: "name",
   scope: "scope",
   created_at: "created_at",
-  updated_at: "updated_at",
 };
 
 export async function getRoles(params: TableParams = {}) {
@@ -29,6 +28,7 @@ export async function getRoles(params: TableParams = {}) {
           OR: [
             { name: { contains: search, mode: "insensitive" as const } },
             { key: { contains: search, mode: "insensitive" as const } },
+            { scope: { contains: search, mode: "insensitive" as const } },
             { description: { contains: search, mode: "insensitive" as const } },
           ],
         }

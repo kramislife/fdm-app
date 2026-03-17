@@ -105,6 +105,9 @@ export function LinkCell({ href, label, fallback = "—" }: LinkCellProps) {
   if (!href) {
     return <span className="text-muted-foreground">{fallback}</span>;
   }
+
+  const displayText = label || "Link URL";
+
   return (
     <a
       href={href}
@@ -113,7 +116,7 @@ export function LinkCell({ href, label, fallback = "—" }: LinkCellProps) {
       className="text-primary underline underline-offset-2 break-all"
       title={href}
     >
-      {label || href}
+      {displayText}
     </a>
   );
 }

@@ -126,7 +126,7 @@ export function ChaptersClient({ chapters, pagination }: Props) {
       renderRow={(row) => ({
         name: <TextCell value={row.name} />,
         address: <TextCell value={row.street} />,
-        gmaps: <LinkCell href={row.google_maps_url} />,
+        gmaps: <LinkCell href={row.google_maps_url} label="Location Link" />,
         fellowship_day: <TextCell value={row.fellowship_day} />,
         members: <TextCell value={row.member_count} />,
         status: <StatusBadge isActive={row.is_active} />,

@@ -9,7 +9,6 @@ import {
 const ORDER_FIELDS: Record<string, string> = {
   name: "name",
   created_at: "created_at",
-  updated_at: "updated_at",
 };
 
 export async function getMinistryTypes(params: TableParams = {}) {
@@ -27,7 +26,6 @@ export async function getMinistryTypes(params: TableParams = {}) {
       ? {
           OR: [
             { name: { contains: search, mode: "insensitive" as const } },
-            { key: { contains: search, mode: "insensitive" as const } },
             { description: { contains: search, mode: "insensitive" as const } },
           ],
         }
