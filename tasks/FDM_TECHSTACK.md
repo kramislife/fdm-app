@@ -505,7 +505,8 @@ npx tsc --noEmit                       # type check only
 npx prisma generate
 npx prisma db push
 npx prisma db push --force-reset       # wipes all data and tables
-npx prisma db seed
+npx prisma db seed                     # default seed file command
+npx tsx prisma/seed-users.ts           # run custom seed files
 npx prisma studio --config ./prisma.config.ts
 npx prisma format
 npx prisma migrate dev --name <name>

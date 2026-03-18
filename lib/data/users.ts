@@ -5,7 +5,6 @@ import { buildOrderBy, buildPaginationMeta, type TableParams } from "@/lib/table
 const ORDER_FIELDS: Record<string, string> = {
   name: "first_name",
   email: "email",
-  created_at: "created_at",
 };
 
 export async function getUsers(params: TableParams = {}) {
@@ -26,6 +25,24 @@ export async function getUsers(params: TableParams = {}) {
           {
             contact_number: { contains: search, mode: "insensitive" as const },
           },
+          {
+            user_roles: {
+              some: {
+                chapter: {
+                  name: { contains: search, mode: "insensitive" as const },
+                },
+              },
+            },
+          },
+          {
+            user_roles: {
+              some: {
+                role: {
+                  name: { contains: search, mode: "insensitive" as const },
+                },
+              },
+            },
+          },
         ],
       }
     : {};
@@ -41,6 +58,7 @@ export async function getUsers(params: TableParams = {}) {
         email: true,
         contact_number: true,
         birthday: true,
+        address: true,
         status: true,
         photo_url: true,
         created_at: true,
@@ -59,9 +77,11 @@ export async function getUsers(params: TableParams = {}) {
         user_roles: {
           where: { is_active: true },
           select: {
-            role: { select: { key: true, name: true } },
-            chapter: { select: { name: true } },
+            id: true,
+            role: { select: { id: true, key: true, name: true } },
+            chapter: { select: { id: true, name: true } },
           },
+          take: 1,
         },
       },
       orderBy: buildOrderBy(sort, order, ORDER_FIELDS),

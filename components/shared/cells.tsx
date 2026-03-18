@@ -87,18 +87,22 @@ export function TextCell({
 interface DateCellProps {
   date: Date | string | null | undefined;
   dateOnly?: boolean;
+  format?: "short" | "long";
   fallback?: string;
 }
 
 export function DateCell({
   date,
   dateOnly = false,
+  format = "short",
   fallback = "—",
 }: DateCellProps) {
   if (!date) {
     return <span className="text-muted-foreground">{fallback}</span>;
   }
-  const formatted = dateOnly ? formatDate(date) : formatDateTime(date);
+  const formatted = dateOnly
+    ? formatDate(date, format)
+    : formatDateTime(date, format);
   return <span title={formatted}>{formatted}</span>;
 }
 

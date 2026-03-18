@@ -1,24 +1,7 @@
 import { requireRole } from "@/lib/auth";
 import { getUsers } from "@/lib/data/users";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
-import { AdminPage, type Column } from "@/components/admin";
-import {
-  DateCell,
-  TextCell,
-  UserStatusBadge,
-  UserCell,
-} from "@/components/shared/cells";
-
-const columns: Column[] = [
-  { key: "name", label: "Full Name", sortable: true },
-  { key: "email", label: "Email", sortable: true },
-  { key: "contact_number", label: "Contact Number" },
-  { key: "birthday", label: "Birthday" },
-  { key: "chapter", label: "Chapter" },
-  { key: "role", label: "Role" },
-  { key: "status", label: "Status" },
-  { key: "created_at", label: "Created At", sortable: true },
-];
+import { UsersClient, type UserRow } from "./users-client";
 
 export default async function UsersPage({ searchParams }: PageProps) {
   await requireRole([
@@ -41,24 +24,21 @@ export default async function UsersPage({ searchParams }: PageProps) {
     order,
   });
 
-  const data = result.data.map((user) => ({
-    name: <UserCell user={user} />,
-    email: <TextCell value={user.email} />,
-    contact_number: <TextCell value={user.contact_number} />,
-    birthday: <DateCell date={user.birthday} dateOnly />,
-    chapter: <TextCell value={user.user_chapters[0]?.chapter?.name} />,
-    role: <TextCell value={user.user_roles[0]?.role?.name} />,
-    status: <UserStatusBadge status={user.status} />,
-    created_at: <DateCell date={user.created_at} />,
+  const users: UserRow[] = result.data.map((user) => ({
+    id: user.id,
+    name: `${user.first_name} ${user.last_name}`,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    email: user.email,
+    contact_number: user.contact_number,
+    address: user.address,
+    birthday: user.birthday?.toISOString() ?? null,
+    status: user.status,
+    user_chapters: user.user_chapters,
+    user_roles: user.user_roles,
+    created_at: user.created_at.toISOString(),
+    updated_at: user.updated_at.toISOString(),
   }));
 
-  return (
-    <AdminPage
-      title="Users"
-      description="View all registered users in the system"
-      columns={columns}
-      data={data}
-      pagination={toPagination(result)}
-    />
-  );
+  return <UsersClient users={users} pagination={toPagination(result)} />;
 }

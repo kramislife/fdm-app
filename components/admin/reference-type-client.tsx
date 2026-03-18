@@ -19,23 +19,21 @@ import type { Pagination } from "@/lib/table";
 type BaseRow = { id: number; name: string };
 type ActionResult = { success: boolean; error?: string; description?: string };
 
-export type ReferenceTypeClientProps<TRow extends BaseRow, TForm> = {
+export type ReferenceTypeClientProps<TRow extends BaseRow, TForm = {}> = {
   entityLabel: string;
   pageTitle: string;
   pageDescription: string;
   rows: TRow[];
   pagination: Pagination;
   columns: Column[];
-  /** Map a row to table cells — do not include the actions column */
+
   renderRow: (row: TRow) => Record<string, ReactNode>;
-  /** Render the read-only detail view — receives the row being viewed */
   renderDetail?: (row: TRow) => ReactNode;
-  /** Initial blank form state used when opening the Add sheet */
-  initialForm: TForm;
-  /** Populate form from an existing row when opening the Edit sheet */
-  getFormFromRow: (row: TRow) => TForm;
-  /** Render the form fields — receives current form state and its setter */
-  renderForm: (
+
+  initialForm?: TForm;
+  getFormFromRow?: (row: TRow) => TForm;
+
+  renderForm?: (
     form: TForm,
     setForm: Dispatch<SetStateAction<TForm>>,
   ) => ReactNode;
@@ -44,35 +42,37 @@ export type ReferenceTypeClientProps<TRow extends BaseRow, TForm> = {
   onDelete?: (id: number) => Promise<ActionResult>;
 };
 
-export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
-  entityLabel,
-  pageTitle,
-  pageDescription,
-  rows,
-  pagination,
-  columns,
-  renderRow,
-  initialForm,
-  getFormFromRow,
-  renderForm,
-  renderDetail,
-  onCreate,
-  onUpdate,
-  onDelete,
-}: ReferenceTypeClientProps<TRow, TForm>) {
+export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
+  props: ReferenceTypeClientProps<TRow, TForm>,
+) {
+  const {
+    entityLabel,
+    pageTitle,
+    pageDescription,
+    rows,
+    pagination,
+    columns,
+    renderRow,
+    initialForm,
+    getFormFromRow,
+    renderForm,
+    renderDetail,
+    onCreate,
+    onUpdate,
+    onDelete,
+  } = props;
   const [viewing, setViewing] = useState<TRow | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [editing, setEditing] = useState<TRow | null>(null);
   const [deleting, setDeleting] = useState<TRow | null>(null);
   const [sheetMode, setSheetMode] = useState<"add" | "edit">("add");
 
-  const [form, setForm] = useState<TForm>(initialForm);
+  const [form, setForm] = useState<TForm>(initialForm ?? ({} as TForm));
   const [isPending, startTransition] = useTransition();
   const [isDeleting, startDeleteTransition] = useTransition();
 
   const isSheetOpen = isAdding || !!editing;
-  // sheetMode is set on open and never cleared on close — keeps the title
-  // stable throughout the close animation
+  
   const sheetTitle =
     sheetMode === "add" ? `Add ${entityLabel}` : `Edit ${entityLabel}`;
 
@@ -90,12 +90,14 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
   }
 
   function openAdd() {
+    if (!initialForm || !onCreate) return;
     setSheetMode("add");
     setForm(initialForm);
     setIsAdding(true);
   }
 
   function openEdit(row: TRow) {
+    if (!getFormFromRow || !onUpdate) return;
     setViewing(null);
     setSheetMode("edit");
     setEditing(row);
@@ -200,17 +202,19 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm>({
       </DetailSheet>
 
       {/* Add and Edit Forms */}
-      <AdminSheet
-        open={isSheetOpen}
-        onClose={closeSheet}
-        title={sheetTitle}
-        description={sheetDescription}
-        onSubmit={handleSubmit}
-        isSubmitting={isPending}
-        submitLabel={sheetMode === "add" ? "Save" : "Update"}
-      >
-        {renderForm(form, setForm)}
-      </AdminSheet>
+      {renderForm && (
+        <AdminSheet
+          open={isSheetOpen}
+          onClose={closeSheet}
+          title={sheetTitle}
+          description={sheetDescription}
+          onSubmit={handleSubmit}
+          isSubmitting={isPending}
+          submitLabel={sheetMode === "add" ? "Save" : "Update"}
+        >
+          {renderForm(form, setForm)}
+        </AdminSheet>
+      )}
 
       {/* Delete Confirm Dialog */}
       {onDelete && (
