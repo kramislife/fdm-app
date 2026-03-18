@@ -83,7 +83,7 @@ export default function ContactPage() {
               <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent" />
               <div className="absolute bottom-4 right-4">
                 <Badge className="items-center gap-2 px-3 py-5 text-sm font-bold uppercase tracking-widest rounded-none [&>svg]:size-5!">
-                  <MapPin />
+                  <MapPin className="mb-1" />
                   {contactSection.image.badge}
                 </Badge>
               </div>
@@ -122,7 +122,7 @@ export default function ContactPage() {
                         href={href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-info leading-relaxed underline"
+                        className="text-sm text-info leading-relaxed underline underline-offset-4 break-all"
                       >
                         {value}
                       </a>

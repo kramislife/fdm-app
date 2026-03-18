@@ -125,7 +125,7 @@ export function LinkCell({ href, label, fallback = "—" }: LinkCellProps) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-primary underline underline-offset-2 break-all"
+      className="text-primary underline underline-offset-4 break-all"
       title={href}
     >
       {displayText}
