@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { backfillAttendance } from "@/lib/auth";
 import { uploadToCloudinary } from "@/lib/cloudinary";
+import { USER_STATUS } from "@/lib/status";
 
 // Upload user avatar to Cloudinary
 async function uploadAvatar(imageUrl: string, userId: number) {
@@ -135,7 +136,7 @@ export async function GET(request: NextRequest) {
       last_name: lastName,
       email,
       auth_id: authUser.id,
-      status: "registered",
+      status: USER_STATUS.REGISTERED,
       is_temp_password: false,
     },
   });

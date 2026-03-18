@@ -11,340 +11,320 @@
 
 ---
 
-### Phase 12: Schema Update + Chapters CRUD
-
-> Goal: Drop areas table, restructure chapters and clusters with
-> Philippine address fields. Build full CRUD for Chapters only.
-> Clusters CRUD comes after.
-
-### 12a. Schema Changes (v10)
-
-Areas table dropped. Chapters get structured PH address.
-Clusters simplified — inherits geography from chapter.
-
-Drop from schema:
-
-Remove Area model entirely
-Remove areas relation from Chapter
-Remove area_id from Cluster
-Remove Area relation from Cluster
-Remove areas_created relation from User
-
-Update Chapter model:
-
-Remove location String — replaced by structured fields
-Add:
-
-prisma region String @db.VarChar(100)
-province String @db.VarChar(100)
-city String @db.VarChar(100)
-barangay String @db.VarChar(100)
-street String? @db.VarChar(255)
-google_maps_url String? @db.VarChar(500)
-landmark String? @db.VarChar(255)
-
-Add indexes: @@index([region]), @@index([province]), @@index([city])
-
-Update Cluster model:
-
-Remove area_id Int
-Remove Area relation
-Remove @@index([area_id])
-Add:
-
-prisma street String? @db.VarChar(255)
-google_maps_url String? @db.VarChar(500)
-landmark String? @db.VarChar(255)
-
-Keep @@unique([name, chapter_id]) and @@index([chapter_id])
-
-add updated_by, deleted_at, deleted_by too fields in chapters and cluster
-
-After schema changes:
-
-Run SQL in Supabase to drop areas table and alter columns safely
-npx prisma generate
-npx prisma db push
-
-### 12b. Install Address Package
-
-npm install select-philippines-address
-Test import works: import { regions, provinces, cities, barangays } from 'select-philippines-address'
-
-### 12c. Chapter Address Form Component
-
-components/admin/chapter-address-form.tsx — "use client"
-
-Uses select-philippines-address for cascading selects
-Fields in order:
-
-Region — select, required
-Province — select, required, populated after region selected
-City/Municipality — select, required, populated after province selected
-Barangay — select, required, populated after city selected
-Street / Exact Address — text input, optional
-Google Maps Link — URL input, optional
-Landmark toggle — checkbox/switch
-
-When toggled on: shows Landmark text input
-When toggled off: hides input, clears value
-
-### 12d. Chapters CRUD Page
-
-lib/data/chapters.ts — update fetcher
-
-Include structured address fields
-Search across: name, region, province, city, barangay
-Include \_count: { select: { clusters: true, user_chapters: true } }
-
-app/(dashboard)/admin/chapters/page.tsx
-
-Add button top-right: "+ Add Chapter"
-Table columns: Name | City | Province | Region | Fellowship Day | Clusters | Members | Status | Actions
-Actions ellipsis: View | Edit | Delete
-
-app/(dashboard)/admin/chapters/actions.ts
-
-createChapter(data) — full address fields + name + fellowship_day + is_active
-updateChapter(id, data) — same fields
-deleteChapter(id) — soft delete, sets deleted_at
-All use revalidatePath('/dashboard/admin/chapters')
-
-AdminSheet form for chapters:
-
-Name (Input, required)
-ChapterAddressForm component (cascading selects)
-Fellowship Day (Select: Monday–Sunday)
-Is Active (Switch)
-Key auto-generated from name (not shown in table)
-
-### 12f. Update Chapters Fetcher
-
-lib/data/chapters.ts
-
-Add deleted_at: null to where clause
-Search includes region, province, city, barangay
-
-Decisions Recorded
-
-Areas table dropped entirely — too many layers for FDM's scale
-Chapters use structured PH address via select-philippines-address
-Clusters inherit geography from chapter — only need street, gmaps, landmark
-Cluster CRUD comes in next phase after chapters is verified
-deleted_at added to chapters for soft delete
+# FDM — Master Task Plan
+> Work phase by phase. Complete and verify before moving to the next.
+> Run `npx tsc --noEmit` after every phase — zero errors required.
+>
+> WORKFLOW:
+> 1. Build tasks below
+> 2. Verify using checking.md
+> 3. Once ALL checks pass → move to completed.md
+> 4. Update checking.md for the next phase
 
 ---
 
-## Phase 13: Ministries — Display + Ministry Head Assignment
+## Phases Overview
+- Phase 1: Foundation — Auth Flow ✅
+- Phase 2: Public Header ✅
+- Phase 3: Public Pages — About ✅
+- Phase 4: Public Pages — Chapters ✅
+- Phase 5: Admin Panel UI ✅
+- Phase 6: Auth-Aware Header + Member Layout ✅
+- Phase 7: Secure Authentication, Role Handling & Logout ✅
+- Phase 8: Reusable Admin Table Component ✅
+- Phase 9: Reference Data — Display Only ✅
+- Phase 10: Google OAuth ✅
+- Phase 11: Admin CRUD — Roles, Ministry Types, Event Types ✅
+- Phase 12: Schema Update + Chapters CRUD ✅
+- Phase 13: Ministry Heads Management ✅
+- Phase 14: Users CRUD ← CURRENT
 
-> Goal: Display all ministries per chapter in a table.
-> Assign, change, and remove Ministry Heads.
-> No create/delete UI — ministries are auto-created via DB triggers.
-> Access is chapter-scoped per permission matrix.
+---
 
+## Phase 14: Users CRUD
+> Goal: Admin can create, update, and soft delete users.
+> No email invite flow yet — that comes later.
+> Guests excluded — status != 'guest'.
+> SD + Elder only for full access.
 
-- [ ] `lib/data/ministries.ts`
+### 14a. Data Fetchers
+- [x] `lib/data/users.ts` — update existing fetcher
 
-  `getMinistries(params: TableParams & { chapterId?: number })`
-  - where: `{ deleted_at: null }`
-  - Filter by `chapterId` when provided
+  `getUsers(params: TableParams)`
+  - where:
+    ```ts
+    {
+      status: { not: 'guest' },
+      deleted_at: null,
+    }
+    ```
   - Include:
     ```ts
-    ministry_type: { select: { name: true, key: true } }
-    chapter: { select: { id: true, name: true } }
-    _count: { select: { ministry_members: true } }
-    user_roles: {
-      where: {
-        role: { key: 'ministry_head' },
-        is_active: true
-      },
+    user_chapters: {
+      where: { is_primary: true },
       select: {
-        id: true,
-        user: {
-          select: {
-            id: true,
-            first_name: true,
-            last_name: true,
-            photo_url: true,
-          }
-        }
+        chapter: { select: { id: true, name: true } }
       },
       take: 1
     }
-    ```
-  - Default sort: ministry_type name asc
-  - SD + Elder: all ministries (no chapter filter required)
-  - HS + AHS: scoped to own chapter only
-
-  `getChapterActiveUsers(chapterId: number)`
-  - Used to populate user select in Assign Head sheet
-  - Filter:
-    ```ts
-    where: {
-      status: 'active',
-      deleted_at: null,
-      user_chapters: {
-        some: { chapter_id: chapterId, is_primary: true }
-      }
+    user_roles: {
+      where: { is_active: true },
+      select: {
+        role: { select: { key: true, name: true } }
+      },
+      take: 1  // show primary/first active role only
     }
-    select: { id, first_name, last_name, photo_url }
-    orderBy: [{ last_name: 'asc' }, { first_name: 'asc' }]
     ```
+  - Columns to display:
+    Full Name | Email | Contact Number | Birthday | Chapter | Role | Status | Actions
+  - Search across: first_name, last_name, email, contact_number, role, chapter
 
-  `getChaptersForFilter()`
-  - Returns all active non-deleted chapters
-  - Used for chapter filter dropdown
+  `getChaptersForSelect()`
+  - All active non-deleted chapters
   - select: { id, name }
   - orderBy: name asc
+  - Used in create/edit form chapter select
 
-### 13a. Ministries Page
+  `getRolesForSelect()`
+  - All roles (no deleted_at on roles)
+  - select: { id, key, name, scope }
+  - orderBy: name asc
+  - Used in create/edit form role select
 
-- [ ] `app/(dashboard)/admin/ministries/page.tsx`
+### 14b. Users Page Updates
+- [x] `app/(dashboard)/admin/users/page.tsx`
+  - Add "+ Add User" button top-right aligned with page header
+  - Table columns: Full Name | Email | Contact Number | Birthday | Chapter | Role | Status | Actions
+  - Status badge: active=green, registered=blue, pending=amber, expired=red
+  - Actions ellipsis:
+    - View
+    - Edit
+    - Separator
+    - Deactivate (if status = active or registered)
+    - Restore (if status = expired)
+    - Separator
+    - Delete (destructive, soft delete)
 
-  **Page header:**
-  - Title: "Ministries"
-  - Description: "Manage ministry heads per chapter"
-  - No Add button — ministries are auto-created
+### 14c. Create User Sheet
+- [x] `app/(dashboard)/admin/users/page.tsx` — Add sheet for create
 
-  **Chapter filter (above table):**
-  - Select: "All Chapters" | each chapter name
-  - SD + Elder: show all chapters option + individual chapters
-  - HS + AHS: no filter shown — locked to own chapter
-  - Filter updates URL param `?chapterId=`
-  - Server re-fetches on param change
+  Form fields:
+  - First Name (Input, required)
+  - Last Name (Input, required)
+  - Email (Input, required, type=email)
+    - Note: email is stored but invite logic skipped for now
+    - Validate: unique — check against existing users
+  - Contact Number (Input, optional, type=tel)
+    - Validate: unique if provided — check against existing users
+  - Birthday (Date picker, optional)
+  - Chapter (Select from getChaptersForSelect(), required)
+  - Role (Select from getRolesForSelect(), required)
+    - When role scope = 'global': no chapter required
+    - When role scope = 'chapter': chapter required
+  - Status (Select: active | registered | pending, default: pending)
+  - Address (Textarea, optional)
 
-  **Table columns:**
-  Ministry | Chapter | Head | Members | Actions
+### 14d. Edit User Sheet
+- [x] Same AdminSheet component, pre-filled with user data
+  - All fields editable except Email
+    - Email shown as read-only text (not input) — auth identifier - use Detail-field
+  - Role change: deactivates old user_role, creates new one
+  - Chapter change: updates user_chapters is_primary record
 
-  **Ministry column:**
-  - Ministry type name (e.g. "Music Ministry")
+### 14e. Server Actions
+- [x] `app/(dashboard)/admin/users/actions.ts`
 
-  **Chapter column:**
-  - Chapter name (hidden when filtered by single chapter)
-
-  **Head column:**
-  - Assigned: avatar initials circle + full name
-  - Unassigned: "Unassigned" muted text
-
-  **Members column:**
-  - Count from `_count.ministry_members`
-
-  **Actions ellipsis (RowActionMenu):**
-  - "Assign Head" — when no head assigned
-  - "Change Head" — when head already assigned
-  - "Remove Head" — when head assigned, destructive
-
-  No Edit, no Delete in actions — ministries are permanent
-
-### 13b. Assign / Change Head Sheet
-
-- [ ] `components/admin/admin-sheet.tsx`
-
-  Props:
-
-  ```ts
-  type AssignHeadSheetProps = {
-    open: boolean;
-    onClose: () => void;
-    mode: "assign" | "change";
-    ministry: {
-      id: number;
-      name: string;
-      chapterId: number;
-      chapterName: string;
-      currentHead?: { id: number; fullName: string };
-    };
-  };
-  ```
-
-  Sheet content:
-  - Title: "Assign Ministry Head" or "Change Ministry Head"
-  - Read-only context: ministry name + chapter name
-  - If mode = 'change': show current head name with note
-    "Current head: [Name] — will be replaced on save"
-  - User select:
-    - Fetches `getChapterActiveUsers(chapterId)` on mount
-    - Shows: avatar initials + full name per option
-    - Sorted alphabetically: last name then first name
-    - Searchable — type to filter
-    - Only active users from that chapter
-  - Save + Cancel buttons
-
-### 13d. Remove Head Confirm
-
-- [ ] Uses existing `DeleteConfirmDialog` component
-  - Title: "Remove Ministry Head"
-  - Description: "[Name] will be removed as head of [Ministry] — [Chapter]"
-  - On confirm: calls `removeMinistryHead` action
-
-### 13e. Server Actions
-
-- [ ] `app/(dashboard)/admin/ministries/actions.ts`
-
-  `assignMinistryHead(ministryId, userId)`
-  - `requireRole(['spiritual_director', 'elder', 'head_servant'])`
-  - Get ministryHeadRoleId from roles table
-  - Deactivate existing ministry_head role for this ministry:
+  `createUser(data)`
+  - `requireRole(['spiritual_director', 'elder'])`
+  - Validate name, email required
+  - Check email uniqueness:
     ```ts
-    prisma.userRole.updateMany({
-      where: {
-        ministry_id: ministryId,
-        role: { key: "ministry_head" },
-        is_active: true,
-      },
-      data: { is_active: false },
-    });
+    prisma.user.findFirst({ where: { email: data.email } })
+    // if found → return { success: false, error: 'Email already exists.' }
     ```
-  - Create new user_role:
+  - Check contact_number uniqueness if provided:
+    ```ts
+    prisma.user.findFirst({ where: { contact_number: data.contact_number } })
+    // if found → return { success: false, error: 'Contact number already exists.' }
+    ```
+  - Create user row:
+    ```ts
+    prisma.user.create({
+      data: {
+        first_name, last_name, email,
+        contact_number: data.contact_number || null,
+        birthday: data.birthday || null,
+        address: data.address || null,
+        status: data.status || 'pending',
+        created_by_admin: currentUser.user.id,
+      }
+    })
+    ```
+  - Assign chapter:
+    ```ts
+    prisma.userChapter.create({
+      data: { user_id: newUser.id, chapter_id: data.chapter_id, is_primary: true }
+    })
+    ```
+  - Assign role:
     ```ts
     prisma.userRole.create({
       data: {
-        user_id: userId,
-        role_id: ministryHeadRoleId,
-        chapter_id: ministry.chapter_id,
-        ministry_id: ministryId,
+        user_id: newUser.id,
+        role_id: data.role_id,
+        chapter_id: roleScope === 'chapter' ? data.chapter_id : null,
         assigned_by: currentUser.user.id,
         is_active: true,
-      },
-    });
+      }
+    })
     ```
-  - `revalidatePath('/dashboard/admin/ministries')`
+  - `revalidatePath('/dashboard/admin/users')`
   - Return `{ success: true }` or `{ success: false, error }`
 
-  `removeMinistryHead(ministryId)`
-  - `requireRole(['spiritual_director', 'elder', 'head_servant'])`
-  - Set `is_active = false` on current ministry_head user_role:
+  `updateUser(id, data)`
+  - `requireRole(['spiritual_director', 'elder'])`
+  - Validate name required
+  - Check contact_number uniqueness if changed:
+    ```ts
+    prisma.user.findFirst({
+      where: { contact_number: data.contact_number, id: { not: id } }
+    })
+    ```
+  - Update user row (email never updated)
+  - If role changed:
+    - Deactivate old user_role
+    - Create new user_role
+  - If chapter changed:
+    - Update user_chapters is_primary record
+  - `revalidatePath('/dashboard/admin/users')`
+  - Return `{ success: true }` or `{ success: false, error }`
+
+  `deactivateUser(id)`
+  - `requireRole(['spiritual_director', 'elder'])`
+  - Sets status = 'expired'
+  - Deactivates all user_roles:
     ```ts
     prisma.userRole.updateMany({
-      where: {
-        ministry_id: ministryId,
-        role: { key: "ministry_head" },
-        is_active: true,
-      },
-      data: { is_active: false },
-    });
+      where: { user_id: id },
+      data: { is_active: false }
+    })
     ```
-  - `revalidatePath('/dashboard/admin/ministries')`
-  - Return `{ success: true }` or `{ success: false, error }`
+  - `revalidatePath('/dashboard/admin/users')`
+
+  `restoreUser(id)`
+  - `requireRole(['spiritual_director', 'elder'])`
+  - Sets status = 'active'
+  - Does NOT restore roles — admin reassigns manually
+  - `revalidatePath('/dashboard/admin/users')`
+
+  `deleteUser(id)`
+  - `requireRole(['spiritual_director', 'elder'])`
+  - Soft delete only:
+    ```ts
+    prisma.user.update({
+      where: { id },
+      data: {
+        deleted_at: new Date(),
+        deleted_by: currentUser.user.id,
+        status: 'expired'
+      }
+    })
+    ```
+  - Deactivate all user_roles
+  - Preserve attendance, guest_logs, finance records
+  - `revalidatePath('/dashboard/admin/users')`
 
 ---
 
-## Access Rules
-
-| Role               | Can view         | Can assign/change/remove head |
-| ------------------ | ---------------- | ----------------------------- |
-| Spiritual Director | All chapters     | All chapters                  |
-| Elder              | All chapters     | All chapters                  |
-| Head Servant       | Own chapter only | Own chapter only              |
-| Asst. Head Servant | Own chapter only | No                            |
-| Others             | No access        | No                            |
-
 ## Decisions Recorded
+- Guests (status = guest) excluded from Users table
+- Email is required on create but invite logic skipped for now
+- Email is never editable after creation — auth identifier
+- Contact number optional, unique when provided
+- Role change deactivates old role, creates new — history preserved
+- Deactivate sets status = expired + deactivates all roles
+- Restore sets status = active but does NOT restore roles
+- Delete is soft only — all records preserved
+- deleted_by and deleted_at set on soft delete
 
-- Ministries auto-created via DB triggers — no manual create
-- Ministry Head must be status = 'active' user from same chapter
-- User select sorted alphabetically: last name then first name
-- Only one active Ministry Head per ministry at a time
-- Changing head deactivates old role, inserts new — history preserved
-- Removing head sets is_active = false — not deleted from user_roles
-- Chapter column hidden in table when filtered to single chapter
+
+
+### Revisions 
+
+Update Users CRUD — create and edit user form.
+Focus on form fields and validation rules only.
+
+== CREATE USER FORM FIELDS ==
+
+Required:
+- First Name
+- Last Name
+- Status (select: active, registered, pending)
+
+Optional:
+- Email (some elderly members may not have one)
+- Contact Number (unique when provided)
+- Birthday (date picker)
+- Chapter (home chapter — not role scope)
+- Address (textarea)
+
+== EDIT USER FORM FIELDS ==
+
+Same fields as create except:
+- Email shown as read-only text if it exists — not editable
+- Email input shown if no email set — can be added later
+- All other fields editable
+
+== VALIDATION RULES ==
+
+Email:
+- Optional
+- If provided: must be valid email format
+- If provided: must be unique across users (excluding current user on edit)
+- If not provided: null in DB
+
+Contact Number:
+- Optional
+- If provided: must be unique across users (excluding current user on edit)
+- If not provided: null in DB
+
+First Name + Last Name:
+- Required, cannot be empty strings
+
+Chapter:
+- Optional in form
+- If provided: saved to user_chapters as is_primary = true
+- If changed on edit: update existing user_chapters primary record
+- If removed on edit: set old user_chapters record is_primary = false
+
+Status:
+- Options: active, registered, pending
+- expired and guest not shown in create/edit — set by system
+
+== SOFT DELETE RULES ==
+
+Delete:
+- Sets deleted_at, deleted_by
+- Sets status = expired
+- Deactivates all user_roles (is_active = false)
+- Preserves all attendance, guest_logs, finance records
+
+Deactivate (separate from delete):
+- Sets status = expired
+- Deactivates all user_roles
+- Does not set deleted_at — user still visible in table
+
+Restore:
+- Sets status = active
+- Does NOT restore roles — admin reassigns via Manage Roles
+- deleted_at stays null (was never set by deactivate)
+
+== MANAGE ROLES  ==
+- add in row action menu - manage roles
+- Handled separately via Manage Roles sheet in ellipsis
+- Role + chapter scope set there, not in create/edit form
+
+== RULES ==
+- TypeScript strict — no any
+- All actions return { success, error } — never throw to client
+- npx tsc --noEmit after changes — zero errors

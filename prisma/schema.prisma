@@ -104,7 +104,7 @@ model User {
   auth_id        String?   @unique @db.VarChar(255)
   first_name     String    @db.VarChar(100)
   last_name      String    @db.VarChar(100)
-  email          String    @unique @db.VarChar(255)
+  email          String?   @unique @db.VarChar(255)
   contact_number String?   @db.VarChar(20)
   status         String    @default("guest") @db.VarChar(20)
   birthday       DateTime? @db.Date
@@ -121,8 +121,13 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  deleted_at DateTime?
+  deleted_by Int?
+
   created_by_admin_user User?  @relation("AdminCreated", fields: [created_by_admin], references: [id])
   provisioned_users     User[] @relation("AdminCreated")
+  deleted_by_user       User?  @relation("UserDeletedBy", fields: [deleted_by], references: [id])
+  users_deleted         User[] @relation("UserDeletedBy")
 
   user_roles       UserRole[]       @relation("UserRoles")
   assigned_roles   UserRole[]       @relation("AssignedBy")

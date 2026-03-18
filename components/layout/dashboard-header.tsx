@@ -8,6 +8,7 @@ import type { DashboardSessionUser } from "@/lib/types";
 
 import { UserDropdown } from "@/components/shared/user-dropdown";
 import { useSignOut } from "@/hooks/use-sign-out";
+import { ROLE_LABELS } from "@/lib/app-roles";
 
 interface DashboardHeaderProps {
   sessionUser: DashboardSessionUser;
@@ -58,6 +59,7 @@ export function DashboardHeader({
           showDashboardLink={false}
           onSignOut={handleSignOut}
           isPending={isPending}
+          fallbackSecondary={ROLE_LABELS[sessionUser.roles[0]]}
         />
       </div>
     </header>

@@ -10,7 +10,7 @@ import { UserProvider } from "@/lib/context/user-context";
 
 import { useMobileSheet } from "@/hooks/use-mobile-sheet";
 
-import type { AppRole } from "@/config/sidebar-navigation";
+import type { AppRole } from "@/lib/app-roles";
 import type { DashboardSessionUser } from "@/lib/types";
 
 interface DashboardLayoutClientProps {

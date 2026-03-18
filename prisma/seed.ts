@@ -2,6 +2,7 @@ import { PrismaClient } from "../lib/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { config } from "dotenv";
+import { USER_STATUS } from "../lib/status";
 
 config({ path: ".env.local" });
 
@@ -530,7 +531,7 @@ async function main() {
         last_name: user.last_name,
         email: user.email,
         contact_number: user.contact_number,
-        status: "active",
+        status: USER_STATUS.ACTIVE,
       },
     });
     createdUsers[user.email] = created;

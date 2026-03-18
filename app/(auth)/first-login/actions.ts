@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
+import { USER_STATUS } from "@/lib/status";
 import crypto from "node:crypto";
 
 export type SetPasswordState = {
@@ -58,11 +59,16 @@ export async function setPasswordAction(
       return err("User profile not found. Please contact an administrator.");
     }
 
+    if (!dbUser.email) {
+      console.error("User profile has no email for auth_id:", user.id);
+      return err("User profile email is missing. Please contact an administrator.");
+    }
+
     await prisma.user.update({
       where: { id: dbUser.id },
       data: {
         auth_id: user.id,
-        status: "registered",
+        status: USER_STATUS.REGISTERED,
         is_temp_password: false,
         account_expires_at: null,
         member_qr: crypto.randomUUID(),

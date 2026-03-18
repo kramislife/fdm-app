@@ -6,7 +6,7 @@ import {
   TextCell,
   UserCell,
   DateCell,
-  StatusBadge,
+  UserStatusBadge,
 } from "@/components/shared/cells";
 import {
   DetailField,
@@ -20,7 +20,7 @@ export type UserRow = {
   name: string;
   first_name: string;
   last_name: string;
-  email: string;
+  email: string | null;
   contact_number: string | null;
   address: string | null;
   birthday: string | null;
@@ -80,7 +80,7 @@ export function UsersClient({ users, pagination }: Props) {
         birthday: <DateCell date={row.birthday} dateOnly format="long" />,
         chapter: <TextCell value={row.user_roles[0]?.chapter?.name} />,
         role: <TextCell value={row.user_roles[0]?.role?.name} />,
-        status: <StatusBadge isActive={row.status === "active"} />,
+        status: <UserStatusBadge status={row.status} />,
       })}
       renderDetail={(row) => (
         <>
@@ -107,7 +107,7 @@ export function UsersClient({ users, pagination }: Props) {
               <TextCell value={row.user_roles[0]?.role?.name} />
             </DetailField>
             <DetailField label={FIELD_LABELS.status}>
-              <StatusBadge isActive={row.status === "active"} />
+              <UserStatusBadge status={row.status} />
             </DetailField>
           </DetailSection>
           <DetailMeta

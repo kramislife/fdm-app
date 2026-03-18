@@ -1,7 +1,7 @@
 import type { StaticImageData } from "next/image";
 import type { LucideIcon } from "lucide-react";
 import type { IconType } from "react-icons";
-import type { AppRole } from "@/config/sidebar-navigation";
+import type { AppRole } from "@/lib/app-roles";
 
 // ---------------------------- Base Config Types ----------------------------
 
@@ -53,7 +53,7 @@ export interface ContactItem {
 export interface BaseUser {
   name: string;
   initials: string;
-  email: string;
+  email: string | null;
   photoUrl?: string | null;
 }
 

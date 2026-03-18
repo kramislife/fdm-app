@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronUp } from "lucide-react";
-import { ROLE_LABELS, type AppRole } from "@/config/sidebar-navigation";
+import { ROLE_LABELS, type AppRole } from "@/lib/app-roles";
 import {
   DropdownMenu,
   DropdownMenuContent,

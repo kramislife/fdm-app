@@ -18,7 +18,8 @@ import webIcon from "@/app/assets/media/web-icon.png";
 import { UserAvatar } from "@/components/shared/user-avatar";
 
 import type { DashboardSessionUser } from "@/lib/types";
-import { SIDEBAR_NAV, ROLE_LABELS } from "@/config/sidebar-navigation";
+import { SIDEBAR_NAV } from "@/config/sidebar-navigation";
+import { ROLE_LABELS } from "@/lib/app-roles";
 import {
   TbLayoutSidebarLeftCollapseFilled,
   TbLayoutSidebarRightCollapseFilled,
@@ -187,7 +188,7 @@ export function Sidebar({
             secondary={
               sessionUser.roles[0]
                 ? ROLE_LABELS[sessionUser.roles[0]]
-                : sessionUser.email
+                : (sessionUser.email ?? undefined)
             }
           />
         </div>

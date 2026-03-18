@@ -25,7 +25,7 @@ import {
 interface SessionUser {
   name: string;
   initials: string;
-  email: string;
+  email: string | null;
   isMember: boolean;
   photoUrl?: string | null;
 }
@@ -37,6 +37,7 @@ interface MobileNavProps {
   pathname: string;
   showDashboardLink: boolean;
   onSignOut: () => void;
+  roleFallback?: string;
 }
 
 interface NavItemProps {
@@ -73,6 +74,7 @@ export function MobileNav({
   pathname,
   showDashboardLink,
   onSignOut,
+  roleFallback,
 }: MobileNavProps) {
   const close = () => onOpenChange(false);
 
@@ -103,7 +105,7 @@ export function MobileNav({
                 initials={sessionUser.initials}
                 photoUrl={sessionUser.photoUrl}
                 name={sessionUser.name}
-                secondary={sessionUser.email}
+                secondary={sessionUser.email ?? roleFallback}
               />
             ) : (
               <Logo size="w-16" />

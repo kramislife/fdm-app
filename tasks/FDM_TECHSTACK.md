@@ -544,7 +544,16 @@ vercel --prod
 □ npx prisma db seed — success
 □ npm run dev — opens at localhost:3000
 □ npx tsc --noEmit — zero errors
+
 ```
+
+###### ------------------------------ User Status ---------------------------------------
+
+guest → encoded by Secretariat, no account yet
+pending → admin created account, awaiting first login
+registered → logged in, changed password, QR generated
+active → fully onboarded, physical QR ID card issued
+inactive → provisioned account deleted, records preserved
 
 ###### ---------------- ACCOUNT TO SETUP IN LIVE -------------------------------------------
 

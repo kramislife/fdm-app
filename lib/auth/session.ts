@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { AppRole } from "@/config/sidebar-navigation";
+import type { AppRole } from "@/lib/app-roles";
 
 /** Prisma include shape for a user with their active roles */
 const userWithRoles = {

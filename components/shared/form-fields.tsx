@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ACTIVE_STATE_LABELS } from "@/lib/status";
 import { cn } from "@/lib/utils";
 
 interface FieldWrapperProps {
@@ -38,7 +39,7 @@ function FieldWrapper({
 }: FieldWrapperProps) {
   return (
     <div className={cn("space-y-2", className)}>
-      <Label htmlFor={id} className={labelClassName}>
+      <Label htmlFor={id} className={cn(labelClassName)}>
         {label}
         {required && <span className="text-destructive">*</span>}
       </Label>
@@ -52,8 +53,10 @@ function FieldWrapper({
 
 // ------------------------------- Input -----------------------------------------
 
-interface FormInputProps
-  extends Omit<React.ComponentProps<typeof Input>, "id"> {
+interface FormInputProps extends Omit<
+  React.ComponentProps<typeof Input>,
+  "id"
+> {
   label: string;
   id: string;
   wrapperClassName?: string;
@@ -99,8 +102,10 @@ export function FormInput({
 
 // ------------------------------ Textarea ----------------------------------------
 
-interface FormTextareaProps
-  extends Omit<React.ComponentProps<typeof Textarea>, "id"> {
+interface FormTextareaProps extends Omit<
+  React.ComponentProps<typeof Textarea>,
+  "id"
+> {
   label: string;
   id: string;
   wrapperClassName?: string;
@@ -131,7 +136,7 @@ export function FormTextarea({
     >
       <Textarea
         id={id}
-        className={cn("min-h-[120px]", className)}
+        className={cn("min-h-30", className)}
         required={required}
         placeholder={placeholder ?? defaultPlaceholder}
         {...props}
@@ -231,8 +236,8 @@ export function FormSwitch({
   const statusDescription =
     description ||
     (checked
-      ? `Active — ${activeDescription}`
-      : `Inactive — ${inactiveDescription}`);
+      ? `${ACTIVE_STATE_LABELS.ACTIVE} — ${activeDescription}`
+      : `${ACTIVE_STATE_LABELS.INACTIVE} — ${inactiveDescription}`);
 
   return (
     <div className={cn("space-y-2", className)}>

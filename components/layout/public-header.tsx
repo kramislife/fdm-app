@@ -11,6 +11,7 @@ import { UserDropdown } from "@/components/shared/user-dropdown";
 import { MobileNav } from "@/components/layout/mobile-nav";
 
 import { navLinks } from "@/config/navigation";
+import { ROLE_LABELS, type AppRole } from "@/lib/app-roles";
 import { useSignOut } from "@/hooks/use-sign-out";
 import { useMobileSheet } from "@/hooks/use-mobile-sheet";
 
@@ -18,6 +19,7 @@ import type { BaseUser } from "@/lib/types";
 
 interface SessionUser extends BaseUser {
   isMember: boolean;
+  roles: AppRole[];
 }
 
 interface PublicHeaderProps {
@@ -33,6 +35,9 @@ export function PublicHeader({ sessionUser }: PublicHeaderProps) {
   const isInDashboard = pathname.startsWith("/dashboard");
   const showDashboardLink =
     !!sessionUser && !sessionUser.isMember && !isInDashboard;
+  const roleFallback = sessionUser?.roles[0]
+    ? ROLE_LABELS[sessionUser.roles[0]]
+    : undefined;
 
   function handleSignOut() {
     startTransition(async () => {
@@ -73,6 +78,7 @@ export function PublicHeader({ sessionUser }: PublicHeaderProps) {
                 showDashboardLink={showDashboardLink}
                 onSignOut={handleSignOut}
                 isPending={isPending}
+                fallbackSecondary={roleFallback}
               />
             </div>
           ) : (
@@ -88,6 +94,7 @@ export function PublicHeader({ sessionUser }: PublicHeaderProps) {
             pathname={pathname}
             showDashboardLink={showDashboardLink}
             onSignOut={handleSignOut}
+            roleFallback={roleFallback}
           />
         </div>
       </div>

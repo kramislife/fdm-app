@@ -21,6 +21,7 @@ export interface UserDropdownProps {
   showDashboardLink: boolean;
   onSignOut: () => void;
   isPending?: boolean;
+  fallbackSecondary?: string;
 }
 
 export function UserDropdown({
@@ -28,6 +29,7 @@ export function UserDropdown({
   showDashboardLink,
   onSignOut,
   isPending = false,
+  fallbackSecondary,
 }: UserDropdownProps) {
   return (
     <DropdownMenu>
@@ -44,7 +46,7 @@ export function UserDropdown({
             initials={initials}
             photoUrl={photoUrl}
             name={name}
-            secondary={email}
+            secondary={email ?? fallbackSecondary}
           />
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

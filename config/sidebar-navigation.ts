@@ -15,31 +15,7 @@ import { BiSolidCalendarCheck } from "react-icons/bi";
 import { IoMdMegaphone } from "react-icons/io";
 import { GiCrownOfThorns } from "react-icons/gi";
 import { MdChurch, MdDashboardCustomize } from "react-icons/md";
-
-export type AppRole =
-  | "spiritual_director"
-  | "elder"
-  | "head_servant"
-  | "asst_head_servant"
-  | "ministry_head"
-  | "builder"
-  | "cluster_head"
-  | "ministry_coordinator"
-  | "finance"
-  | "member";
-
-export const ROLE_LABELS: Record<AppRole, string> = {
-  spiritual_director: "Spiritual Director",
-  elder: "Elder",
-  head_servant: "Head Servant",
-  asst_head_servant: "Asst. Head Servant",
-  ministry_head: "Ministry Head",
-  builder: "Builder",
-  cluster_head: "Cluster Head",
-  ministry_coordinator: "Master of Ceremonies",
-  finance: "Finance Officer",
-  member: "Member",
-};
+import type { AppRole } from "@/lib/app-roles";
 
 export interface NavItem {
   label: string;

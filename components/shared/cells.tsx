@@ -1,5 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime, formatDate, capitalizeWords } from "@/lib/format";
+import {
+  ACTIVE_STATE_LABELS,
+  USER_STATUS,
+  USER_STATUS_LABELS,
+  isUserStatus,
+} from "@/lib/status";
 
 // ------------------------------- Status Badge -----------------------------------------
 interface StatusBadgeProps {
@@ -10,8 +16,8 @@ interface StatusBadgeProps {
 
 export function StatusBadge({
   isActive,
-  activeLabel = "Active",
-  inactiveLabel = "Inactive",
+  activeLabel = ACTIVE_STATE_LABELS.ACTIVE,
+  inactiveLabel = ACTIVE_STATE_LABELS.INACTIVE,
 }: StatusBadgeProps) {
   return isActive ? (
     <Badge variant="success">{activeLabel}</Badge>
@@ -26,15 +32,18 @@ interface UserStatusBadgeProps {
 }
 
 export function UserStatusBadge({ status }: UserStatusBadgeProps) {
-  let variant: "default" | "secondary" | "outline" | "destructive" | "success" =
+  let variant: "secondary" | "outline" | "default" | "success" | "destructive" =
     "secondary";
 
-  if (status === "guest") variant = "secondary";
-  else if (status === "pending") variant = "outline";
-  else if (status === "registered") variant = "default";
-  else if (status === "active") variant = "success";
+  if (status === USER_STATUS.GUEST) variant = "secondary";
+  else if (status === USER_STATUS.PENDING) variant = "outline";
+  else if (status === USER_STATUS.REGISTERED) variant = "default";
+  else if (status === USER_STATUS.ACTIVE) variant = "success";
+  else if (status === USER_STATUS.INACTIVE) variant = "destructive";
 
-  const label = status.charAt(0).toUpperCase() + status.slice(1);
+  const label = isUserStatus(status)
+    ? USER_STATUS_LABELS[status]
+    : capitalizeWords(status);
   return <Badge variant={variant}>{label}</Badge>;
 }
 

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithRole } from "@/lib/roles";
 import { prisma } from "@/lib/prisma";
-import type { AppRole } from "@/config/sidebar-navigation";
+import type { AppRole } from "@/lib/app-roles";
 
 /** Returns the current Supabase auth user or null — verified via network call */
 export const getAuthUser = cache(async () => {
