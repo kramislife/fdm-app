@@ -15,9 +15,10 @@ const AUTH_LABEL_STYLE =
 
 interface LoginFormProps {
   provisionedDate?: string;
+  authError?: string;
 }
 
-export function LoginForm({ provisionedDate }: LoginFormProps) {
+export function LoginForm({ provisionedDate, authError }: LoginFormProps) {
   const [state, formAction, isPending] = useActionState(
     loginAction,
     initialState,
@@ -33,11 +34,21 @@ export function LoginForm({ provisionedDate }: LoginFormProps) {
     }
   }, [provisionedDate]);
 
+  useEffect(() => {
+    if (authError === "invalid_google_email") {
+      sileo.error({
+        title: "Google Sign-In Failed",
+        description:
+          "Your Google account must provide a valid, verified email address.",
+      });
+    }
+  }, [authError]);
+
   return (
     <div className="flex flex-col gap-5">
       <AuthFormCard
         title="Welcome back"
-        description="Sign in to your community account."
+        description="Sign in to your community account"
         formAction={formAction}
         isPending={isPending}
         error={state.error}

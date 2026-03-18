@@ -8,6 +8,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const provisionedDate =
     params.error === "provisioned" && params.date ? params.date : undefined;
+  const authError = params.error;
 
-  return <LoginForm provisionedDate={provisionedDate} />;
+  return <LoginForm provisionedDate={provisionedDate} authError={authError} />;
 }

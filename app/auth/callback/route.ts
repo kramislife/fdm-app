@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { backfillAttendance } from "@/lib/auth";
 import { uploadToCloudinary } from "@/lib/cloudinary";
+import { normalizeEmail, isValidEmailFormat } from "@/lib/format";
 import { USER_STATUS } from "@/lib/status";
 
 // Upload user avatar to Cloudinary
@@ -34,12 +35,29 @@ export async function GET(request: NextRequest) {
     data: { user: authUser },
   } = await supabase.auth.getUser();
 
-  if (!authUser?.email) {
+  const isGoogleProvider =
+    authUser?.app_metadata?.provider === "google" ||
+    authUser?.identities?.some((identity) => identity.provider === "google");
+
+  if (!authUser || !isGoogleProvider) {
+    await supabase.auth.signOut();
     return NextResponse.redirect(`${origin}/login?error=auth_failed`);
   }
 
-  const email = authUser.email;
-  const identityData = authUser.identities?.[0]?.identity_data;
+  const email = normalizeEmail(authUser.email);
+  const googleIdentity = authUser.identities?.find(
+    (identity) => identity.provider === "google",
+  );
+  const emailVerifiedByProvider =
+    authUser.email_confirmed_at !== null ||
+    googleIdentity?.identity_data?.email_verified === true;
+
+  if (!email || !isValidEmailFormat(email) || !emailVerifiedByProvider) {
+    await supabase.auth.signOut();
+    return NextResponse.redirect(`${origin}/login?error=invalid_google_email`);
+  }
+
+  const identityData = googleIdentity?.identity_data;
   const avatarUrl: string | undefined =
     authUser.user_metadata?.avatar_url ??
     authUser.user_metadata?.picture ??

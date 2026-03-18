@@ -30,3 +30,13 @@ export function formatDate(
 export function capitalizeWords(str: string) {
   return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }
+
+// Normalize email for consistent lookup/storage checks
+export function normalizeEmail(email: string | null | undefined) {
+  return email?.trim().toLowerCase() ?? "";
+}
+
+// Basic email format validation
+export function isValidEmailFormat(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
