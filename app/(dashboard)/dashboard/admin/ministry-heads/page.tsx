@@ -17,7 +17,6 @@ export default async function MinistryHeadsPage({ searchParams }: PageProps) {
 
   const { search, page, perPage, sort, order } = parseTableParams(
     await searchParams,
-    "created_at",
   );
 
   const result = await getMinistryHeads({

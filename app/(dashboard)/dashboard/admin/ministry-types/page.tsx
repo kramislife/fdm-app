@@ -11,7 +11,6 @@ export default async function MinistryTypesPage({ searchParams }: PageProps) {
 
   const { search, page, perPage, sort, order } = parseTableParams(
     await searchParams,
-    "created_at",
   );
 
   const result = await getMinistryTypes({

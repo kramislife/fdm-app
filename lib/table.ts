@@ -15,6 +15,17 @@ export type TableResult<T> = {
 };
 
 export type RawSearchParams = Record<string, string | string[] | undefined>;
+export type SortOrder = "asc" | "desc";
+export type TableSortDefaults = {
+  defaultSort?: string;
+  defaultOrder?: SortOrder;
+};
+
+/** Default Sort */
+export const TABLE_SORT_DEFAULTS: Required<TableSortDefaults> = {
+  defaultSort: "created_at",
+  defaultOrder: "desc",
+};
 
 /** Single source of truth for valid perPage options */
 export const VALID_PER_PAGE = [10, 20, 30, 50, 100] as const;
@@ -23,6 +34,17 @@ export const VALID_PER_PAGE = [10, 20, 30, 50, 100] as const;
 export type PageProps = {
   searchParams: Promise<RawSearchParams>;
 };
+
+function resolveSortDefaults(config?: string | TableSortDefaults) {
+  if (typeof config === "string") {
+    return { defaultSort: config, defaultOrder: "desc" as const };
+  }
+
+  return {
+    defaultSort: config?.defaultSort ?? TABLE_SORT_DEFAULTS.defaultSort,
+    defaultOrder: config?.defaultOrder ?? TABLE_SORT_DEFAULTS.defaultOrder,
+  };
+}
 
 /**
  * Builds a Prisma-compatible orderBy object from a sort key and direction.
@@ -43,10 +65,19 @@ export function buildOrderBy(
 
 export function parseTableParams(
   params: RawSearchParams,
-  defaultSort = "name",
+  config?: string | TableSortDefaults,
 ): Required<TableParams> {
+  const { defaultSort, defaultOrder } = resolveSortDefaults(config);
   const rawPage = Number(params.page);
   const rawPerPage = Number(params.perPage);
+  const sortValue =
+    typeof params.sort === "string" && params.sort.length > 0
+      ? params.sort
+      : defaultSort;
+  const orderValue: SortOrder =
+    params.order === "asc" || params.order === "desc"
+      ? params.order
+      : defaultOrder;
 
   return {
     search:
@@ -55,11 +86,8 @@ export function parseTableParams(
     perPage: (VALID_PER_PAGE as readonly number[]).includes(rawPerPage)
       ? rawPerPage
       : 10,
-    sort:
-      typeof params.sort === "string" && params.sort
-        ? params.sort
-        : defaultSort,
-    order: params.order === "asc" ? "asc" : "desc",
+    sort: sortValue,
+    order: orderValue,
   };
 }
 

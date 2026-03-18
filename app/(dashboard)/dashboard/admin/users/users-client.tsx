@@ -39,7 +39,7 @@ export type UserRow = {
 
 const FIELD_LABELS = {
   name: "Full Name",
-  email: "Email",
+  email: "Email Address",
   contact_number: "Contact Number",
   address: "Address",
   birthday: "Birthday",
@@ -94,11 +94,11 @@ export function UsersClient({ users, pagination }: Props) {
             <DetailField label={FIELD_LABELS.contact_number}>
               <TextCell value={row.contact_number} />
             </DetailField>
-            <DetailField label={FIELD_LABELS.address} fullWidth>
-              <TextCell value={row.address} />
-            </DetailField>
             <DetailField label={FIELD_LABELS.birthday}>
               <DateCell date={row.birthday} dateOnly format="long" />
+            </DetailField>
+            <DetailField label={FIELD_LABELS.address} fullWidth>
+              <TextCell value={row.address} />
             </DetailField>
             <DetailField label={FIELD_LABELS.chapter}>
               <TextCell value={row.user_roles[0]?.chapter?.name} />

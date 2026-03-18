@@ -10,7 +10,6 @@ const ORDER_FIELDS: Record<string, string> = {
   name: "name",
   street: "street",
   fellowship_day: "fellowship_day",
-  created_at: "created_at",
 };
 
 export async function getChapters(params: TableParams = {}) {
@@ -28,6 +27,8 @@ export async function getChapters(params: TableParams = {}) {
       ? {
           OR: [
             { name: { contains: search, mode: "insensitive" as const } },
+            { region: { contains: search, mode: "insensitive" as const } },
+            { city: { contains: search, mode: "insensitive" as const } },
             { street: { contains: search, mode: "insensitive" as const } },
             {
               fellowship_day: {
@@ -39,7 +40,6 @@ export async function getChapters(params: TableParams = {}) {
         }
       : {}),
   };
-
   const [data, total] = await Promise.all([
     prisma.chapter.findMany({
       where,

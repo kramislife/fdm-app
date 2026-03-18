@@ -94,12 +94,18 @@ const FIELD_LABELS = {
 
 const columns: Column[] = [
   { key: "name", label: FIELD_LABELS.name, sortable: true },
-  { key: "address", label: FIELD_LABELS.street, maxWidth: "300px" },
-  { key: "gmaps", label: FIELD_LABELS.gmaps, maxWidth: "200px" },
+  {
+    key: "street",
+    label: FIELD_LABELS.street,
+    maxWidth: "500px",
+    sortable: true,
+  },
+  { key: "gmaps", label: FIELD_LABELS.gmaps, maxWidth: "300px" },
   {
     key: "fellowship_day",
     label: FIELD_LABELS.fellowship_day,
     align: "center",
+    sortable: true,
   },
   {
     key: "members",
@@ -107,7 +113,6 @@ const columns: Column[] = [
     align: "center",
   },
   { key: "status", label: FIELD_LABELS.status, align: "center" },
-  { key: "created_at", label: "Created At", sortable: true },
   { key: "actions", label: "Actions", align: "center" },
 ];
 
@@ -127,12 +132,11 @@ export function ChaptersClient({ chapters, pagination }: Props) {
       columns={columns}
       renderRow={(row) => ({
         name: <TextCell value={row.name} capitalize />,
-        address: <TextCell value={row.street} />,
-        gmaps: <LinkCell href={row.google_maps_url} label="Location Link" />,
+        street: <TextCell value={row.street} />,
+        gmaps: <LinkCell href={row.google_maps_url} />,
         fellowship_day: <TextCell value={row.fellowship_day} capitalize />,
         members: <TextCell value={row.member_count} />,
         status: <StatusBadge isActive={row.is_active} />,
-        created_at: <DateCell date={row.created_at} />,
       })}
       renderDetail={(row) => (
         <>
@@ -142,9 +146,6 @@ export function ChaptersClient({ chapters, pagination }: Props) {
             </DetailField>
             <DetailField label={FIELD_LABELS.fellowship_day}>
               <TextCell value={row.fellowship_day} capitalize />
-            </DetailField>
-            <DetailField label={FIELD_LABELS.status}>
-              <StatusBadge isActive={row.is_active} />
             </DetailField>
             <DetailField label={FIELD_LABELS.region}>
               <TextCell value={row.region} capitalize />
@@ -175,6 +176,9 @@ export function ChaptersClient({ chapters, pagination }: Props) {
             )}
             <DetailField label={FIELD_LABELS.members}>
               <TextCell value={row.member_count} />
+            </DetailField>
+            <DetailField label={FIELD_LABELS.status}>
+              <StatusBadge isActive={row.is_active} />
             </DetailField>
           </DetailSection>
           <DetailMeta
