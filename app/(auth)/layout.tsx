@@ -16,7 +16,7 @@ export default function AuthLayout({
     useScrollAnimation();
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen max-w-480 mx-auto border-x">
       {/* Banner Pane */}
       <div className="relative hidden lg:w-[60%] overflow-hidden lg:block">
         <motion.div
