@@ -50,7 +50,7 @@ const FIELD_LABELS = {
 
 const columns: Column[] = [
   { key: "name", label: FIELD_LABELS.name, sortable: true },
-  { key: "scope", label: FIELD_LABELS.scope },
+  { key: "scope", label: FIELD_LABELS.scope, align: "center" },
   { key: "description", label: FIELD_LABELS.description, maxWidth: "500px" },
   { key: "status", label: FIELD_LABELS.status, align: "center" },
   { key: "created_by", label: "Created By" },
@@ -80,7 +80,7 @@ export function RolesClient({ roles, pagination }: Props) {
       pagination={pagination}
       columns={columns}
       renderRow={(row) => ({
-        name: <TextCell value={row.name} capitalize/>,
+        name: <TextCell value={row.name} capitalize />,
         scope: <TextCell value={row.scope} capitalize />,
         description: <TextCell value={row.description} />,
         status: <StatusBadge isActive={row.is_active} />,
@@ -91,7 +91,7 @@ export function RolesClient({ roles, pagination }: Props) {
         <>
           <DetailSection>
             <DetailField label={FIELD_LABELS.name}>
-              <TextCell value={row.name} capitalize/>
+              <TextCell value={row.name} capitalize />
             </DetailField>
             <DetailField label={FIELD_LABELS.scope}>
               <TextCell value={row.scope} capitalize />

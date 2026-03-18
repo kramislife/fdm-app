@@ -51,7 +51,7 @@ const FIELD_LABELS = {
 const columns: Column[] = [
   { key: "name", label: FIELD_LABELS.name, sortable: true },
   { key: "email", label: FIELD_LABELS.email, sortable: true },
-  { key: "contact_number", label: FIELD_LABELS.contact_number },
+  { key: "contact_number", label: FIELD_LABELS.contact_number, align: "center" },
   { key: "birthday", label: FIELD_LABELS.birthday },
   { key: "chapter", label: FIELD_LABELS.chapter },
   { key: "role", label: FIELD_LABELS.role },

@@ -85,7 +85,7 @@ export function DataTable({
               >
                 <span
                   className={cn(
-                    col.align === "center" && "text-center w-full px-5",
+                    col.align === "center" && "text-center w-full",
                     col.align === "right" && "text-right",
                   )}
                 >
@@ -109,7 +109,7 @@ export function DataTable({
       <TableBody>
         {isLoading ? (
           <TableRow>
-            <TableCell colSpan={columns.length} className="h-32">
+            <TableCell colSpan={columns.length} className="h-24">
               <div className="flex justify-center items-center">
                 <Loading size="md" text="Syncing Data..." />
               </div>

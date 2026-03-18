@@ -4,7 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -20,6 +19,10 @@ import { UserAvatar } from "@/components/shared/user-avatar";
 
 import type { DashboardSessionUser } from "@/lib/types";
 import { SIDEBAR_NAV, ROLE_LABELS } from "@/config/sidebar-navigation";
+import {
+  TbLayoutSidebarLeftCollapseFilled,
+  TbLayoutSidebarRightCollapseFilled,
+} from "react-icons/tb";
 
 interface SidebarProps {
   sessionUser: DashboardSessionUser;
@@ -96,9 +99,9 @@ export function Sidebar({
                   }
                 >
                   {isCollapsed ? (
-                    <PanelLeftOpen className="h-5 w-5 text-primary" />
+                    <TbLayoutSidebarRightCollapseFilled className="h-5 w-5 text-primary" />
                   ) : (
-                    <PanelLeftClose className="h-5 w-5 text-primary" />
+                    <TbLayoutSidebarLeftCollapseFilled className="h-5 w-5 text-primary" />
                   )}
                 </Button>
               </TooltipTrigger>
@@ -137,7 +140,7 @@ export function Sidebar({
                         isCollapsed ? "justify-center px-0" : "gap-3 px-3",
                         isActive
                           ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                          : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent",
+                          : "text-sidebar-foreground/80 hover:text-primary hover:bg-sidebar-accent",
                       )}
                     >
                       <item.icon className="h-5 w-5 shrink-0" />
