@@ -1,4 +1,5 @@
 import "server-only";
+import { ROLE_KEYS } from "@/lib/app-roles";
 import { prisma } from "@/lib/prisma";
 import { USER_STATUS } from "@/lib/status";
 import {
@@ -49,7 +50,7 @@ export async function getMinistryHeads(
             {
               user_roles: {
                 some: {
-                  role: { key: "ministry_head" },
+                  role: { key: ROLE_KEYS.MINISTRY_HEAD },
                   is_active: true,
                   user: {
                     OR: [
@@ -85,7 +86,7 @@ export async function getMinistryHeads(
         updater: { select: { first_name: true, last_name: true } },
         user_roles: {
           where: {
-            role: { key: "ministry_head" },
+            role: { key: ROLE_KEYS.MINISTRY_HEAD },
             is_active: true,
           },
           select: {

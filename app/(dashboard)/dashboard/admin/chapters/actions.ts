@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { PERMISSION_ROLES } from "@/lib/app-roles";
 
 const REVALIDATE_PATH = "/dashboard/admin/chapters";
 
@@ -24,7 +25,7 @@ type ChapterData = {
 };
 
 export async function createChapter(data: ChapterData) {
-  const currentUser = await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   if (!data.name.trim()) return { success: false, error: "Name is required." };
   if (!data.region) return { success: false, error: "Region is required." };
@@ -100,7 +101,7 @@ export async function createChapter(data: ChapterData) {
 }
 
 export async function updateChapter(id: number, data: ChapterData) {
-  const currentUser = await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   if (!data.name.trim()) return { success: false, error: "Name is required." };
   if (!data.region) return { success: false, error: "Region is required." };
@@ -143,7 +144,7 @@ export async function updateChapter(id: number, data: ChapterData) {
 }
 
 export async function deleteChapter(id: number) {
-  const currentUser = await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   try {
     // 1. Check if chapter has active clusters

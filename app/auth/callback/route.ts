@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { backfillAttendance } from "@/lib/auth";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { normalizeEmail, isValidEmailFormat } from "@/lib/format";
+import { AUTH_ERROR_CODES, buildLoginErrorPath } from "@/lib/auth-errors";
+import { ROLE_KEYS } from "@/lib/app-roles";
 import { USER_STATUS } from "@/lib/status";
 
 // Upload user avatar to Cloudinary
@@ -19,7 +21,9 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
 
   if (!code) {
-    return NextResponse.redirect(`${origin}/login?error=auth_failed`);
+    return NextResponse.redirect(
+      `${origin}${buildLoginErrorPath(AUTH_ERROR_CODES.AUTH_FAILED)}`,
+    );
   }
 
   const supabase = await createClient();
@@ -28,7 +32,9 @@ export async function GET(request: NextRequest) {
     await supabase.auth.exchangeCodeForSession(code);
 
   if (exchangeError) {
-    return NextResponse.redirect(`${origin}/login?error=auth_failed`);
+    return NextResponse.redirect(
+      `${origin}${buildLoginErrorPath(AUTH_ERROR_CODES.AUTH_FAILED)}`,
+    );
   }
 
   const {
@@ -41,7 +47,9 @@ export async function GET(request: NextRequest) {
 
   if (!authUser || !isGoogleProvider) {
     await supabase.auth.signOut();
-    return NextResponse.redirect(`${origin}/login?error=auth_failed`);
+    return NextResponse.redirect(
+      `${origin}${buildLoginErrorPath(AUTH_ERROR_CODES.AUTH_FAILED)}`,
+    );
   }
 
   const email = normalizeEmail(authUser.email);
@@ -54,7 +62,9 @@ export async function GET(request: NextRequest) {
 
   if (!email || !isValidEmailFormat(email) || !emailVerifiedByProvider) {
     await supabase.auth.signOut();
-    return NextResponse.redirect(`${origin}/login?error=invalid_google_email`);
+    return NextResponse.redirect(
+      `${origin}${buildLoginErrorPath(AUTH_ERROR_CODES.INVALID_GOOGLE_EMAIL)}`,
+    );
   }
 
   const identityData = googleIdentity?.identity_data;
@@ -86,7 +96,7 @@ export async function GET(request: NextRequest) {
     await supabase.auth.signOut();
     const dateParam = existingUser.created_at.toISOString();
     return NextResponse.redirect(
-      `${origin}/login?error=provisioned&date=${encodeURIComponent(dateParam)}`,
+      `${origin}${buildLoginErrorPath(AUTH_ERROR_CODES.PROVISIONED, { date: dateParam })}`,
     );
   }
 
@@ -112,9 +122,9 @@ export async function GET(request: NextRequest) {
 
     await backfillAttendance(email, existingUser.id);
 
-    const role = existingUser.user_roles[0]?.role?.key ?? "member";
+    const role = existingUser.user_roles[0]?.role?.key ?? ROLE_KEYS.MEMBER;
     return NextResponse.redirect(
-      `${origin}${role === "member" ? "/" : "/dashboard"}`,
+      `${origin}${role === ROLE_KEYS.MEMBER ? "/" : "/dashboard"}`,
     );
   }
 
@@ -132,19 +142,24 @@ export async function GET(request: NextRequest) {
   const sdUser = await prisma.user.findFirst({
     where: {
       user_roles: {
-        some: { role: { key: "spiritual_director" }, is_active: true },
+        some: {
+          role: { key: ROLE_KEYS.SPIRITUAL_DIRECTOR },
+          is_active: true,
+        },
       },
     },
     select: { id: true },
   });
 
   const memberRole = await prisma.role.findUnique({
-    where: { key: "member" },
+    where: { key: ROLE_KEYS.MEMBER },
     select: { id: true },
   });
 
   if (!sdUser || !memberRole) {
-    return NextResponse.redirect(`${origin}/login?error=auth_failed`);
+    return NextResponse.redirect(
+      `${origin}${buildLoginErrorPath(AUTH_ERROR_CODES.AUTH_FAILED)}`,
+    );
   }
 
   // Create the new user row first (need ID for Cloudinary folder)

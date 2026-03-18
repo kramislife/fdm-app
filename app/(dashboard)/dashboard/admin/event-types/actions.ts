@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireRole, getUser } from "@/lib/auth";
+import { PERMISSION_ROLES } from "@/lib/app-roles";
 import { toKey } from "@/lib/utils/slugify";
 
 const REVALIDATE_PATH = "/dashboard/admin/event-types";
@@ -14,7 +15,7 @@ type EventTypeData = {
 };
 
 export async function createEventType(data: EventTypeData) {
-  const currentUser = await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   if (!data.name.trim()) {
     return { success: false, error: "Name is required." };
@@ -54,7 +55,7 @@ export async function createEventType(data: EventTypeData) {
 }
 
 export async function updateEventType(id: number, data: EventTypeData) {
-  const currentUser = await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   if (!data.name.trim()) {
     return { success: false, error: "Name is required." };
@@ -82,7 +83,7 @@ export async function updateEventType(id: number, data: EventTypeData) {
 }
 
 export async function deleteEventType(id: number) {
-  const currentUser = await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   try {
     // Check if event type is being used by any events

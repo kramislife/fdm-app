@@ -3,21 +3,20 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/app-roles";
 
 import { getChapterActiveUsers } from "@/lib/data/ministry-heads";
 
 const REVALIDATE_PATH = "/dashboard/admin/ministry-heads";
 
 export async function getActiveUsersForChapter(chapterId: number) {
-  await requireRole(["spiritual_director", "elder", "head_servant"]);
+  await requireRole([...PERMISSION_ROLES.MINISTRY_HEADS_MANAGE]);
   return await getChapterActiveUsers(chapterId);
 }
 
 export async function updateMinistryHead(id: number, data: { userId: string }) {
   const currentUser = await requireRole([
-    "spiritual_director",
-    "elder",
-    "head_servant",
+    ...PERMISSION_ROLES.MINISTRY_HEADS_MANAGE,
   ]);
 
   if (!data.userId) {
@@ -38,7 +37,7 @@ export async function updateMinistryHead(id: number, data: { userId: string }) {
     }
 
     const role = await prisma.role.findUnique({
-      where: { key: "ministry_head" },
+      where: { key: ROLE_KEYS.MINISTRY_HEAD },
     });
 
     if (!role) {
@@ -49,7 +48,7 @@ export async function updateMinistryHead(id: number, data: { userId: string }) {
     await prisma.userRole.updateMany({
       where: {
         ministry_head_id: ministryHeadId,
-        role: { key: "ministry_head" },
+        role: { key: ROLE_KEYS.MINISTRY_HEAD },
         is_active: true,
       },
       data: { is_active: false },

@@ -1,10 +1,11 @@
 import { requireRole } from "@/lib/auth";
 import { getEventTypes } from "@/lib/data/event-types";
+import { PERMISSION_ROLES } from "@/lib/app-roles";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
 import { EventTypesClient, type EventTypeRow } from "./event-types-client";
 
 export default async function EventTypesPage({ searchParams }: PageProps) {
-  await requireRole(["spiritual_director", "elder"]);
+  await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   const { search, page, perPage, sort, order } = parseTableParams(
     await searchParams,

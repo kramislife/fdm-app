@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/app-roles";
 import { toKey } from "@/lib/utils/slugify";
 
 const REVALIDATE_PATH = "/dashboard/admin/ministry-types";
@@ -14,7 +15,7 @@ type MinistryTypeData = {
 };
 
 export async function createMinistryType(data: MinistryTypeData) {
-  const currentUser = await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   if (!data.name.trim()) {
     return { success: false, error: "Name is required." };
@@ -77,7 +78,7 @@ export async function createMinistryType(data: MinistryTypeData) {
 }
 
 export async function updateMinistryType(id: number, data: MinistryTypeData) {
-  const currentUser = await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   if (!data.name.trim()) {
     return { success: false, error: "Name is required." };
@@ -105,7 +106,7 @@ export async function updateMinistryType(id: number, data: MinistryTypeData) {
 }
 
 export async function deleteMinistryType(id: number) {
-  const currentUser = await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   try {
     // 1. Check if any ministry of this type is in use
@@ -118,7 +119,7 @@ export async function deleteMinistryType(id: number) {
           {
             user_roles: {
               some: {
-                role: { key: "ministry_head" },
+                role: { key: ROLE_KEYS.MINISTRY_HEAD },
                 is_active: true,
               },
             },

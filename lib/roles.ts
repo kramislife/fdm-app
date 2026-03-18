@@ -1,10 +1,10 @@
 import "server-only";
 import { cache } from "react";
 import { prisma } from "@/lib/prisma";
-import type { AppRole } from "@/lib/app-roles";
+import { ROLE_KEYS, type RoleKey } from "@/lib/app-roles";
 
 /** Get the first active role key for a user by Supabase auth ID */
-export const getUserRole = cache(async (authId: string): Promise<AppRole | null> => {
+export const getUserRole = cache(async (authId: string): Promise<RoleKey | null> => {
   const user = await prisma.user.findUnique({
     where: { auth_id: authId },
     include: {
@@ -17,7 +17,7 @@ export const getUserRole = cache(async (authId: string): Promise<AppRole | null>
   });
 
   if (!user || user.user_roles.length === 0) return null;
-  return user.user_roles[0].role.key as AppRole;
+  return user.user_roles[0].role.key as RoleKey;
 });
 
 /** Get user with all active roles and primary chapter by Supabase auth ID */
@@ -39,7 +39,7 @@ export const getUserWithRole = cache(async (authId: string) => {
 
   if (!user) return null;
 
-  const roles = user.user_roles.map((ur) => ur.role.key as AppRole);
+  const roles = user.user_roles.map((ur) => ur.role.key as RoleKey);
   const chapter = user.user_chapters[0]?.chapter ?? null;
 
   return { user, roles, chapter };
@@ -50,7 +50,7 @@ export function hasRole(userRole: string, allowed: string[]): boolean {
   return allowed.includes(userRole);
 }
 
-/** Returns true if the role is anything other than "member" */
+/** Returns true if the role is anything other than ROLE_KEYS.MEMBER */
 export function isAdminRole(role: string): boolean {
-  return role !== "member";
+  return role !== ROLE_KEYS.MEMBER;
 }

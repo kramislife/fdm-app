@@ -1,8 +1,12 @@
 import { requireAuth } from "@/lib/auth";
 import { getUserWithRole } from "@/lib/roles";
 import { getMinistryHeads } from "@/lib/data/ministry-heads";
+import { PERMISSION_ROLES } from "@/lib/app-roles";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
-import { MinistryHeadsClient, type MinistryHeadRow } from "./ministry-heads-client";
+import {
+  MinistryHeadsClient,
+  type MinistryHeadRow,
+} from "./ministry-heads-client";
 
 export default async function MinistryHeadsPage({ searchParams }: PageProps) {
   const authUser = await requireAuth();
@@ -12,7 +16,7 @@ export default async function MinistryHeadsPage({ searchParams }: PageProps) {
 
   const { roles, chapter: userChapter } = userData;
   const isSuperAdmin = roles.some((r) =>
-    ["spiritual_director", "elder"].includes(r),
+    PERMISSION_ROLES.SUPER_ADMIN.some((allowedRole) => allowedRole === r),
   );
 
   const { search, page, perPage, sort, order } = parseTableParams(

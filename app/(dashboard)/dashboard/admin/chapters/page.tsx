@@ -1,10 +1,11 @@
 import { requireRole } from "@/lib/auth";
 import { getChapters } from "@/lib/data/chapters";
+import { PERMISSION_ROLES } from "@/lib/app-roles";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
 import { ChaptersClient, type ChapterRow } from "./chapters-client";
 
 export default async function ChaptersPage({ searchParams }: PageProps) {
-  await requireRole(["spiritual_director", "elder"]);
+  await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   const { search, page, perPage, sort, order } = parseTableParams(
     await searchParams,

@@ -1,4 +1,5 @@
 import { LoginForm } from "./login-form";
+import { AUTH_ERROR_CODES, isAuthErrorCode, type AuthErrorCode } from "@/lib/auth-errors";
 
 interface LoginPageProps {
   searchParams: Promise<{ error?: string; date?: string }>;
@@ -6,9 +7,13 @@ interface LoginPageProps {
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
+  const authError: AuthErrorCode | undefined = isAuthErrorCode(params.error)
+    ? params.error
+    : undefined;
   const provisionedDate =
-    params.error === "provisioned" && params.date ? params.date : undefined;
-  const authError = params.error;
+    authError === AUTH_ERROR_CODES.PROVISIONED && params.date
+      ? params.date
+      : undefined;
 
   return <LoginForm provisionedDate={provisionedDate} authError={authError} />;
 }

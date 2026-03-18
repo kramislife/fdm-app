@@ -1,5 +1,6 @@
 import { requireRole } from "@/lib/auth";
 import { getMinistryTypes } from "@/lib/data/ministry-types";
+import { PERMISSION_ROLES } from "@/lib/app-roles";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
 import {
   MinistryTypesClient,
@@ -7,7 +8,7 @@ import {
 } from "./ministry-types-client";
 
 export default async function MinistryTypesPage({ searchParams }: PageProps) {
-  await requireRole(["spiritual_director", "elder"]);
+  await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   const { search, page, perPage, sort, order } = parseTableParams(
     await searchParams,

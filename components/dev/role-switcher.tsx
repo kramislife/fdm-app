@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronUp } from "lucide-react";
-import { ROLE_LABELS, type AppRole } from "@/lib/app-roles";
+import { ROLE_KEYS, ROLE_LABELS, type RoleKey } from "@/lib/app-roles";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,13 +12,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-const ALL_ROLES = (Object.keys(ROLE_LABELS) as AppRole[]).filter(
-  (r) => r !== "member",
+const ALL_ROLES = (Object.keys(ROLE_LABELS) as RoleKey[]).filter(
+  (r) => r !== ROLE_KEYS.MEMBER,
 );
 
 interface RoleSwitcherProps {
-  activeRole: AppRole;
-  onRoleChange: (role: AppRole) => void;
+  activeRole: RoleKey;
+  onRoleChange: (role: RoleKey) => void;
 }
 
 // DEV ONLY — overrides the sidebar UI display only.

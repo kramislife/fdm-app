@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getUserRole } from "@/lib/roles";
+import { ROLE_KEYS } from "@/lib/app-roles";
+import { AUTH_ERROR_CODES, buildLoginErrorPath } from "@/lib/auth-errors";
 
 // Initiates the Google OAuth flow on the server.
 export async function signInWithGoogle() {
@@ -24,7 +26,7 @@ export async function signInWithGoogle() {
 
   if (error) {
     console.error("Google sign-in error:", error);
-    return redirect("/login?error=auth_failed");
+    return redirect(buildLoginErrorPath(AUTH_ERROR_CODES.AUTH_FAILED));
   }
 
   if (data.url) {
@@ -92,7 +94,7 @@ export async function loginAction(
   // Resolve role from DB
   const role = await getUserRole(user.id);
 
-  if (!role || role === "member") redirect("/");
+  if (!role || role === ROLE_KEYS.MEMBER) redirect("/");
 
   redirect("/dashboard");
 }

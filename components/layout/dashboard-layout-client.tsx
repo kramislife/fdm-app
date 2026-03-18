@@ -10,7 +10,7 @@ import { UserProvider } from "@/lib/context/user-context";
 
 import { useMobileSheet } from "@/hooks/use-mobile-sheet";
 
-import type { AppRole } from "@/lib/app-roles";
+import type { RoleKey } from "@/lib/app-roles";
 import type { DashboardSessionUser } from "@/lib/types";
 
 interface DashboardLayoutClientProps {
@@ -23,7 +23,7 @@ export function DashboardLayoutClient({
   sessionUser,
 }: DashboardLayoutClientProps) {
   const { open, setOpen } = useMobileSheet();
-  const [devRole, setDevRole] = useState<AppRole | null>(null);
+  const [devRole, setDevRole] = useState<RoleKey | null>(null);
 
   // In dev, the switcher can override the active role for sidebar filtering
   const activeRoles = devRole ? [devRole] : sessionUser.roles;

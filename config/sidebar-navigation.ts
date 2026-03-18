@@ -15,13 +15,13 @@ import { BiSolidCalendarCheck } from "react-icons/bi";
 import { IoMdMegaphone } from "react-icons/io";
 import { GiCrownOfThorns } from "react-icons/gi";
 import { MdChurch, MdDashboardCustomize } from "react-icons/md";
-import type { AppRole } from "@/lib/app-roles";
+import type { RoleKey } from "@/lib/app-roles";
 
 export interface NavItem {
   label: string;
   href: string;
   icon: ComponentType<{ className?: string }>;
-  roles: AppRole[];
+  roles: RoleKey[];
 }
 
 export interface NavGroup {

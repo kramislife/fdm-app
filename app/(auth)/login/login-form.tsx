@@ -6,6 +6,7 @@ import { AuthFormCard } from "@/components/auth/auth-form-card";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { FormInput } from "@/components/shared/form-fields";
 import { formatDate } from "@/lib/format";
+import { AUTH_ERROR_CODES, type AuthErrorCode } from "@/lib/auth-errors";
 import { loginAction, type LoginState } from "./actions";
 
 const initialState: LoginState = { error: null };
@@ -15,7 +16,7 @@ const AUTH_LABEL_STYLE =
 
 interface LoginFormProps {
   provisionedDate?: string;
-  authError?: string;
+  authError?: AuthErrorCode;
 }
 
 export function LoginForm({ provisionedDate, authError }: LoginFormProps) {
@@ -35,7 +36,7 @@ export function LoginForm({ provisionedDate, authError }: LoginFormProps) {
   }, [provisionedDate]);
 
   useEffect(() => {
-    if (authError === "invalid_google_email") {
+    if (authError === AUTH_ERROR_CODES.INVALID_GOOGLE_EMAIL) {
       sileo.error({
         title: "Google Sign-In Failed",
         description:

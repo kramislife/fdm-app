@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { PERMISSION_ROLES } from "@/lib/app-roles";
 import { toKey } from "@/lib/utils/slugify";
 type RoleForm = {
   name: string;
@@ -12,7 +13,7 @@ type RoleForm = {
 };
 
 export async function createRole(data: RoleForm) {
-  const currentUser = await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   if (!data.name.trim()) return { success: false, error: "Name is required." };
   if (!data.scope.trim())
@@ -54,7 +55,7 @@ export async function createRole(data: RoleForm) {
 }
 
 export async function updateRole(id: number, data: RoleForm) {
-  const currentUser = await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   if (!data.name.trim()) return { success: false, error: "Name is required." };
   if (!data.scope.trim())
@@ -83,7 +84,7 @@ export async function updateRole(id: number, data: RoleForm) {
 }
 
 export async function deleteRole(id: number) {
-  const currentUser = await requireRole(["spiritual_director", "elder"]);
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   try {
     // Check if role is assigned to any users

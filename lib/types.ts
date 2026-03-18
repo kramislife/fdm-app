@@ -1,7 +1,7 @@
 import type { StaticImageData } from "next/image";
 import type { LucideIcon } from "lucide-react";
 import type { IconType } from "react-icons";
-import type { AppRole } from "@/lib/app-roles";
+import type { RoleKey } from "@/lib/app-roles";
 
 // ---------------------------- Base Config Types ----------------------------
 
@@ -58,7 +58,7 @@ export interface BaseUser {
 }
 
 export interface DashboardSessionUser extends BaseUser {
-  roles: AppRole[];
+  roles: RoleKey[];
 }
 
 // ---------------------------- Address Types ----------------------------

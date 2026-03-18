@@ -1,27 +1,47 @@
-export const APP_ROLES = [
-  "spiritual_director",
-  "elder",
-  "head_servant",
-  "asst_head_servant",
-  "ministry_head",
-  "builder",
-  "cluster_head",
-  "ministry_coordinator",
-  "finance",
-  "member",
-] as const;
+// Centralized application roles and permissions
+export const ROLE_KEYS = {
+  SPIRITUAL_DIRECTOR: "spiritual_director",
+  ELDER: "elder",
+  HEAD_SERVANT: "head_servant",
+  ASST_HEAD_SERVANT: "asst_head_servant",
+  MINISTRY_HEAD: "ministry_head",
+  BUILDER: "builder",
+  CLUSTER_HEAD: "cluster_head",
+  MINISTRY_COORDINATOR: "ministry_coordinator",
+  FINANCE: "finance",
+  MEMBER: "member",
+} as const;
 
-export type AppRole = (typeof APP_ROLES)[number];
+export type RoleKey = (typeof ROLE_KEYS)[keyof typeof ROLE_KEYS];
 
-export const ROLE_LABELS: Record<AppRole, string> = {
-  spiritual_director: "Spiritual Director",
-  elder: "Elder",
-  head_servant: "Head Servant",
-  asst_head_servant: "Asst. Head Servant",
-  ministry_head: "Ministry Head",
-  builder: "Builder",
-  cluster_head: "Cluster Head",
-  ministry_coordinator: "Master of Ceremonies",
-  finance: "Finance Officer",
-  member: "Member",
+export const ROLE_LIST = Object.values(ROLE_KEYS) as RoleKey[];
+
+// Human-readable labels for roles
+export const ROLE_LABELS: Record<RoleKey, string> = {
+  [ROLE_KEYS.SPIRITUAL_DIRECTOR]: "Spiritual Director",
+  [ROLE_KEYS.ELDER]: "Elder",
+  [ROLE_KEYS.HEAD_SERVANT]: "Head Servant",
+  [ROLE_KEYS.ASST_HEAD_SERVANT]: "Asst. Head Servant",
+  [ROLE_KEYS.MINISTRY_HEAD]: "Ministry Head",
+  [ROLE_KEYS.BUILDER]: "Builder",
+  [ROLE_KEYS.CLUSTER_HEAD]: "Cluster Head",
+  [ROLE_KEYS.MINISTRY_COORDINATOR]: "Ministry Coordinator",
+  [ROLE_KEYS.FINANCE]: "Finance Officer",
+  [ROLE_KEYS.MEMBER]: "Member",
 };
+
+// Define role hierarchies for permissions
+export const PERMISSION_ROLES = {
+  SUPER_ADMIN: [ROLE_KEYS.SPIRITUAL_DIRECTOR, ROLE_KEYS.ELDER],
+  MINISTRY_HEADS_MANAGE: [
+    ROLE_KEYS.SPIRITUAL_DIRECTOR,
+    ROLE_KEYS.ELDER,
+    ROLE_KEYS.HEAD_SERVANT,
+  ],
+  USERS_VIEW: [
+    ROLE_KEYS.SPIRITUAL_DIRECTOR,
+    ROLE_KEYS.ELDER,
+    ROLE_KEYS.HEAD_SERVANT,
+    ROLE_KEYS.ASST_HEAD_SERVANT,
+  ],
+} as const satisfies Record<string, readonly RoleKey[]>;

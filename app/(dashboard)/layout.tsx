@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth";
 import { getUserWithRole } from "@/lib/roles";
+import { ROLE_KEYS } from "@/lib/app-roles";
 import { DashboardLayoutClient } from "@/components/layout/dashboard-layout-client";
 
 export default async function DashboardLayout({
@@ -11,7 +12,7 @@ export default async function DashboardLayout({
   const authUser = await requireAuth();
   const data = await getUserWithRole(authUser.id);
 
-  if (!data || data.roles.every((r) => r === "member")) redirect("/");
+  if (!data || data.roles.every((r) => r === ROLE_KEYS.MEMBER)) redirect("/");
 
   const { user, roles } = data;
   const sessionUser = {

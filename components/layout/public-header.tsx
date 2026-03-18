@@ -11,7 +11,7 @@ import { UserDropdown } from "@/components/shared/user-dropdown";
 import { MobileNav } from "@/components/layout/mobile-nav";
 
 import { navLinks } from "@/config/navigation";
-import { ROLE_LABELS, type AppRole } from "@/lib/app-roles";
+import { ROLE_LABELS, type RoleKey } from "@/lib/app-roles";
 import { useSignOut } from "@/hooks/use-sign-out";
 import { useMobileSheet } from "@/hooks/use-mobile-sheet";
 
@@ -19,7 +19,7 @@ import type { BaseUser } from "@/lib/types";
 
 interface SessionUser extends BaseUser {
   isMember: boolean;
-  roles: AppRole[];
+  roles: RoleKey[];
 }
 
 interface PublicHeaderProps {

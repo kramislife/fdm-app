@@ -1,10 +1,11 @@
 import "server-only";
+
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithRole } from "@/lib/roles";
 import { prisma } from "@/lib/prisma";
-import type { AppRole } from "@/lib/app-roles";
+import type { RoleKey } from "@/lib/app-roles";
 
 /** Returns the current Supabase auth user or null — verified via network call */
 export const getAuthUser = cache(async () => {
@@ -37,7 +38,7 @@ export async function requireAuth() {
  * Redirects to /login if not authenticated, /dashboard if role not allowed.
  * Returns the full user data with roles and chapter.
  */
-export async function requireRole(roles: AppRole[]) {
+export async function requireRole(roles: RoleKey[]) {
   const authUser = await requireAuth();
   const data = await getUserWithRole(authUser.id);
 

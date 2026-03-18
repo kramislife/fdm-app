@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import type { AppRole } from "@/lib/app-roles";
+import { ROLE_KEYS } from "@/lib/app-roles";
+import type { RoleKey } from "@/lib/app-roles";
 
 /** Prisma include shape for a user with their active roles */
 const userWithRoles = {
@@ -20,13 +21,13 @@ export async function getUserWithRoles(authId: string) {
 type UserWithRoles = NonNullable<Awaited<ReturnType<typeof getUserWithRoles>>>;
 
 /** Extract the role keys from a fetched user */
-export function getRoleKeys(dbUser: UserWithRoles): AppRole[] {
-  return dbUser.user_roles.map((ur) => ur.role.key as AppRole);
+export function getRoleKeys(dbUser: UserWithRoles): RoleKey[] {
+  return dbUser.user_roles.map((ur) => ur.role.key as RoleKey);
 }
 
-/** True when the user has roles and ALL of them are "member" */
-export function isMemberOnly(roleKeys: AppRole[]): boolean {
-  return roleKeys.length > 0 && roleKeys.every((k) => k === "member");
+/** True when the user has roles and ALL of them are ROLE_KEYS.MEMBER */
+export function isMemberOnly(roleKeys: RoleKey[]): boolean {
+  return roleKeys.length > 0 && roleKeys.every((k) => k === ROLE_KEYS.MEMBER);
 }
 
 /** Build the session user object passed to client components */
