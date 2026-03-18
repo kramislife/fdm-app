@@ -107,6 +107,7 @@ export function ChapterAddressForm({
           id="ch-street"
           value={value.street}
           onChange={(e) => handleStreetChange(e.target.value)}
+          optional
         />
 
         <FormInput
@@ -114,6 +115,7 @@ export function ChapterAddressForm({
           id="ch-gmaps"
           value={value.google_maps_url}
           onChange={(e) => handleMapsUrlChange(e.target.value)}
+          optional
         />
 
         <FormInput
@@ -121,6 +123,7 @@ export function ChapterAddressForm({
           id="ch-landmark"
           value={value.landmark}
           onChange={(e) => handleLandmarkChange(e.target.value)}
+          optional
         />
       </div>
     </div>

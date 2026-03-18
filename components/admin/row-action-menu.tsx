@@ -51,14 +51,14 @@ export function RowActionMenu({
               onClick={onViewDetails}
               className="cursor-pointer text-sm"
             >
-              <FaEye className="size-4" />
+              <FaEye className="size-4 mb-0.5" />
               {viewDetailsLabel}
             </DropdownMenuItem>
           </>
         )}
         {onEdit && (
           <DropdownMenuItem onClick={onEdit} className="cursor-pointer text-sm">
-            <RiFileEditFill className="size-4" />
+            <RiFileEditFill className="size-4 mb-0.5" />
             {editLabel}
           </DropdownMenuItem>
         )}
@@ -69,7 +69,7 @@ export function RowActionMenu({
               onClick={onDelete}
               className="text-destructive focus:text-destructive"
             >
-              <RiDeleteBin2Fill className="size-4" />
+              <RiDeleteBin2Fill className="size-4 mb-0.5" />
               {deleteLabel}
             </DropdownMenuItem>
           </>

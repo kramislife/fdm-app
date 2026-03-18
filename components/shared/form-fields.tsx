@@ -59,6 +59,7 @@ interface FormInputProps
   wrapperClassName?: string;
   labelClassName?: string;
   description?: string;
+  optional?: boolean;
 }
 
 export function FormInput({
@@ -70,9 +71,12 @@ export function FormInput({
   description,
   className,
   placeholder,
+  optional,
   ...props
 }: FormInputProps) {
-  const defaultPlaceholder = `Enter ${label.toLowerCase()}`;
+  const defaultPlaceholder = optional
+    ? `Enter ${label.toLowerCase()} (optional)`
+    : `Enter ${label.toLowerCase()}`;
   return (
     <FieldWrapper
       label={label}
