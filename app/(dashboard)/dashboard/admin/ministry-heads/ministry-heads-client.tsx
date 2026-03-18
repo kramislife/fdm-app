@@ -138,22 +138,14 @@ export function MinistryHeadsClient({ ministryHeads, pagination }: Props) {
       }}
       renderForm={(form, setForm) => (
         <div className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-2">
-            <FormInput
-              label={FIELD_LABELS.chapter}
-              id="display-chapter"
-              readOnly
-              disabled
-              value={form.chapterName}
-            />
-            <FormInput
-              label={FIELD_LABELS.name}
-              id="display-ministry"
-              readOnly
-              disabled
-              value={form.ministryName}
-            />
-          </div>
+          <DetailSection>
+            <DetailField label={FIELD_LABELS.chapter}>
+              <TextCell value={form.chapterName} />
+            </DetailField>
+            <DetailField label={FIELD_LABELS.name}>
+              <TextCell value={form.ministryName} />
+            </DetailField>
+          </DetailSection>
           <FormSelect
             label={FIELD_LABELS.head}
             id="ministry-head"
