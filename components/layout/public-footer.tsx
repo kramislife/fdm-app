@@ -81,7 +81,6 @@ export function PublicFooter() {
                 key={item}
                 className="flex items-center gap-2 text-sm text-white/80"
               >
-                <span className="h-2 w-2 shrink-0 rounded-full bg-muted/50" />
                 {item}
               </li>
             ))}
