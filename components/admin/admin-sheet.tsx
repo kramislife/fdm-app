@@ -61,7 +61,7 @@ export function AdminSheet({
             <Button
               type="button"
               variant="outline"
-              className="flex-1 cursor-pointer"
+              className="flex-1"
               onClick={onClose}
               disabled={isSubmitting}
             >
@@ -69,7 +69,7 @@ export function AdminSheet({
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-primary cursor-pointer"
+              className="flex-1 bg-primary"
               disabled={isSubmitting}
             >
               {isSubmitting ? (

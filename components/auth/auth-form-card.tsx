@@ -67,11 +67,7 @@ export function AuthFormCard({
       <form action={formAction} className="flex flex-col gap-5">
         <div className="flex flex-col gap-5">{children}</div>
 
-        <Button
-          type="submit"
-          disabled={isPending}
-          className="h-12 cursor-pointer"
-        >
+        <Button type="submit" disabled={isPending} className="h-12">
           {isPending ? (
             <span className="flex items-center gap-2">
               <Loading size="sm" variant="white" />

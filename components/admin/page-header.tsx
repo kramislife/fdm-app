@@ -23,7 +23,7 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
       </div>
       {action && (
         <div className="shrink-0">
-          <Button onClick={action.onClick} className="cursor-pointer">
+          <Button onClick={action.onClick}>
             <Plus className="size-4" />
             <span className="hidden md:block">{action.label}</span>
           </Button>

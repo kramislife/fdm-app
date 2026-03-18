@@ -44,11 +44,7 @@ export function DeleteConfirmDialog({
           <AlertDialogCancel onClick={onClose} disabled={isDeleting}>
             Cancel
           </AlertDialogCancel>
-          <Button
-            onClick={onConfirm}
-            disabled={isDeleting}
-            className="cursor-pointer"
-          >
+          <Button onClick={onConfirm} disabled={isDeleting}>
             {isDeleting ? (
               <Loading size="sm" variant="white" text="Deleting..." />
             ) : (

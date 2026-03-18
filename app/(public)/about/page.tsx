@@ -243,7 +243,7 @@ export default function AboutPage() {
           {...getAnimationProps(fadeInUp)}
         >
           <Link href="/chapters">
-            <Button className="rounded-full h-auto px-7 py-5 md:px-10 cursor-pointer">
+            <Button className="rounded-full h-auto px-7 py-5 md:px-10">
               View All Chapters
             </Button>
           </Link>
@@ -355,14 +355,14 @@ export default function AboutPage() {
 
             <div className="flex flex-wrap gap-5 pt-5">
               <Link href={ctaContent.primaryButton.href}>
-                <Button className="rounded-full h-auto px-7 py-5 md:px-10 cursor-pointer">
+                <Button className="rounded-full h-auto px-7 py-5 md:px-10">
                   {ctaContent.primaryButton.label}
                 </Button>
               </Link>
               <Link href={ctaContent.secondaryButton.href}>
                 <Button
                   variant="outline"
-                  className="rounded-full h-auto px-7 py-5 md:px-10 cursor-pointer"
+                  className="rounded-full h-auto px-7 py-5 md:px-10"
                 >
                   {ctaContent.secondaryButton.label}
                 </Button>

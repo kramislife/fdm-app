@@ -47,17 +47,13 @@ export function DetailSheet({
             <Button
               type="button"
               variant="outline"
-              className="flex-1 cursor-pointer"
+              className="flex-1"
               onClick={onClose}
             >
               Close
             </Button>
             {onEdit && (
-              <Button
-                type="button"
-                className="flex-1 cursor-pointer"
-                onClick={onEdit}
-              >
+              <Button type="button" className="flex-1" onClick={onEdit}>
                 Edit
               </Button>
             )}

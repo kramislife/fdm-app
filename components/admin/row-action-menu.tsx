@@ -38,7 +38,7 @@ export function RowActionMenu({
           variant="ghost"
           size="icon"
           disabled={disabled}
-          className="size-8 cursor-pointer"
+          className="size-8"
         >
           <TfiMoreAlt className="size-4" />
           <span className="sr-only">Open menu</span>

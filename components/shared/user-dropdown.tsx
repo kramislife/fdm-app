@@ -32,10 +32,7 @@ export function UserDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="p-0 cursor-pointer hover:bg-transparent"
-        >
+        <Button variant="ghost" className="p-0 hover:bg-transparent">
           <UserAvatar initials={initials} photoUrl={photoUrl} />
         </Button>
       </DropdownMenuTrigger>

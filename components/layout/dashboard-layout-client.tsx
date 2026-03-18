@@ -62,10 +62,10 @@ export function DashboardLayoutClient({
           <main className="flex-1 overflow-y-auto p-5">{children}</main>
         </div>
 
-        <RoleSwitcher
+        {/* <RoleSwitcher
           activeRole={devRole ?? sessionUser.roles[0]}
           onRoleChange={setDevRole}
-        />
+        /> */}
       </div>
     </UserProvider>
   );

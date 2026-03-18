@@ -35,7 +35,7 @@ export function DashboardHeader({
           variant="ghost"
           size="icon"
           onClick={onMenuClick}
-          className="lg:hidden h-9 w-9 shrink-0 cursor-pointer"
+          className="lg:hidden h-9 w-9 shrink-0"
           aria-label="Open menu"
         >
           <Menu className="h-5 w-5" />

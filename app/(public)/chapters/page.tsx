@@ -74,7 +74,7 @@ export default function ChaptersPage() {
             <Button
               key={area}
               variant={activeArea === area ? "default" : "outline"}
-              className="px-5 rounded-full cursor-pointer flex items-center justify-center"
+              className="px-5 rounded-full flex items-center justify-center"
               onClick={() => setActiveArea(area)}
             >
               {area}

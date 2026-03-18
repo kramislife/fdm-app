@@ -82,7 +82,7 @@ export function MobileNav({
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden cursor-pointer"
+          className="md:hidden"
           aria-label="Open menu"
           title="Open menu"
         >
@@ -158,11 +158,11 @@ export function MobileNav({
         {/* Footer: Sign Out or Sign In */}
         <SheetFooter className="border-t">
           {sessionUser ? (
-            <Button onClick={onSignOut} className="w-full h-12 cursor-pointer">
+            <Button onClick={onSignOut} className="w-full h-12">
               Sign Out
             </Button>
           ) : (
-            <Button asChild className="w-full h-12 cursor-pointer">
+            <Button asChild className="w-full h-12">
               <Link href="/login" onClick={close}>
                 Sign In
               </Link>

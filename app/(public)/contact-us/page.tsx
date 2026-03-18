@@ -210,7 +210,7 @@ export default function ContactPage() {
                   />
 
                   {/* Submit */}
-                  <Button type="submit" className="h-12 cursor-pointer">
+                  <Button type="submit" className="h-12">
                     {formContent.submitLabel}
                   </Button>
                 </form>
