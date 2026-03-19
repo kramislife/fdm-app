@@ -57,3 +57,11 @@ export async function getChapters(params: TableParams = {}) {
 
   return { data, ...buildPaginationMeta(total, page, perPage) };
 }
+
+export async function getChaptersForSelect() {
+  return prisma.chapter.findMany({
+    where: { is_active: true, deleted_at: null },
+    select: { id: true, name: true },
+    orderBy: { name: "asc" },
+  });
+}

@@ -1,6 +1,11 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import { buildOrderBy, buildPaginationMeta, type TableParams } from "@/lib/table";
+import {
+  buildOrderBy,
+  buildPaginationMeta,
+  type TableParams,
+} from "@/lib/table";
+import { USER_STATUS } from "@/lib/status";
 
 const ORDER_FIELDS: Record<string, string> = {
   name: "first_name",
@@ -16,8 +21,14 @@ export async function getUsers(params: TableParams = {}) {
     order = "desc",
   } = params;
 
+  const baseWhere = {
+    status: { not: USER_STATUS.GUEST },
+    deleted_at: null,
+  };
+
   const where = search
     ? {
+        ...baseWhere,
         OR: [
           { first_name: { contains: search, mode: "insensitive" as const } },
           { last_name: { contains: search, mode: "insensitive" as const } },
@@ -26,7 +37,7 @@ export async function getUsers(params: TableParams = {}) {
             contact_number: { contains: search, mode: "insensitive" as const },
           },
           {
-            user_roles: {
+            user_chapters: {
               some: {
                 chapter: {
                   name: { contains: search, mode: "insensitive" as const },
@@ -45,7 +56,7 @@ export async function getUsers(params: TableParams = {}) {
           },
         ],
       }
-    : {};
+    : baseWhere;
 
   const [data, total] = await Promise.all([
     prisma.user.findMany({
@@ -81,7 +92,6 @@ export async function getUsers(params: TableParams = {}) {
             role: { select: { id: true, key: true, name: true } },
             chapter: { select: { id: true, name: true } },
           },
-          take: 1,
         },
       },
       orderBy: buildOrderBy(sort, order, ORDER_FIELDS),

@@ -1,5 +1,7 @@
 import { requireRole } from "@/lib/auth";
 import { getUsers } from "@/lib/data/users";
+import { getChaptersForSelect } from "@/lib/data/chapters";
+import { getRolesForSelect } from "@/lib/data/roles";
 import { PERMISSION_ROLES } from "@/lib/app-roles";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
 import { UsersClient, type UserRow } from "./users-client";
@@ -11,13 +13,11 @@ export default async function UsersPage({ searchParams }: PageProps) {
     await searchParams,
   );
 
-  const result = await getUsers({
-    search: search || undefined,
-    page,
-    perPage,
-    sort,
-    order,
-  });
+  const [result, chapters, roles] = await Promise.all([
+    getUsers({ search: search || undefined, page, perPage, sort, order }),
+    getChaptersForSelect(),
+    getRolesForSelect(),
+  ]);
 
   const users: UserRow[] = result.data.map((user) => ({
     id: user.id,
@@ -35,5 +35,12 @@ export default async function UsersPage({ searchParams }: PageProps) {
     updated_at: user.updated_at.toISOString(),
   }));
 
-  return <UsersClient users={users} pagination={toPagination(result)} />;
+  return (
+    <UsersClient
+      users={users}
+      pagination={toPagination(result)}
+      chapters={chapters}
+      roles={roles}
+    />
+  );
 }

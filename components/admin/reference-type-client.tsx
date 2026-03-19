@@ -9,7 +9,7 @@ import {
 } from "react";
 import { sileo } from "sileo";
 import { AdminPage } from "./admin-page";
-import { RowActionMenu } from "./row-action-menu";
+import { RowActionMenu, type ExtraAction } from "./row-action-menu";
 import { AdminSheet } from "./admin-sheet";
 import { DetailSheet } from "./detail-sheet";
 import { DeleteConfirmDialog } from "./delete-confirm-dialog";
@@ -18,6 +18,18 @@ import type { Pagination } from "@/lib/table";
 
 type BaseRow = { id: number; name: string };
 type ActionResult = { success: boolean; error?: string; description?: string };
+
+export type ConfirmRowAction<TRow extends BaseRow> = {
+  label: string;
+  icon?: ReactNode;
+  condition?: (row: TRow) => boolean;
+  action: (id: number) => Promise<ActionResult>;
+  title: string;
+  description: string;
+  successTitle?: string;
+  successDescription?: (row: TRow) => string;
+  confirmingText?: string;
+};
 
 export type ReferenceTypeClientProps<TRow extends BaseRow, TForm = {}> = {
   entityLabel: string;
@@ -36,10 +48,13 @@ export type ReferenceTypeClientProps<TRow extends BaseRow, TForm = {}> = {
   renderForm?: (
     form: TForm,
     setForm: Dispatch<SetStateAction<TForm>>,
+    isEditing: boolean,
   ) => ReactNode;
   onCreate?: (data: TForm) => Promise<ActionResult>;
   onUpdate?: (id: number, data: TForm) => Promise<ActionResult>;
   onDelete?: (id: number) => Promise<ActionResult>;
+  extraRowActions?: (row: TRow) => ExtraAction[];
+  confirmRowActions?: ConfirmRowAction<TRow>[];
 };
 
 export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
@@ -60,26 +75,35 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
     onCreate,
     onUpdate,
     onDelete,
+    extraRowActions,
+    confirmRowActions,
   } = props;
   const [viewing, setViewing] = useState<TRow | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [editing, setEditing] = useState<TRow | null>(null);
   const [deleting, setDeleting] = useState<TRow | null>(null);
-  const [sheetMode, setSheetMode] = useState<"add" | "edit">("add");
+  // Tracks edit vs add mode separately so the sheet title/description doesn't
+  // flicker to "Add" while the close animation is still running.
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [confirmingAction, setConfirmingAction] = useState<{
+    row: TRow;
+    def: ConfirmRowAction<TRow>;
+  } | null>(null);
 
   const [form, setForm] = useState<TForm>(initialForm ?? ({} as TForm));
   const [isPending, startTransition] = useTransition();
   const [isDeleting, startDeleteTransition] = useTransition();
+  const [isConfirming, startConfirmTransition] = useTransition();
 
   const isSheetOpen = isAdding || !!editing;
-  
-  const sheetTitle =
-    sheetMode === "add" ? `Add ${entityLabel}` : `Edit ${entityLabel}`;
 
-  const sheetDescription =
-    sheetMode === "add"
-      ? `Fill in the details to create a new ${entityLabel.toLowerCase()}`
-      : `Update the details and settings for this ${entityLabel.toLowerCase()}`;
+  const sheetTitle = isEditMode
+    ? `Edit ${entityLabel}`
+    : `Add ${entityLabel}`;
+
+  const sheetDescription = isEditMode
+    ? `Update the details and settings for this ${entityLabel.toLowerCase()}`
+    : `Fill in the details to create a new ${entityLabel.toLowerCase()}`;
 
   function openView(row: TRow) {
     setViewing(row);
@@ -91,7 +115,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
 
   function openAdd() {
     if (!initialForm || !onCreate) return;
-    setSheetMode("add");
+    setIsEditMode(false);
     setForm(initialForm);
     setIsAdding(true);
   }
@@ -99,7 +123,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
   function openEdit(row: TRow) {
     if (!getFormFromRow || !onUpdate) return;
     setViewing(null);
-    setSheetMode("edit");
+    setIsEditMode(true);
     setEditing(row);
     setForm(getFormFromRow(row));
   }
@@ -107,6 +131,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
   function closeSheet() {
     setIsAdding(false);
     setEditing(null);
+    // isEditMode intentionally not reset here — prevents title flicker during close animation
   }
 
   function handleSubmit() {
@@ -163,16 +188,49 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
     });
   }
 
-  const data = rows.map((row) => ({
-    ...renderRow(row),
-    actions: (
-      <RowActionMenu
-        onViewDetails={renderDetail ? () => openView(row) : undefined}
-        onEdit={onUpdate ? () => openEdit(row) : undefined}
-        onDelete={onDelete ? () => setDeleting(row) : undefined}
-      />
-    ),
-  }));
+  function handleConfirmAction() {
+    if (!confirmingAction) return;
+    const { row, def } = confirmingAction;
+
+    startConfirmTransition(async () => {
+      const result = await def.action(row.id);
+
+      if (result.success) {
+        sileo.success({
+          title: def.successTitle ?? "Done!",
+          description: result.description ?? def.successDescription?.(row),
+        });
+        setConfirmingAction(null);
+      } else {
+        sileo.error({
+          title: "Something went wrong",
+          description: result.error ?? result.description,
+        });
+      }
+    });
+  }
+
+  const data = rows.map((row) => {
+    const confirmItems: ExtraAction[] = (confirmRowActions ?? [])
+      .filter((a) => !a.condition || a.condition(row))
+      .map((a) => ({
+        label: a.label,
+        icon: a.icon,
+        onClick: () => setConfirmingAction({ row, def: a }),
+      }));
+
+    return {
+      ...renderRow(row),
+      actions: (
+        <RowActionMenu
+          onViewDetails={renderDetail ? () => openView(row) : undefined}
+          onEdit={onUpdate ? () => openEdit(row) : undefined}
+          onDelete={onDelete ? () => setDeleting(row) : undefined}
+          extraItems={[...(extraRowActions?.(row) ?? []), ...confirmItems]}
+        />
+      ),
+    };
+  });
 
   return (
     <>
@@ -210,9 +268,9 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
           description={sheetDescription}
           onSubmit={handleSubmit}
           isSubmitting={isPending}
-          submitLabel={sheetMode === "add" ? "Save" : "Update"}
+          submitLabel={isEditMode ? "Update" : "Save"}
         >
-          {renderForm(form, setForm)}
+          {renderForm(form, setForm, isEditMode)}
         </AdminSheet>
       )}
 
@@ -224,14 +282,21 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
           onConfirm={handleDelete}
           isDeleting={isDeleting}
           title={`Delete ${entityLabel}?`}
-          description={
-            <>
-              <span className="font-semibold text-foreground">
-                {deleting?.name}
-              </span>{" "}
-              will be permanently removed. This action cannot be undone.
-            </>
-          }
+          name={deleting?.name}
+        />
+      )}
+
+      {/* Confirm Row Action Dialog */}
+      {confirmRowActions && confirmRowActions.length > 0 && (
+        <DeleteConfirmDialog
+          open={!!confirmingAction}
+          onClose={() => setConfirmingAction(null)}
+          onConfirm={handleConfirmAction}
+          isDeleting={isConfirming}
+          title={confirmingAction?.def.title ?? ""}
+          name={confirmingAction?.row.name}
+          nameSuffix={confirmingAction?.def.description}
+          confirmingText={confirmingAction?.def.confirmingText}
         />
       )}
     </>

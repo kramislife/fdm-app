@@ -55,3 +55,11 @@ export async function getRoles(params: TableParams = {}) {
 
   return { data, ...buildPaginationMeta(total, page, perPage) };
 }
+
+export async function getRolesForSelect() {
+  return prisma.role.findMany({
+    where: { deleted_at: null },
+    select: { id: true, key: true, name: true, scope: true },
+    orderBy: { name: "asc" },
+  });
+}
