@@ -181,6 +181,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
         sileo.error({
           title: "Couldn't delete",
           description:
+            result.error ??
             result.description ??
             `We couldn't delete the ${entityLabel.toLowerCase()}. Please try again.`,
         });

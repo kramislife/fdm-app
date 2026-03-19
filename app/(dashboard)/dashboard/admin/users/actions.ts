@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
-import { PERMISSION_ROLES } from "@/lib/app-roles";
+import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/app-roles";
 import { USER_STATUS } from "@/lib/status";
 
 const REVALIDATE_PATH = "/dashboard/admin/users";
@@ -14,7 +14,6 @@ export type UserFormData = {
   contact_number: string;
   email: string;
   birthday: string;
-  chapter_id: string;
   status: string;
   address: string;
 };
@@ -24,14 +23,10 @@ export async function createUser(
 ): Promise<{ success: boolean; error?: string }> {
   const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
-  const chapterId = parseInt(data.chapter_id, 10);
-
   if (!data.first_name.trim())
     return { success: false, error: "First name is required." };
   if (!data.last_name.trim())
     return { success: false, error: "Last name is required." };
-  if (isNaN(chapterId))
-    return { success: false, error: "Chapter is required." };
 
   if (data.email.trim()) {
     const existing = await prisma.user.findFirst({
@@ -49,33 +44,26 @@ export async function createUser(
   }
 
   try {
-    await prisma.$transaction(async (tx) => {
-      const user = await tx.user.create({
-        data: {
-          first_name: data.first_name.trim(),
-          last_name: data.last_name.trim(),
-          email: data.email.trim() || null,
-          contact_number: data.contact_number.trim() || null,
-          birthday: data.birthday ? new Date(data.birthday) : null,
-          status: data.status,
-          address: data.address.trim() || null,
-          created_by_admin: currentUser.user.id,
-        },
-      });
-
-      await tx.userChapter.create({
-        data: {
-          user_id: user.id,
-          chapter_id: chapterId,
-          is_primary: true,
-        },
-      });
+    await prisma.user.create({
+      data: {
+        first_name: data.first_name.trim(),
+        last_name: data.last_name.trim(),
+        email: data.email.trim() || null,
+        contact_number: data.contact_number.trim() || null,
+        birthday: data.birthday ? new Date(data.birthday) : null,
+        status: data.status,
+        address: data.address.trim() || null,
+        created_by_admin: currentUser.user.id,
+      },
     });
 
     revalidatePath(REVALIDATE_PATH);
     return { success: true };
   } catch {
-    return { success: false, error: "Failed to create user. Please try again." };
+    return {
+      success: false,
+      error: "Failed to create user. Please try again.",
+    };
   }
 }
 
@@ -85,14 +73,10 @@ export async function updateUser(
 ): Promise<{ success: boolean; error?: string }> {
   await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
-  const chapterId = parseInt(data.chapter_id, 10);
-
   if (!data.first_name.trim())
     return { success: false, error: "First name is required." };
   if (!data.last_name.trim())
     return { success: false, error: "Last name is required." };
-  if (isNaN(chapterId))
-    return { success: false, error: "Chapter is required." };
 
   if (data.contact_number.trim()) {
     const existing = await prisma.user.findFirst({
@@ -107,55 +91,72 @@ export async function updateUser(
   }
 
   try {
-    await prisma.$transaction(async (tx) => {
-      await tx.user.update({
-        where: { id },
-        data: {
-          first_name: data.first_name.trim(),
-          last_name: data.last_name.trim(),
-          contact_number: data.contact_number.trim() || null,
-          birthday: data.birthday ? new Date(data.birthday) : null,
-          status: data.status,
-          address: data.address.trim() || null,
-        },
-      });
-
-      // Set new chapter as primary, remove old primary
-      await tx.userChapter.updateMany({
-        where: { user_id: id, is_primary: true },
-        data: { is_primary: false },
-      });
-
-      await tx.userChapter.upsert({
-        where: {
-          user_id_chapter_id: { user_id: id, chapter_id: chapterId },
-        },
-        update: { is_primary: true },
-        create: {
-          user_id: id,
-          chapter_id: chapterId,
-          is_primary: true,
-        },
-      });
+    await prisma.user.update({
+      where: { id },
+      data: {
+        first_name: data.first_name.trim(),
+        last_name: data.last_name.trim(),
+        contact_number: data.contact_number.trim() || null,
+        birthday: data.birthday ? new Date(data.birthday) : null,
+        status: data.status,
+        address: data.address.trim() || null,
+      },
     });
 
     revalidatePath(REVALIDATE_PATH);
     return { success: true };
   } catch {
-    return { success: false, error: "Failed to update user. Please try again." };
+    return {
+      success: false,
+      error: "Failed to update user. Please try again.",
+    };
   }
 }
 
 export async function deactivateUser(
   id: number,
 ): Promise<{ success: boolean; error?: string }> {
-  await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
+
+  if (id === currentUser.user.id)
+    return { success: false, error: "You cannot deactivate your own account." };
+
+  const user = await prisma.user.findUnique({
+    where: { id },
+    include: {
+      user_roles: {
+        where: { is_active: true },
+        include: { role: { select: { key: true } } },
+      },
+    },
+  });
+
+  if (!user) return { success: false, error: "User not found." };
+  if (user.deleted_at)
+    return { success: false, error: "User is already deleted." };
+  if (user.status === USER_STATUS.INACTIVE)
+    return { success: false, error: "User is already deactivated." };
+
+  const hasSD = user.user_roles.some(
+    (ur) => ur.role.key === ROLE_KEYS.SPIRITUAL_DIRECTOR,
+  );
+  if (hasSD)
+    return {
+      success: false,
+      error: "Spiritual Director account cannot be deactivated.",
+    };
 
   try {
-    await prisma.user.update({
-      where: { id },
-      data: { status: USER_STATUS.INACTIVE },
-    });
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id },
+        data: { status: USER_STATUS.INACTIVE },
+      }),
+      prisma.userRole.updateMany({
+        where: { user_id: id, is_active: true },
+        data: { is_active: false },
+      }),
+    ]);
 
     revalidatePath(REVALIDATE_PATH);
     return { success: true };
@@ -171,6 +172,17 @@ export async function restoreUser(
   id: number,
 ): Promise<{ success: boolean; error?: string }> {
   await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
+
+  const user = await prisma.user.findUnique({ where: { id } });
+
+  if (!user) return { success: false, error: "User not found." };
+  if (user.deleted_at)
+    return {
+      success: false,
+      error: "Deleted users cannot be restored. Create a new account.",
+    };
+  if (user.status !== USER_STATUS.INACTIVE)
+    return { success: false, error: "User account is already active." };
 
   try {
     await prisma.user.update({
@@ -193,14 +205,45 @@ export async function deleteUser(
 ): Promise<{ success: boolean; error?: string }> {
   const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
-  try {
-    await prisma.user.update({
-      where: { id },
-      data: {
-        deleted_at: new Date(),
-        deleted_by: currentUser.user.id,
+  if (id === currentUser.user.id)
+    return { success: false, error: "You cannot delete your own account." };
+
+  const user = await prisma.user.findUnique({
+    where: { id },
+    include: {
+      user_roles: {
+        where: { is_active: true },
+        include: { role: { select: { key: true } } },
       },
-    });
+    },
+  });
+
+  if (!user) return { success: false, error: "User not found." };
+
+  const hasSD = user.user_roles.some(
+    (ur) => ur.role.key === ROLE_KEYS.SPIRITUAL_DIRECTOR,
+  );
+  if (hasSD)
+    return {
+      success: false,
+      error: "Spiritual Director account cannot be deleted.",
+    };
+
+  try {
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id },
+        data: {
+          deleted_at: new Date(),
+          deleted_by: currentUser.user.id,
+          status: USER_STATUS.INACTIVE,
+        },
+      }),
+      prisma.userRole.updateMany({
+        where: { user_id: id, is_active: true },
+        data: { is_active: false },
+      }),
+    ]);
 
     revalidatePath(REVALIDATE_PATH);
     return { success: true };
@@ -212,55 +255,130 @@ export async function deleteUser(
   }
 }
 
-export async function addUserRoles(
+export async function addUserRole(
   userId: number,
-  roleIds: number[],
-): Promise<{ success: boolean; error?: string }> {
+  roleId: number,
+  chapterId?: number,
+): Promise<{ success: boolean; error?: string; userRoleId?: number }> {
   const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
-  if (!roleIds.length)
-    return { success: false, error: "No roles selected." };
+  const [role, user] = await Promise.all([
+    prisma.role.findUnique({
+      where: { id: roleId },
+      select: { key: true, scope: true },
+    }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        user_roles: {
+          where: { is_active: true },
+          include: { chapter: { select: { name: true } } },
+        },
+        user_chapters: { select: { id: true }, take: 1 },
+      },
+    }),
+  ]);
+
+  if (!role) return { success: false, error: "Role not found." };
+  if (!user) return { success: false, error: "User not found." };
+  if (user.deleted_at)
+    return { success: false, error: "Cannot assign role to a deleted user." };
+  if (role.key === ROLE_KEYS.MINISTRY_HEAD)
+    return {
+      success: false,
+      error: "Ministry Head is assigned via Ministry Heads page.",
+    };
+  if (role.scope === "chapter" && !chapterId)
+    return { success: false, error: "Chapter is required for this role." };
+
+  const resolvedChapterId =
+    role.scope === "chapter" ? (chapterId ?? null) : null;
+
+  const duplicate = user.user_roles.find(
+    (ur) =>
+      ur.role_id === roleId &&
+      (ur.chapter_id ?? null) === (resolvedChapterId ?? null),
+  );
+  if (duplicate) {
+    const chapterName = duplicate.chapter?.name ?? "Global";
+    return {
+      success: false,
+      error: `This role is already assigned for ${chapterName}.`,
+    };
+  }
 
   try {
-    await prisma.userRole.createMany({
-      data: roleIds.map((roleId) => ({
-        user_id: userId,
-        role_id: roleId,
-        assigned_by: currentUser.user.id,
-      })),
-      skipDuplicates: true,
+    let createdId: number | undefined;
+
+    await prisma.$transaction(async (tx) => {
+      const created = await tx.userRole.create({
+        data: {
+          user_id: userId,
+          role_id: roleId,
+          chapter_id: resolvedChapterId ?? undefined,
+          assigned_by: currentUser.user.id,
+          is_active: true,
+        },
+      });
+      createdId = created.id;
+
+      // Auto-set home chapter if none exists yet
+      if (resolvedChapterId && user.user_chapters.length === 0) {
+        await tx.userChapter.create({
+          data: {
+            user_id: userId,
+            chapter_id: resolvedChapterId,
+            is_primary: true,
+          },
+        });
+      }
     });
 
     revalidatePath(REVALIDATE_PATH);
-    return { success: true };
+    return { success: true, userRoleId: createdId };
   } catch {
-    return {
-      success: false,
-      error: "Failed to update roles. Please try again.",
-    };
+    return { success: false, error: "Failed to add role. Please try again." };
   }
 }
 
-export async function removeUserRoles(
+export async function removeUserRole(
   userId: number,
-  roleIds: number[],
-): Promise<{ success: boolean; error?: string }> {
+  userRoleId: number,
+): Promise<{ success: boolean; error?: string; warning?: string }> {
   await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
-  if (!roleIds.length)
-    return { success: false, error: "No roles selected." };
+  const userRole = await prisma.userRole.findUnique({
+    where: { id: userRoleId },
+    include: { role: { select: { key: true } } },
+  });
+
+  if (!userRole || userRole.user_id !== userId)
+    return { success: false, error: "Role not found." };
+
+  if (userRole.role.key === ROLE_KEYS.MINISTRY_HEAD)
+    return {
+      success: false,
+      error: "Remove Ministry Head via Ministry Heads page.",
+    };
+
+  const activeRoleCount = await prisma.userRole.count({
+    where: { user_id: userId, is_active: true },
+  });
+  const warning =
+    activeRoleCount === 1 ? "This is the user's only active role." : undefined;
 
   try {
-    await prisma.userRole.deleteMany({
-      where: { user_id: userId, role_id: { in: roleIds } },
+    await prisma.userRole.update({
+      where: { id: userRoleId },
+      data: { is_active: false },
     });
 
     revalidatePath(REVALIDATE_PATH);
-    return { success: true };
+    return { success: true, warning };
   } catch {
     return {
       success: false,
-      error: "Failed to remove roles. Please try again.",
+      error: "Failed to remove role. Please try again.",
     };
   }
 }

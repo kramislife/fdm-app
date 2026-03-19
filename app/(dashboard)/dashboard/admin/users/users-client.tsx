@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { sileo } from "sileo";
 import { FaUserCheck, FaPowerOff, FaUserCog } from "react-icons/fa";
 import { X } from "lucide-react";
+import { MdLibraryAdd } from "react-icons/md";
 
 import type { Column } from "@/components/admin/data-table";
 import type { Pagination } from "@/lib/table";
@@ -26,17 +27,19 @@ import {
   FormTextarea,
 } from "@/components/shared/form-fields";
 import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+
 import { formatName } from "@/lib/format";
 import { USER_STATUS, USER_STATUS_LABELS } from "@/lib/status";
+import { ROLE_KEYS } from "@/lib/app-roles";
 import {
   createUser,
   updateUser,
   deactivateUser,
   restoreUser,
   deleteUser,
-  addUserRoles,
-  removeUserRoles,
+  addUserRole,
+  removeUserRole,
   type UserFormData,
 } from "./actions";
 
@@ -55,7 +58,7 @@ export type UserRow = {
   }>;
   user_roles: Array<{
     id: number;
-    role: { id: number; key: string; name: string };
+    role: { id: number; key: string; name: string; scope: string };
     chapter: { id: number; name: string } | null;
   }>;
   created_at: string;
@@ -64,14 +67,9 @@ export type UserRow = {
 
 type ChapterOption = { id: number; name: string };
 type RoleOption = { id: number; key: string; name: string; scope: string };
+type PendingAdd = { key: string; roleId: number; chapterId?: number };
 
 type UserForm = UserFormData;
-
-type ManageRoleForm = {
-  selectedRoleId: string;
-  pendingRoleIds: number[];
-  pendingRemoveRoleIds: number[];
-};
 
 // Constants
 
@@ -81,15 +79,8 @@ const EMPTY_FORM: UserForm = {
   contact_number: "",
   email: "",
   birthday: "",
-  chapter_id: "",
   status: USER_STATUS.ACTIVE,
   address: "",
-};
-
-const EMPTY_ROLE_FORM: ManageRoleForm = {
-  selectedRoleId: "",
-  pendingRoleIds: [],
-  pendingRemoveRoleIds: [],
 };
 
 const STATUS_OPTIONS = [
@@ -121,7 +112,6 @@ const columns: Column[] = [
     align: "center",
   },
   { key: "birthday", label: FIELD_LABELS.birthday },
-  { key: "chapter", label: FIELD_LABELS.chapter },
   { key: "status", label: FIELD_LABELS.status, align: "center" },
   { key: "created_at", label: FIELD_LABELS.created_at, sortable: true },
   { key: "actions", label: "Actions", align: "center" },
@@ -136,33 +126,45 @@ function getFormFromRow(row: UserRow): UserForm {
     contact_number: row.contact_number ?? "",
     email: row.email ?? "",
     birthday: row.birthday ? row.birthday.split("T")[0] : "",
-    chapter_id: row.user_chapters[0]?.chapter?.id.toString() ?? "",
     status: row.status,
     address: row.address ?? "",
   };
 }
 
-// Badge Component
-
 function RemovableBadge({
   name,
+  sub,
   onRemove,
+  variant = "outline",
+  disabled = false,
+  markedForRemoval = false,
 }: {
   name: string;
-  onRemove: () => void;
+  sub?: string;
+  onRemove?: () => void;
+  variant?: "outline" | "secondary";
+  disabled?: boolean;
+  markedForRemoval?: boolean;
 }) {
   return (
-    <Badge variant="outline" className="py-3">
-      {name}
-      <button
-        type="button"
-        onClick={onRemove}
-        className="ml-0.5 rounded-full hover:bg-muted p-0.5 hover:text-primary transition-colors cursor-pointer"
-        aria-label={`Remove ${name}`}
-        title={`Remove ${name}`}
-      >
-        <X className="size-3" />
-      </button>
+    <Badge
+      variant={markedForRemoval ? "outline" : variant}
+      className={`p-3${markedForRemoval ? " opacity-40 line-through" : ""}`}
+    >
+      <span>{name}</span>
+      {sub && <span className="text-muted-foreground">· {sub}</span>}
+      {onRemove && (
+        <button
+          type="button"
+          onClick={onRemove}
+          disabled={disabled}
+          className="ml-1 text-primary cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label={`${markedForRemoval ? "Undo remove" : "Remove"} ${name}`}
+          title={`${markedForRemoval ? "Undo remove" : "Remove"} ${name}`}
+        >
+          <X className="size-3" />
+        </button>
+      )}
     </Badge>
   );
 }
@@ -175,62 +177,144 @@ type Props = {
 };
 
 export function UsersClient({ users, pagination, chapters, roles }: Props) {
-  // Extra state — not handled by ReferenceTypeClient
   const [managingRoles, setManagingRoles] = useState<UserRow | null>(null);
-  const [roleForm, setRoleForm] = useState<ManageRoleForm>(EMPTY_ROLE_FORM);
-
-  const [isRoleSaving, startRoleTransition] = useTransition();
+  const [pendingAdds, setPendingAdds] = useState<PendingAdd[]>([]);
+  const [pendingRemoveIds, setPendingRemoveIds] = useState<number[]>([]);
+  const [selectedRoleId, setSelectedRoleId] = useState("");
+  const [selectedChapterId, setSelectedChapterId] = useState("");
+  const [addError, setAddError] = useState<string | null>(null);
+  const [isSubmitting, startSubmitTransition] = useTransition();
 
   const chapterOptions = chapters.map((c) => ({
     value: c.id.toString(),
     label: c.name,
   }));
 
-  const pendingRemoveIdSet = new Set(roleForm.pendingRemoveRoleIds);
+  const pendingRemoveSet = new Set(pendingRemoveIds);
   const currentRoles = (managingRoles?.user_roles ?? []).filter(
-    (ur) => !pendingRemoveIdSet.has(ur.role.id),
+    (ur) => !pendingRemoveSet.has(ur.id),
   );
-  const assignedRoleIds = new Set(currentRoles.map((ur) => ur.role.id));
-  const pendingRoleIdSet = new Set(roleForm.pendingRoleIds);
+  const pendingAddRoleIds = new Set(pendingAdds.map((pa) => pa.roleId));
+  const assignedRoleIds = new Set([
+    ...currentRoles.map((ur) => ur.role.id),
+    ...pendingAddRoleIds,
+  ]);
   const availableRoles = roles.filter(
-    (r) => !assignedRoleIds.has(r.id) && !pendingRoleIdSet.has(r.id),
+    (r) => !assignedRoleIds.has(r.id) && r.key !== ROLE_KEYS.MINISTRY_HEAD,
   );
+  const selectedRole =
+    roles.find((r) => r.id.toString() === selectedRoleId) ?? null;
+  const needsChapter = selectedRole?.scope === "chapter";
+
+  function getAvailableRolesForRow(rowKey: string, rowRoleId: number) {
+    const currentRoleIds = new Set(currentRoles.map((ur) => ur.role.id));
+    const otherPendingIds = new Set(
+      pendingAdds.filter((pa) => pa.key !== rowKey).map((pa) => pa.roleId),
+    );
+    return roles.filter(
+      (r) =>
+        r.id === rowRoleId ||
+        (!currentRoleIds.has(r.id) &&
+          !otherPendingIds.has(r.id) &&
+          r.key !== ROLE_KEYS.MINISTRY_HEAD),
+    );
+  }
 
   function openManageRoles(row: UserRow) {
     setManagingRoles(row);
-    setRoleForm(EMPTY_ROLE_FORM);
+    setPendingAdds([]);
+    setPendingRemoveIds([]);
+    setSelectedRoleId("");
+    setSelectedChapterId("");
+    setAddError(null);
   }
 
-  function handleSelectRole(roleId: string) {
-    const id = parseInt(roleId, 10);
-    if (isNaN(id)) return;
-    setRoleForm((f) => ({
-      ...f,
-      selectedRoleId: "",
-      pendingRoleIds: [...f.pendingRoleIds, id],
-    }));
+  function handleRoleSelect(value: string) {
+    setSelectedRoleId(value);
+    setAddError(null);
+    // FIX 2: only clear chapter when switching to a global role
+    const role = roles.find((r) => r.id.toString() === value);
+    if (role?.scope !== "chapter") setSelectedChapterId("");
   }
 
-  function handleRemovePendingRole(roleId: number) {
-    setRoleForm((f) => ({
-      ...f,
-      pendingRoleIds: f.pendingRoleIds.filter((id) => id !== roleId),
-    }));
+  function handleChapterSelect(value: string) {
+    setSelectedChapterId(value);
+    setAddError(null);
   }
 
-  function handleRemoveCurrentRole(roleId: number) {
-    setRoleForm((f) => ({
-      ...f,
-      pendingRemoveRoleIds: [...f.pendingRemoveRoleIds, roleId],
-    }));
+  function handleAdd() {
+    if (!selectedRoleId) {
+      setAddError("Please select a role.");
+      return;
+    }
+    const role = roles.find((r) => r.id.toString() === selectedRoleId);
+    if (!role) return;
+    if (role.scope === "chapter" && !selectedChapterId) {
+      setAddError("Chapter is required for this role.");
+      return;
+    }
+    setPendingAdds((prev) => [
+      ...prev,
+      {
+        key: String(Date.now()),
+        roleId: role.id,
+        chapterId:
+          role.scope === "chapter" && selectedChapterId
+            ? parseInt(selectedChapterId, 10)
+            : undefined,
+      },
+    ]);
+    setSelectedRoleId("");
+    setSelectedChapterId("");
+    setAddError(null);
   }
 
-  function handleRoleSubmit() {
+  function updatePendingRole(key: string, value: string) {
+    const role = roles.find((r) => r.id.toString() === value);
+    setPendingAdds((prev) =>
+      prev.map((pa) =>
+        pa.key === key
+          ? {
+              ...pa,
+              roleId: parseInt(value, 10),
+              chapterId: role?.scope !== "chapter" ? undefined : pa.chapterId,
+            }
+          : pa,
+      ),
+    );
+  }
+
+  function updatePendingChapter(key: string, value: string) {
+    setPendingAdds((prev) =>
+      prev.map((pa) =>
+        pa.key === key ? { ...pa, chapterId: parseInt(value, 10) } : pa,
+      ),
+    );
+  }
+
+  function removePending(key: string) {
+    setPendingAdds((prev) => prev.filter((pa) => pa.key !== key));
+  }
+
+  function handleMarkRemove(userRoleId: number) {
+    setPendingRemoveIds((prev) => [...prev, userRoleId]);
+  }
+
+  function handleSubmit() {
     if (!managingRoles) return;
-    const hasAdd = roleForm.pendingRoleIds.length > 0;
-    const hasRemove = roleForm.pendingRemoveRoleIds.length > 0;
 
-    if (!hasAdd && !hasRemove) {
+    for (const pa of pendingAdds) {
+      const role = roles.find((r) => r.id === pa.roleId);
+      if (role?.scope === "chapter" && !pa.chapterId) {
+        sileo.error({
+          title: "Missing chapter",
+          description: `Please select a chapter for ${role.name}.`,
+        });
+        return;
+      }
+    }
+
+    if (pendingAdds.length === 0 && pendingRemoveIds.length === 0) {
       sileo.error({
         title: "No changes",
         description: "Please add or remove at least one role.",
@@ -238,27 +322,32 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
       return;
     }
 
-    startRoleTransition(async () => {
+    startSubmitTransition(async () => {
       const results = await Promise.all([
-        hasAdd ? addUserRoles(managingRoles.id, roleForm.pendingRoleIds) : null,
-        hasRemove
-          ? removeUserRoles(managingRoles.id, roleForm.pendingRemoveRoleIds)
-          : null,
+        ...pendingAdds.map((pa) =>
+          addUserRole(managingRoles.id, pa.roleId, pa.chapterId),
+        ),
+        ...pendingRemoveIds.map((id) => removeUserRole(managingRoles.id, id)),
       ]);
 
-      const failed = results.find((r) => r && !r.success);
+      const failed = results.find((r) => !r.success);
       if (failed) {
         sileo.error({
           title: "Something went wrong",
           description: failed.error ?? "Failed to update roles.",
         });
-      } else {
-        sileo.success({
-          title: "Roles updated!",
-          description: "User roles have been updated successfully.",
-        });
-        setManagingRoles(null);
+        return;
       }
+
+      const warning = results
+        .map((r) => ("warning" in r ? r.warning : undefined))
+        .find(Boolean);
+
+      sileo.success({
+        title: "Roles updated!",
+        description: warning ?? "User roles have been updated successfully.",
+      });
+      setManagingRoles(null);
     });
   }
 
@@ -276,7 +365,6 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
           email: <TextCell value={row.email} />,
           contact_number: <TextCell value={row.contact_number} />,
           birthday: <DateCell date={row.birthday} dateOnly format="long" />,
-          chapter: <TextCell value={row.user_chapters[0]?.chapter?.name} />,
           status: <UserStatusBadge status={row.status} />,
           created_at: <DateCell date={row.created_at} />,
         })}
@@ -305,9 +393,22 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
                 <TextCell value={row.address} />
               </DetailField>
               <DetailField label={FIELD_LABELS.roles} fullWidth>
-                <TextCell
-                  value={row.user_roles.map((r) => r.role.name).join(", ")}
-                />
+                {row.user_roles.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {row.user_roles.map((ur) => (
+                      <RemovableBadge
+                        key={ur.id}
+                        name={ur.role.name}
+                        sub={ur.chapter?.name}
+                        variant="secondary"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-sm text-muted-foreground">
+                    No roles assigned.
+                  </span>
+                )}
               </DetailField>
             </DetailSection>
             <DetailMeta
@@ -322,7 +423,6 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
         renderForm={(form, setForm, isEditing) => (
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-2">
-              {/* First Name */}
               <FormInput
                 label={FIELD_LABELS.first_name}
                 id="user-first-name"
@@ -332,8 +432,6 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
                 }
                 required
               />
-
-              {/* Last Name */}
               <FormInput
                 label={FIELD_LABELS.last_name}
                 id="user-last-name"
@@ -346,7 +444,6 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-2">
-              {/* Contact Number */}
               <FormInput
                 label={FIELD_LABELS.contact_number}
                 id="user-contact"
@@ -357,8 +454,6 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
                 }
                 optional
               />
-
-              {/* Email Address */}
               <FormInput
                 label={FIELD_LABELS.email}
                 id="user-email"
@@ -373,7 +468,6 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-2">
-              {/* Birthday */}
               <FormInput
                 label={FIELD_LABELS.birthday}
                 id="user-birthday"
@@ -384,29 +478,16 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
                 }
                 optional
               />
-
-              {/* Select Chapter */}
               <FormSelect
-                label={FIELD_LABELS.chapter}
-                id="user-chapter"
-                value={form.chapter_id}
-                onValueChange={(v) => setForm((f) => ({ ...f, chapter_id: v }))}
-                options={chapterOptions}
+                label={FIELD_LABELS.status}
+                id="user-status"
+                value={form.status}
+                onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}
+                options={STATUS_OPTIONS}
                 required
               />
             </div>
 
-            {/* Select Status */}
-            <FormSelect
-              label={FIELD_LABELS.status}
-              id="user-status"
-              value={form.status}
-              onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}
-              options={STATUS_OPTIONS}
-              required
-            />
-
-            {/* Address Field */}
             <FormTextarea
               label={FIELD_LABELS.address}
               id="user-address"
@@ -433,7 +514,8 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
             icon: <FaPowerOff className="mb-0.5" />,
             condition: (row) =>
               row.status === USER_STATUS.ACTIVE ||
-              row.status === USER_STATUS.REGISTERED,
+              row.status === USER_STATUS.REGISTERED ||
+              row.status === USER_STATUS.PENDING,
             action: deactivateUser,
             title: "Deactivate user?",
             description:
@@ -463,72 +545,138 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
         open={!!managingRoles}
         onClose={() => setManagingRoles(null)}
         title="Manage Roles"
-        description="Assign roles to this user"
-        onSubmit={handleRoleSubmit}
-        isSubmitting={isRoleSaving}
+        description={
+          managingRoles
+            ? `Assign or remove roles for ${formatName(managingRoles)}`
+            : ""
+        }
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
         submitLabel="Update"
       >
         {managingRoles && (
           <div className="space-y-5">
+            {/* Current roles — badge per role, click X to mark for removal */}
             <DetailSection>
-              <DetailField label={FIELD_LABELS.name}>
-                <UserCell user={managingRoles} />
-              </DetailField>
-              <DetailField label={FIELD_LABELS.chapter}>
-                <TextCell
-                  value={managingRoles.user_chapters[0]?.chapter?.name}
-                />
+              <DetailField label="Current Roles" fullWidth>
+                {managingRoles.user_roles.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {managingRoles.user_roles.map((ur) => {
+                      const marked = pendingRemoveSet.has(ur.id);
+                      return (
+                        <RemovableBadge
+                          key={ur.id}
+                          name={ur.role.name}
+                          sub={ur.chapter?.name}
+                          onRemove={() =>
+                            marked
+                              ? setPendingRemoveIds((prev) =>
+                                  prev.filter((id) => id !== ur.id),
+                                )
+                              : handleMarkRemove(ur.id)
+                          }
+                          variant="secondary"
+                          disabled={isSubmitting}
+                          markedForRemoval={marked}
+                        />
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <span className="text-sm text-muted-foreground">
+                    No roles assigned.
+                  </span>
+                )}
               </DetailField>
             </DetailSection>
 
-            <div className="space-y-2">
-              <Label className="font-bold">Current Roles</Label>
-              <div className="flex flex-wrap gap-2">
-                {currentRoles.length > 0 ? (
-                  currentRoles.map((ur) => (
-                    <RemovableBadge
-                      key={ur.id}
-                      name={ur.role.name}
-                      onRemove={() => handleRemoveCurrentRole(ur.role.id)}
-                    />
-                  ))
-                ) : (
-                  <span className="text-sm text-muted-foreground">
-                    No roles assigned
-                  </span>
-                )}
-              </div>
+            {/* Add Role form: [Role] [Chapter?] [Add] */}
+            <div className="flex gap-2 items-center">
+              <FormSelect
+                label="Add Role"
+                id="manage-role-select"
+                value={selectedRoleId}
+                onValueChange={handleRoleSelect}
+                options={availableRoles.map((r) => ({
+                  value: r.id.toString(),
+                  label: r.name,
+                }))}
+                placeholder="Select a role..."
+                wrapperClassName="flex-1"
+                disabled={isSubmitting}
+                labelClassName="font-bold"
+              />
+              {needsChapter && (
+                <FormSelect
+                  label="Chapter"
+                  id="manage-role-chapter"
+                  value={selectedChapterId}
+                  onValueChange={handleChapterSelect}
+                  options={chapterOptions}
+                  placeholder="Select chapter..."
+                  wrapperClassName="flex-1"
+                  disabled={isSubmitting}
+                  labelClassName="font-bold"
+                />
+              )}
+              <Button
+                type="button"
+                onClick={handleAdd}
+                disabled={isSubmitting}
+                className="px-2 mt-3"
+              >
+                <MdLibraryAdd />
+              </Button>
             </div>
+            {addError && <p className="text-xs text-destructive">{addError}</p>}
 
-            <FormSelect
-              label="Add Role"
-              id="manage-role-select"
-              value={roleForm.selectedRoleId}
-              onValueChange={handleSelectRole}
-              options={availableRoles.map((r) => ({
-                value: r.id.toString(),
-                label: r.name,
-              }))}
-              description="Select a role to add — it will appear below before saving"
-              labelClassName="font-bold"
-              placeholder="Support multiple role(s)"
-            />
-
-            {roleForm.pendingRoleIds.length > 0 && (
+            {/* Staged pending adds — editable rows */}
+            {pendingAdds.length > 0 && (
               <div className="space-y-2">
-                <Label className="font-bold">Roles to Add</Label>
-                <div className="flex flex-wrap gap-2">
-                  {roleForm.pendingRoleIds.map((id) => {
-                    const role = roles.find((r) => r.id === id);
-                    return (
-                      <RemovableBadge
-                        key={id}
-                        name={role?.name ?? `Role #${id}`}
-                        onRemove={() => handleRemovePendingRole(id)}
+                {pendingAdds.map((pa) => {
+                  const paRole = roles.find((r) => r.id === pa.roleId);
+                  const paAvailable = getAvailableRolesForRow(
+                    pa.key,
+                    pa.roleId,
+                  );
+                  return (
+                    <div key={pa.key} className="flex gap-2 items-center">
+                      <FormSelect
+                        label="Role"
+                        id={`pending-role-${pa.key}`}
+                        value={pa.roleId.toString()}
+                        onValueChange={(v) => updatePendingRole(pa.key, v)}
+                        options={paAvailable.map((r) => ({
+                          value: r.id.toString(),
+                          label: r.name,
+                        }))}
+                        wrapperClassName="flex-1"
+                        disabled={isSubmitting}
                       />
-                    );
-                  })}
-                </div>
+                      {paRole?.scope === "chapter" && (
+                        <FormSelect
+                          label="Chapter"
+                          id={`pending-chapter-${pa.key}`}
+                          value={pa.chapterId?.toString() ?? ""}
+                          onValueChange={(v) => updatePendingChapter(pa.key, v)}
+                          options={chapterOptions}
+                          placeholder="Select chapter..."
+                          wrapperClassName="flex-1"
+                          disabled={isSubmitting}
+                        />
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removePending(pa.key)}
+                        disabled={isSubmitting}
+                        className="text-primary cursor-pointer disabled:opacity-50 mt-3"
+                        aria-label="Remove pending role"
+                      >
+                        <X className="size-4" />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

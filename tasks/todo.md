@@ -41,75 +41,104 @@
 - Phase 12: Schema Update + Chapters CRUD ✅
 - Phase 13: Ministry Heads Management ✅
 - Phase 14: Users CRUD ✅
+- Phase 15: User's Role Validation - ongoing
 
 ---
 
-## Phase 14: Users CRUD
+== MANAGE ROLES VALIDATION ==
 
-> Goal: Admin can create, update, and soft delete users.
-> No email invite flow yet — that comes later.
-> Guests excluded — status != 'guest'.
-> SD + Elder only for full access.
+Add Role:
 
-- Columns to display:
-  Full Name | Email | Contact Number | Birthday | Chapter | Status | Created At | Actions
-- Search across: first_name, last_name, email, contact_number, role, chapter
+- role required — cannot submit without selecting a role
+- chapter required when role scope = 'chapter'
+- chapter hidden and null when role scope = 'global'
+- role dropdown excludes roles already active for this user
+  (filtered client-side to prevent duplicate attempt)
+- block if same role_id + chapter_id already active for this user
+  error: "This role is already assigned for [chapter name / global]."
+- block if role key = 'ministry_head'
+  error: "Ministry Head is assigned via Ministry Heads page."
+- block if user has deleted_at set
+  error: "Cannot assign role to a deleted user."
+- on success: auto-set home chapter in user_chapters if none exists yet
+  and chapterId is provided
 
-`getChaptersForSelect()`
+Remove Role:
 
-- All active non-deleted chapters
-- select: { id, name }
-- orderBy: name asc
-- Used in create/edit form chapter select
+- block if role key = 'ministry_head'
+  error: "Remove Ministry Head via Ministry Heads page."
+- warn (not block) if this is user's only active role
+  warning: "This is the user's only active role."
+- on success: sets user_role.is_active = false — not deleted
 
-`getRolesForSelect()`
+Current Roles Display:
 
-- All roles (no deleted_at on roles)
-- select: { id, key, name, scope }
-- orderBy: name asc
-- Used in create/edit form role select
+- fetch user_roles WHERE user_id = userId AND is_active = true
+- show: role name | chapter name (or "Global" if null) | Remove button
+- refreshes after every add or remove
 
-### 14a. Users Page Updates
+== DEACTIVATE VALIDATION ==
 
-- [x] `app/(dashboard)/admin/users/page.tsx`
-  - Add "+ Add User" button top-right aligned with page header
-  - Table columns: Full Name | Email | Contact Number | Birthday | Chapter | Status | Created At | Actions
-  - Status badge: active=green, registered=default, pending=outline, inactive=red
-  - Actions ellipsis:
-    - View
-    - Edit
-    - Manage Roles
-    - Deactivate (if status = active or registered)
-    - Restore (if status = inactive)
-    - Separator
-    - Delete (destructive, soft delete)
+<!-- - block if user.id = currentUser.id
+  error: "You cannot deactivate your own account." -->
+<!-- - block if user active roles include spiritual_director
+  error: "Spiritual Director account cannot be deactivated." -->
+- block if user.status = 'inactive'
+  error: "User is already deactivated."
+- block if user.deleted_at is not null
+  error: "User is already deleted."
+- on success:
+  status = expired
+  all user_roles is_active = false
 
-### 14b. Create User Sheet
+== RESTORE VALIDATION ==
 
-Form fields:
+- block if user.status != 'expired'
+  error: "User account is already active."
+- block if user.deleted_at is not null
+  error: "Deleted users cannot be restored. Create a new account."
+- on success:
+  status = active
+  roles NOT restored — admin reassigns via Manage Roles
 
-- First Name (Input, required)
-- Last Name (Input, required)
-- Contact Number (Input, optional, type=tel)
-  - Validate: unique if provided — check against existing users
-- Email (Input, type=email, optional)
-  - Note: email is stored but invite logic skipped for now
-  - Validate: unique — check against existing users
-- Birthday (Date picker, optional)
-- Chapter (Select from getChaptersForSelect(), required)
-- Status (Select: active | registered | pending)
-- Address (Textarea, optional)
+== DELETE VALIDATION ==
 
-### 14c. Edit User Sheet
+- block if user.id = currentUser.id
+  error: "You cannot delete your own account."
+- block if user active roles include spiritual_director
+  error: "Spiritual Director account cannot be deleted."
+- warn before confirming (not block):
+  "This will permanently hide [Name] from the system.
+  Their records will be preserved. This cannot be undone."
+- on success:
+  deleted_at = now()
+  deleted_by = currentUser.id
+  status = expired
+  all user_roles is_active = false
+  attendance, guest_logs, finance records untouched
 
-- [x] Same AdminSheet component, pre-filled with user data
-  - All fields editable except Email
-    - Email shown as read-only text (not input) — auth identifier - use Detail-field
-  - Chapter change: updates user_chapters is_primary record
 
-### 14d. Manage Role
 
-- In sheet, display user's full name and chapter in detailfield
-- Select role, below display in success badge the current roles of the user, below of this once admin click and select a role, display in badge too in outline variant. Put an x on the badge so admin can remove a role. Same button below cancel and update. Only trigger updates once admin click update button
+Fix three issues
 
----
+== FIX 1: Current roles not updating after add ==
+After addUserRole server action returns success:
+- Append the new role to currentRoles local state immediately
+- Do not wait for server revalidation to update the list
+- New role object shape:
+  { id: result.userRoleId, role: { key, name, scope }, chapter: { name } | null }
+
+== FIX 2: Chapter resetting when role changes ==
+In Role select onChange handler:
+- Only reset chapterId to null when new role scope = 'global'
+- When new role scope = 'chapter': keep existing chapterId, just show chapter select
+- Never clear chapterId solely because the role changed
+
+== FIX 3: Elder + Builder coexist ==
+No code change needed — schema already supports it.
+Just verify the duplicate check uses role_id + chapter_id combined:
+  block only if: same role_id AND same chapter_id already active
+  allow if: same role different chapter (Builder QC + Builder Bataan = valid)
+  allow if: different roles same chapter (Elder + Builder QC = valid)
+
+npx tsc --noEmit after changes — zero errors
