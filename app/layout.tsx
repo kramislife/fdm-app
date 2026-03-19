@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { Inter, Abhaya_Libre } from "next/font/google";
 import "@/app/assets/styles/globals.css";
-import { Toaster } from "sileo";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
   variable: "--font-sans",
 });
+
 
 const abhayaLibre = Abhaya_Libre({
   subsets: ["latin"],
@@ -36,7 +37,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
-        <Toaster position="top-center" />
+        <Toaster />
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
-import { sileo } from "sileo";
+import { toast } from "sonner";
 import { AuthFormCard } from "@/components/auth/auth-form-card";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { FormInput } from "@/components/shared/form-fields";
@@ -28,8 +28,7 @@ export function LoginForm({ provisionedDate, authError }: LoginFormProps) {
   useEffect(() => {
     if (provisionedDate) {
       const date = formatDate(provisionedDate);
-      sileo.warning({
-        title: "Account Provisioned",
+      toast.warning("Account Provisioned", {
         description: `Your account was created by our admin on ${date}. Check your email for login credentials.`,
       });
     }
@@ -37,8 +36,7 @@ export function LoginForm({ provisionedDate, authError }: LoginFormProps) {
 
   useEffect(() => {
     if (authError === AUTH_ERROR_CODES.INVALID_GOOGLE_EMAIL) {
-      sileo.error({
-        title: "Google Sign-In Failed",
+      toast.error("Google Sign-In Failed", {
         description:
           "Your Google account must provide a valid, verified email address.",
       });

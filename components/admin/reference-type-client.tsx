@@ -7,7 +7,7 @@ import {
   useState,
   useTransition,
 } from "react";
-import { sileo } from "sileo";
+import { toast } from "sonner";
 import { AdminPage } from "./admin-page";
 import { RowActionMenu, type ExtraAction } from "./row-action-menu";
 import { AdminSheet } from "./admin-sheet";
@@ -145,8 +145,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
       if (!result) return;
 
       if (result.success) {
-        sileo.success({
-          title: isEditing ? "Changes saved!" : "All set!",
+        toast.success(isEditing ? "Changes saved!" : "All set!", {
           description:
             result.description ??
             (isEditing
@@ -155,8 +154,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
         });
         closeSheet();
       } else {
-        sileo.error({
-          title: "Something went wrong",
+        toast.error("Something went wrong", {
           description:
             result.description ??
             `We couldn't save the ${entityLabel.toLowerCase()}. Please try again.`,
@@ -172,14 +170,12 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
       const result = await onDelete(deleting.id);
 
       if (result.success) {
-        sileo.success({
-          title: "Deleted successfully",
+        toast.success("Deleted successfully", {
           description: result.description ?? `${entityLabel} has been removed.`,
         });
         setDeleting(null);
       } else {
-        sileo.error({
-          title: "Couldn't delete",
+        toast.error("Couldn't delete", {
           description:
             result.error ??
             result.description ??
@@ -197,14 +193,12 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
       const result = await def.action(row.id);
 
       if (result.success) {
-        sileo.success({
-          title: def.successTitle ?? "Done!",
+        toast.success(def.successTitle ?? "Done!", {
           description: result.description ?? def.successDescription?.(row),
         });
         setConfirmingAction(null);
       } else {
-        sileo.error({
-          title: "Something went wrong",
+        toast.error("Something went wrong", {
           description: result.error ?? result.description,
         });
       }

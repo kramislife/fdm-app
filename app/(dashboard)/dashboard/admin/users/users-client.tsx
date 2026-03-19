@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { sileo } from "sileo";
+import { toast } from "sonner";
 import { FaUserCheck, FaPowerOff, FaUserCog } from "react-icons/fa";
 import { X } from "lucide-react";
 import { MdLibraryAdd } from "react-icons/md";
@@ -306,8 +306,7 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
     for (const pa of pendingAdds) {
       const role = roles.find((r) => r.id === pa.roleId);
       if (role?.scope === "chapter" && !pa.chapterId) {
-        sileo.error({
-          title: "Missing chapter",
+        toast.error("Missing chapter", {
           description: `Please select a chapter for ${role.name}.`,
         });
         return;
@@ -315,8 +314,7 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
     }
 
     if (pendingAdds.length === 0 && pendingRemoveIds.length === 0) {
-      sileo.error({
-        title: "No changes",
+      toast.error("No changes", {
         description: "Please add or remove at least one role.",
       });
       return;
@@ -332,8 +330,7 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
 
       const failed = results.find((r) => !r.success);
       if (failed) {
-        sileo.error({
-          title: "Something went wrong",
+        toast.error("Something went wrong", {
           description: failed.error ?? "Failed to update roles.",
         });
         return;
@@ -343,8 +340,7 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
         .map((r) => ("warning" in r ? r.warning : undefined))
         .find(Boolean);
 
-      sileo.success({
-        title: "Roles updated!",
+      toast.success("Roles updated!", {
         description: warning ?? "User roles have been updated successfully.",
       });
       setManagingRoles(null);

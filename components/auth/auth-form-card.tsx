@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { sileo } from "sileo";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Loading } from "@/components/ui/loading";
 import { Logo } from "@/components/ui/logo";
@@ -35,8 +35,7 @@ export function AuthFormCard({
 }: AuthFormCardProps) {
   useEffect(() => {
     if (error) {
-      sileo.error({
-        title: "Action failed",
+      toast.error("Action failed", {
         description: error,
       });
     }
