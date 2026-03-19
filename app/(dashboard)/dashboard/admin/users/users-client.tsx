@@ -27,6 +27,7 @@ import {
 } from "@/components/shared/form-fields";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { formatName } from "@/lib/format";
 import { USER_STATUS, USER_STATUS_LABELS } from "@/lib/status";
 import {
   createUser,
@@ -81,7 +82,7 @@ const EMPTY_FORM: UserForm = {
   email: "",
   birthday: "",
   chapter_id: "",
-  status: "active",
+  status: USER_STATUS.ACTIVE,
   address: "",
 };
 
@@ -105,6 +106,7 @@ const FIELD_LABELS = {
   contact_number: "Contact Number",
   birthday: "Birthday",
   chapter: "Chapter",
+  roles: "Roles",
   status: "Status",
   address: "Address",
   created_at: "Created At",
@@ -302,6 +304,11 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
               <DetailField label={FIELD_LABELS.address} fullWidth>
                 <TextCell value={row.address} />
               </DetailField>
+              <DetailField label={FIELD_LABELS.roles} fullWidth>
+                <TextCell
+                  value={row.user_roles.map((r) => r.role.name).join(", ")}
+                />
+              </DetailField>
             </DetailSection>
             <DetailMeta
               id={row.id}
@@ -432,7 +439,8 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
             description:
               "will be set to inactive and lose access to the system.",
             successTitle: "User deactivated",
-            successDescription: (row) => `${row.name} has been deactivated.`,
+            successDescription: (row) =>
+              `${formatName(row)} has been deactivated.`,
             confirmingText: "Deactivating...",
           },
           {
@@ -444,7 +452,7 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
             description: "will be restored to active status.",
             successTitle: "User restored",
             successDescription: (row) =>
-              `${row.name} has been restored to active.`,
+              `${formatName(row)} has been restored to active.`,
             confirmingText: "Restoring...",
           },
         ]}

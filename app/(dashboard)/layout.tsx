@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth";
 import { getUserWithRole } from "@/lib/roles";
 import { ROLE_KEYS } from "@/lib/app-roles";
+import { formatName, getNameInitials } from "@/lib/format";
 import { DashboardLayoutClient } from "@/components/layout/dashboard-layout-client";
 
 export default async function DashboardLayout({
@@ -16,8 +17,8 @@ export default async function DashboardLayout({
 
   const { user, roles } = data;
   const sessionUser = {
-    name: `${user.first_name} ${user.last_name}`,
-    initials: `${user.first_name[0]}${user.last_name[0]}`.toUpperCase(),
+    name: formatName(user),
+    initials: getNameInitials(user),
     email: user.email,
     photoUrl: user.photo_url,
     roles,

@@ -3,6 +3,7 @@
 import type { Column } from "@/components/admin/data-table";
 import type { Pagination } from "@/lib/table";
 
+import { formatName } from "@/lib/format";
 import { useEffect, useState } from "react";
 import { ReferenceTypeClient } from "@/components/admin/reference-type-client";
 import { TextCell, UserCell, DateCell } from "@/components/shared/cells";
@@ -153,7 +154,7 @@ export function MinistryHeadsClient({ ministryHeads, pagination }: Props) {
             onValueChange={(v) => setForm((f) => ({ ...f, userId: v }))}
             options={users.map((u) => ({
               value: u.id.toString(),
-              label: `${u.first_name} ${u.last_name}`,
+              label: formatName(u),
             }))}
             disabled={isLoadingUsers}
             required

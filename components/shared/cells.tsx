@@ -1,5 +1,10 @@
 import { Badge } from "@/components/ui/badge";
-import { formatDateTime, formatDate, capitalizeWords } from "@/lib/format";
+import {
+  formatDateTime,
+  formatDate,
+  capitalizeWords,
+  formatName,
+} from "@/lib/format";
 import {
   ACTIVE_STATE_LABELS,
   USER_STATUS,
@@ -57,7 +62,7 @@ export function UserCell({ user, fallback = "—" }: UserCellProps) {
   if (!user) {
     return <span className="text-muted-foreground">{fallback}</span>;
   }
-  const fullName = capitalizeWords(`${user.first_name} ${user.last_name}`);
+  const fullName = formatName(user, "full", fallback);
   return <span title={fullName}>{fullName}</span>;
 }
 

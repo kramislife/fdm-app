@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { backfillAttendance } from "@/lib/auth";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { normalizeEmail, isValidEmailFormat } from "@/lib/format";
+import { splitName } from "@/lib/format";
 import { AUTH_ERROR_CODES, buildLoginErrorPath } from "@/lib/auth-errors";
 import { ROLE_KEYS } from "@/lib/app-roles";
 import { USER_STATUS } from "@/lib/status";
@@ -134,9 +135,7 @@ export async function GET(request: NextRequest) {
     authUser.user_metadata?.name ??
     email.split("@")[0];
 
-  const nameParts = fullName.trim().split(/\s+/);
-  const firstName = nameParts[0] ?? "Unknown";
-  const lastName = nameParts.slice(1).join(" ") || "—";
+  const { first_name: firstName, last_name: lastName } = splitName(fullName);
 
   // Look up spiritual director as system actor for assigned_by
   const sdUser = await prisma.user.findFirst({

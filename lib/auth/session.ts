@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { ROLE_KEYS } from "@/lib/app-roles";
 import type { RoleKey } from "@/lib/app-roles";
+import { formatName, getNameInitials } from "@/lib/format";
 
 /** Prisma include shape for a user with their active roles */
 const userWithRoles = {
@@ -34,8 +35,8 @@ export function isMemberOnly(roleKeys: RoleKey[]): boolean {
 export function buildSessionUser(dbUser: UserWithRoles) {
   const roles = getRoleKeys(dbUser);
   return {
-    name: `${dbUser.first_name} ${dbUser.last_name}`,
-    initials: `${dbUser.first_name[0]}${dbUser.last_name[0]}`.toUpperCase(),
+    name: formatName(dbUser),
+    initials: getNameInitials(dbUser),
     email: dbUser.email,
     photoUrl: dbUser.photo_url,
     roles,

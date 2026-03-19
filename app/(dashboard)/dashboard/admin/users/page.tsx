@@ -3,6 +3,7 @@ import { getUsers } from "@/lib/data/users";
 import { getChaptersForSelect } from "@/lib/data/chapters";
 import { getRolesForSelect } from "@/lib/data/roles";
 import { PERMISSION_ROLES } from "@/lib/app-roles";
+import { formatName } from "@/lib/format";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
 import { UsersClient, type UserRow } from "./users-client";
 
@@ -21,7 +22,7 @@ export default async function UsersPage({ searchParams }: PageProps) {
 
   const users: UserRow[] = result.data.map((user) => ({
     id: user.id,
-    name: `${user.first_name} ${user.last_name}`,
+    name: formatName(user),
     first_name: user.first_name,
     last_name: user.last_name,
     email: user.email,
