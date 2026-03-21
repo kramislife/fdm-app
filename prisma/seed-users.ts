@@ -2,7 +2,7 @@ import { PrismaClient } from "../lib/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { config } from "dotenv";
-import { USER_STATUS } from "../lib/status";
+import { ACCOUNT_STATUS } from "../lib/status";
 
 config({ path: ".env.local" });
 
@@ -41,7 +41,7 @@ async function main() {
       email,
       contact_number,
       birthday,
-      status: USER_STATUS.ACTIVE,
+      account_status: ACCOUNT_STATUS.ACTIVE,
     };
   });
 

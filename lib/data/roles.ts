@@ -58,7 +58,10 @@ export async function getRoles(params: TableParams = {}) {
 
 export async function getRolesForSelect() {
   return prisma.role.findMany({
-    where: { deleted_at: null },
+    where: {
+      deleted_at: null,
+      key: { notIn: ["member", "ministry_head"] },
+    },
     select: { id: true, key: true, name: true, scope: true },
     orderBy: { name: "asc" },
   });

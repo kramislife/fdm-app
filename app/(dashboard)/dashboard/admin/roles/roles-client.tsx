@@ -22,6 +22,8 @@ import {
 import { ReferenceTypeClient } from "@/components/admin/reference-type-client";
 import { createRole, updateRole, deleteRole } from "./actions";
 
+// ------------------------------- Types -----------------------------------------
+
 export type RoleRow = {
   id: number;
   name: string;
@@ -41,11 +43,20 @@ type RoleForm = {
   is_active: boolean;
 };
 
+// ------------------------------- Constants --------------------------------------
+
 const FIELD_LABELS = {
   name: "Role",
   scope: "Scope",
   description: "Description",
   status: "Status",
+};
+
+const EMPTY_FORM: RoleForm = {
+  name: "",
+  scope: "",
+  description: "",
+  is_active: true,
 };
 
 const columns: Column[] = [
@@ -58,12 +69,7 @@ const columns: Column[] = [
   { key: "actions", label: "Actions", align: "center" },
 ];
 
-const EMPTY_FORM: RoleForm = {
-  name: "",
-  scope: "",
-  description: "",
-  is_active: true,
-};
+// ------------------------------- Component --------------------------------------
 
 type Props = {
   roles: RoleRow[];
@@ -71,14 +77,22 @@ type Props = {
 };
 
 export function RolesClient({ roles, pagination }: Props) {
+  function validate(form: RoleForm) {
+    const errors: Record<string, string | undefined> = {};
+    if (!form.name.trim()) errors.name = "Role is required";
+    if (!form.scope) errors.scope = "Scope is required";
+    return errors;
+  }
+
   return (
-    <ReferenceTypeClient
+    <ReferenceTypeClient<RoleRow, RoleForm>
       entityLabel="Role"
       pageTitle="Role Management"
       pageDescription="View and manage all community roles"
       rows={roles}
       pagination={pagination}
       columns={columns}
+      // ----------------------------- Row Rendering -----------------------------
       renderRow={(row) => ({
         name: <TextCell value={row.name} capitalize />,
         scope: <TextCell value={row.scope} capitalize />,
@@ -87,6 +101,7 @@ export function RolesClient({ roles, pagination }: Props) {
         created_by: <UserCell user={row.creator} />,
         created_at: <DateCell date={row.created_at} />,
       })}
+      // ----------------------------- Detail View -------------------------------
       renderDetail={(row) => (
         <>
           <DetailSection>
@@ -112,6 +127,7 @@ export function RolesClient({ roles, pagination }: Props) {
           />
         </>
       )}
+      // ----------------------------- Form Handling -----------------------------
       initialForm={EMPTY_FORM}
       getFormFromRow={(row) => ({
         name: row.name,
@@ -119,14 +135,16 @@ export function RolesClient({ roles, pagination }: Props) {
         description: row.description ?? "",
         is_active: row.is_active,
       })}
-      renderForm={(form, setForm) => (
+      validate={validate}
+      renderForm={(form, setForm, _isEditing, errors, _initialValues) => (
         <div className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-y-5 gap-x-2">
             <FormInput
               label={FIELD_LABELS.name}
               id="role-name"
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              error={errors.name}
               wrapperClassName="col-span-1 md:col-span-2"
               required
             />
@@ -139,6 +157,7 @@ export function RolesClient({ roles, pagination }: Props) {
                 { value: "global", label: "Global" },
                 { value: "chapter", label: "Chapter" },
               ]}
+              error={errors.scope}
               wrapperClassName="col-span-1"
               required
             />
@@ -151,6 +170,7 @@ export function RolesClient({ roles, pagination }: Props) {
             onChange={(e) =>
               setForm((f) => ({ ...f, description: e.target.value }))
             }
+            error={errors.description}
           />
 
           <FormSwitch
@@ -163,6 +183,7 @@ export function RolesClient({ roles, pagination }: Props) {
           />
         </div>
       )}
+      // ----------------------------- Server Actions ---------------------------
       onCreate={createRole}
       onUpdate={updateRole}
       onDelete={deleteRole}

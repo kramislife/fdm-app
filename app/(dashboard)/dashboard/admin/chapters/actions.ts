@@ -24,16 +24,49 @@ type ChapterData = {
   is_active: boolean;
 };
 
-export async function createChapter(data: ChapterData) {
-  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
+type ActionResult = {
+  success: boolean;
+  title?: string;
+  error?: string;
+  description?: string;
+  errors?: Record<string, string>;
+};
 
-  if (!data.name.trim()) return { success: false, error: "Name is required." };
-  if (!data.region) return { success: false, error: "Region is required." };
-  if (!data.province) return { success: false, error: "Province is required." };
-  if (!data.city) return { success: false, error: "City is required." };
-  if (!data.barangay) return { success: false, error: "Barangay is required." };
-  if (!data.fellowship_day)
-    return { success: false, error: "Schedule is required." };
+// ------------------------------- Helpers -----------------------------------------
+
+function validateChapter(data: ChapterData): ActionResult | null {
+  const errors: Record<string, string> = {};
+
+  if (!data.name.trim()) errors.name = "Chapter name is required.";
+  if (!data.region) errors.region = "Region is required.";
+  if (!data.province) errors.province = "Province is required.";
+  if (!data.city) errors.city = "City is required.";
+  if (!data.barangay) errors.barangay = "Barangay is required.";
+  if (!data.fellowship_day) errors.fellowship_day = "Schedule is required.";
+
+  if (Object.keys(errors).length > 0) {
+    return {
+      success: false,
+      title: "Form Incomplete",
+      description: "Please check the highlighted fields and try again.",
+      errors,
+    };
+  }
+  return null;
+}
+
+const handleActionError = (message: string): ActionResult => ({
+  success: false,
+  title: "Error",
+  description: message,
+});
+
+// ------------------------------- Actions -----------------------------------------
+
+export async function createChapter(data: ChapterData): Promise<ActionResult> {
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
+  const validationError = validateChapter(data);
+  if (validationError) return validationError;
 
   try {
     const existing = await prisma.chapter.findFirst({
@@ -46,7 +79,9 @@ export async function createChapter(data: ChapterData) {
     if (existing) {
       return {
         success: false,
-        error: "A chapter with this name already exists.",
+        title: "Already Exists",
+        description: "A chapter with this name already exists.",
+        errors: { name: "This name is already in use." },
       };
     }
 
@@ -91,27 +126,42 @@ export async function createChapter(data: ChapterData) {
     }
 
     revalidatePath(REVALIDATE_PATH);
-    return { success: true };
-  } catch {
     return {
-      success: false,
-      error: "Failed to create chapter. Please try again.",
+      success: true,
+      title: "Chapter Created",
+      description: `"${data.name}" has been created successfully.`,
     };
+  } catch {
+    return handleActionError("Failed to create chapter. Please try again.");
   }
 }
 
-export async function updateChapter(id: number, data: ChapterData) {
+export async function updateChapter(
+  id: number,
+  data: ChapterData,
+): Promise<ActionResult> {
   const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
-
-  if (!data.name.trim()) return { success: false, error: "Name is required." };
-  if (!data.region) return { success: false, error: "Region is required." };
-  if (!data.province) return { success: false, error: "Province is required." };
-  if (!data.city) return { success: false, error: "City is required." };
-  if (!data.barangay) return { success: false, error: "Barangay is required." };
-  if (!data.fellowship_day)
-    return { success: false, error: "Schedule is required." };
+  const validationError = validateChapter(data);
+  if (validationError) return validationError;
 
   try {
+    const existing = await prisma.chapter.findFirst({
+      where: {
+        name: { equals: data.name.trim(), mode: "insensitive" },
+        id: { not: id },
+        deleted_at: null,
+      },
+    });
+
+    if (existing) {
+      return {
+        success: false,
+        title: "Already Exists",
+        description: "A chapter with this name already exists.",
+        errors: { name: "This name is already in use." },
+      };
+    }
+
     await prisma.chapter.update({
       where: { id },
       data: {
@@ -134,20 +184,20 @@ export async function updateChapter(id: number, data: ChapterData) {
     });
 
     revalidatePath(REVALIDATE_PATH);
-    return { success: true };
-  } catch {
     return {
-      success: false,
-      error: "Failed to update chapter. Please try again.",
+      success: true,
+      title: "Chapter Updated",
+      description: `"${data.name}" has been updated successfully.`,
     };
+  } catch {
+    return handleActionError("Failed to update chapter. Please try again.");
   }
 }
 
-export async function deleteChapter(id: number) {
+export async function deleteChapter(id: number): Promise<ActionResult> {
   const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   try {
-    // 1. Check if chapter has active clusters
     const clusterCount = await prisma.cluster.count({
       where: { chapter_id: id, deleted_at: null },
     });
@@ -155,11 +205,11 @@ export async function deleteChapter(id: number) {
     if (clusterCount > 0) {
       return {
         success: false,
-        error: `Cannot delete. This chapter has ${clusterCount} active cluster(s) assigned. Remove them first.`,
+        title: "Deletion Prevented",
+        description: `This chapter has ${clusterCount} active cluster(s) assigned. Remove them first.`,
       };
     }
 
-    // 2. Check if chapter has active members
     const memberCount = await prisma.userChapter.count({
       where: { chapter_id: id },
     });
@@ -167,36 +217,37 @@ export async function deleteChapter(id: number) {
     if (memberCount > 0) {
       return {
         success: false,
-        error:
-          "Cannot delete. This chapter has active members assigned. Remove them first.",
+        title: "Deletion Prevented",
+        description:
+          "This chapter has active members assigned. Remove them first before deleting.",
       };
     }
 
-    // 3. Soft delete all ministry head rows for this chapter
-    await prisma.ministryHead.updateMany({
-      where: { chapter_id: id, deleted_at: null },
-      data: {
-        deleted_at: new Date(),
-        deleted_by: currentUser.user.id,
-      },
-    });
-
-    // 4. Soft delete the chapter
-    await prisma.chapter.update({
-      where: { id },
-      data: {
-        deleted_at: new Date(),
-        deleted_by: currentUser.user.id,
-      },
-    });
+    await prisma.$transaction([
+      prisma.ministryHead.updateMany({
+        where: { chapter_id: id, deleted_at: null },
+        data: {
+          deleted_at: new Date(),
+          deleted_by: currentUser.user.id,
+        },
+      }),
+      prisma.chapter.update({
+        where: { id },
+        data: {
+          deleted_at: new Date(),
+          deleted_by: currentUser.user.id,
+        },
+      }),
+    ]);
 
     revalidatePath(REVALIDATE_PATH);
-    return { success: true };
+    return {
+      success: true,
+      title: "Chapter Deleted",
+      description: "Chapter has been removed successfully.",
+    };
   } catch (error) {
     console.error("Failed to delete chapter:", error);
-    return {
-      success: false,
-      error: "Failed to delete chapter. Please try again.",
-    };
+    return handleActionError("Failed to delete chapter. Please try again.");
   }
 }

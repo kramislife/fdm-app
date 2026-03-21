@@ -115,3 +115,14 @@ export function normalizeEmail(email: string | null | undefined) {
 export function isValidEmailFormat(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
+// Normalize phone number for consistent storage (remove all non-digits)
+export function normalizePhoneNumber(phone: string | null | undefined) {
+  return phone?.replace(/\D/g, "") ?? "";
+}
+
+// Check for exactly 11 digits (Philippine mobile standard)
+export function isValidPhoneNumber(phone: string) {
+  const cleaned = normalizePhoneNumber(phone);
+  return cleaned.length === 11 && /^09\d{9}$/.test(cleaned);
+}

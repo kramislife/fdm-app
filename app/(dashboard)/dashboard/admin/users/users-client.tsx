@@ -1,15 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { toast } from "sonner";
-import { FaUserCheck, FaPowerOff, FaUserCog } from "react-icons/fa";
-import { X } from "lucide-react";
-import { MdLibraryAdd } from "react-icons/md";
-
+import { useTransition, useState } from "react";
 import type { Column } from "@/components/admin/data-table";
 import type { Pagination } from "@/lib/table";
 import { ReferenceTypeClient } from "@/components/admin/reference-type-client";
-import { AdminSheet } from "@/components/admin/admin-sheet";
 import {
   TextCell,
   UserCell,
@@ -18,76 +12,48 @@ import {
 } from "@/components/shared/cells";
 import {
   DetailField,
-  DetailSection,
   DetailMeta,
+  DetailSection,
 } from "@/components/shared/detail-field";
 import {
   FormInput,
   FormSelect,
   FormTextarea,
 } from "@/components/shared/form-fields";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-
-import { formatName } from "@/lib/format";
-import { USER_STATUS, USER_STATUS_LABELS } from "@/lib/status";
-import { ROLE_KEYS } from "@/lib/app-roles";
+import { ACCOUNT_STATUS } from "@/lib/status";
+import {
+  isValidPhoneNumber,
+  isValidEmailFormat,
+  normalizePhoneNumber,
+} from "@/lib/format";
 import {
   createUser,
   updateUser,
   deactivateUser,
   restoreUser,
   deleteUser,
-  addUserRole,
-  removeUserRole,
+  generateUserQR,
   type UserFormData,
 } from "./actions";
+import { FaPowerOff, FaSyncAlt, FaUserCog } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { MemberQRDialog } from "@/components/shared/qr-code";
+import { DeleteConfirmDialog } from "@/components/admin/delete-confirm-dialog";
+import { toast } from "sonner";
+import { ManageRolesSheet, getDisplayRoles } from "./manage-roles-sheet";
 
-export type UserRow = {
-  id: number;
-  name: string;
-  first_name: string;
-  last_name: string;
-  email: string | null;
-  contact_number: string | null;
-  address: string | null;
-  birthday: string | null;
-  status: string;
-  user_chapters: Array<{
-    chapter: { id: number; name: string };
-  }>;
-  user_roles: Array<{
-    id: number;
-    role: { id: number; key: string; name: string; scope: string };
-    chapter: { id: number; name: string } | null;
-  }>;
-  created_at: string;
-  updated_at: string;
-};
+// ------------------------------- UI ONLY SHELL --------------------------------------
 
-type ChapterOption = { id: number; name: string };
-type RoleOption = { id: number; key: string; name: string; scope: string };
-type PendingAdd = { key: string; roleId: number; chapterId?: number };
-
-type UserForm = UserFormData;
-
-// Constants
-
-const EMPTY_FORM: UserForm = {
+const EMPTY_FORM: UserFormData = {
   first_name: "",
   last_name: "",
   contact_number: "",
   email: "",
   birthday: "",
-  status: USER_STATUS.ACTIVE,
+  account_status: ACCOUNT_STATUS.PENDING,
   address: "",
 };
-
-const STATUS_OPTIONS = [
-  USER_STATUS.ACTIVE,
-  USER_STATUS.REGISTERED,
-  USER_STATUS.PENDING,
-].map((value) => ({ value, label: USER_STATUS_LABELS[value] }));
 
 const FIELD_LABELS = {
   name: "Full Name",
@@ -101,6 +67,7 @@ const FIELD_LABELS = {
   status: "Status",
   address: "Address",
   created_at: "Created At",
+  qr_code: "QR Code",
 };
 
 const columns: Column[] = [
@@ -112,244 +79,99 @@ const columns: Column[] = [
     align: "center",
   },
   { key: "birthday", label: FIELD_LABELS.birthday },
-  { key: "status", label: FIELD_LABELS.status, align: "center" },
+  { key: "account_status", label: FIELD_LABELS.status, align: "center" },
   { key: "created_at", label: FIELD_LABELS.created_at, sortable: true },
+  { key: "qr_code", label: FIELD_LABELS.qr_code, align: "center" },
   { key: "actions", label: "Actions", align: "center" },
 ];
 
-// Helpers
-
-function getFormFromRow(row: UserRow): UserForm {
-  return {
-    first_name: row.first_name,
-    last_name: row.last_name,
-    contact_number: row.contact_number ?? "",
-    email: row.email ?? "",
-    birthday: row.birthday ? row.birthday.split("T")[0] : "",
-    status: row.status,
-    address: row.address ?? "",
-  };
-}
-
-function RemovableBadge({
-  name,
-  sub,
-  onRemove,
-  variant = "outline",
-  disabled = false,
-  markedForRemoval = false,
-}: {
+export type UserRow = {
+  id: number;
   name: string;
-  sub?: string;
-  onRemove?: () => void;
-  variant?: "outline" | "secondary";
-  disabled?: boolean;
-  markedForRemoval?: boolean;
-}) {
-  return (
-    <Badge
-      variant={markedForRemoval ? "outline" : variant}
-      className={`p-3${markedForRemoval ? " opacity-40 line-through" : ""}`}
-    >
-      <span>{name}</span>
-      {sub && <span className="text-muted-foreground">· {sub}</span>}
-      {onRemove && (
-        <button
-          type="button"
-          onClick={onRemove}
-          disabled={disabled}
-          className="ml-1 text-primary cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label={`${markedForRemoval ? "Undo remove" : "Remove"} ${name}`}
-          title={`${markedForRemoval ? "Undo remove" : "Remove"} ${name}`}
-        >
-          <X className="size-3" />
-        </button>
-      )}
-    </Badge>
-  );
-}
+  first_name: string;
+  last_name: string;
+  email: string | null;
+  contact_number: string | null;
+  birthday: string | null;
+  address: string | null;
+  account_status: string;
+  deactivated_at: string | null;
+  created_at: string;
+  member_qr: string | null;
+  photo_url: string | null;
+  photoUrl: string | null;
+  initials: string;
+  has_qr: boolean;
+  user_chapters: any[];
+  user_roles: any[];
+  creator?: any;
+  updated_by_user?: any;
+  [key: string]: any;
+};
 
 type Props = {
   users: UserRow[];
   pagination: Pagination;
-  chapters: ChapterOption[];
-  roles: RoleOption[];
+  chapters: { id: number; name: string }[];
+  roles: { id: number; name: string; key: string; scope: string }[];
 };
 
+// --------------------------------- Main Component --------------------------------
+
 export function UsersClient({ users, pagination, chapters, roles }: Props) {
+  const [isPendingQR, startQRTransition] = useTransition();
+  const [qrTarget, setQrTarget] = useState<UserRow | null>(null);
+
+  // Manage roles dialog state
   const [managingRoles, setManagingRoles] = useState<UserRow | null>(null);
-  const [pendingAdds, setPendingAdds] = useState<PendingAdd[]>([]);
-  const [pendingRemoveIds, setPendingRemoveIds] = useState<number[]>([]);
-  const [selectedRoleId, setSelectedRoleId] = useState("");
-  const [selectedChapterId, setSelectedChapterId] = useState("");
-  const [addError, setAddError] = useState<string | null>(null);
-  const [isSubmitting, startSubmitTransition] = useTransition();
-
-  const chapterOptions = chapters.map((c) => ({
-    value: c.id.toString(),
-    label: c.name,
-  }));
-
-  const pendingRemoveSet = new Set(pendingRemoveIds);
-  const currentRoles = (managingRoles?.user_roles ?? []).filter(
-    (ur) => !pendingRemoveSet.has(ur.id),
-  );
-  const pendingAddRoleIds = new Set(pendingAdds.map((pa) => pa.roleId));
-  const assignedRoleIds = new Set([
-    ...currentRoles.map((ur) => ur.role.id),
-    ...pendingAddRoleIds,
-  ]);
-  const availableRoles = roles.filter(
-    (r) => !assignedRoleIds.has(r.id) && r.key !== ROLE_KEYS.MINISTRY_HEAD,
-  );
-  const selectedRole =
-    roles.find((r) => r.id.toString() === selectedRoleId) ?? null;
-  const needsChapter = selectedRole?.scope === "chapter";
-
-  function getAvailableRolesForRow(rowKey: string, rowRoleId: number) {
-    const currentRoleIds = new Set(currentRoles.map((ur) => ur.role.id));
-    const otherPendingIds = new Set(
-      pendingAdds.filter((pa) => pa.key !== rowKey).map((pa) => pa.roleId),
-    );
-    return roles.filter(
-      (r) =>
-        r.id === rowRoleId ||
-        (!currentRoleIds.has(r.id) &&
-          !otherPendingIds.has(r.id) &&
-          r.key !== ROLE_KEYS.MINISTRY_HEAD),
-    );
-  }
 
   function openManageRoles(row: UserRow) {
     setManagingRoles(row);
-    setPendingAdds([]);
-    setPendingRemoveIds([]);
-    setSelectedRoleId("");
-    setSelectedChapterId("");
-    setAddError(null);
   }
 
-  function handleRoleSelect(value: string) {
-    setSelectedRoleId(value);
-    setAddError(null);
-    // FIX 2: only clear chapter when switching to a global role
-    const role = roles.find((r) => r.id.toString() === value);
-    if (role?.scope !== "chapter") setSelectedChapterId("");
-  }
-
-  function handleChapterSelect(value: string) {
-    setSelectedChapterId(value);
-    setAddError(null);
-  }
-
-  function handleAdd() {
-    if (!selectedRoleId) {
-      setAddError("Please select a role.");
-      return;
+  function validate(form: UserFormData) {
+    const errors: Record<string, string | undefined> = {};
+    if (!form.first_name.trim()) errors.first_name = "First name is required";
+    if (!form.last_name.trim()) errors.last_name = "Last name is required";
+    if (form.email.trim() && !isValidEmailFormat(form.email)) {
+      errors.email = "Invalid email format";
     }
-    const role = roles.find((r) => r.id.toString() === selectedRoleId);
-    if (!role) return;
-    if (role.scope === "chapter" && !selectedChapterId) {
-      setAddError("Chapter is required for this role.");
-      return;
+
+    if (
+      form.contact_number.trim() &&
+      !isValidPhoneNumber(form.contact_number)
+    ) {
+      errors.contact_number =
+        "Must be a valid PH mobile number (e.g. 09123456789)";
     }
-    setPendingAdds((prev) => [
-      ...prev,
-      {
-        key: String(Date.now()),
-        roleId: role.id,
-        chapterId:
-          role.scope === "chapter" && selectedChapterId
-            ? parseInt(selectedChapterId, 10)
-            : undefined,
-      },
-    ]);
-    setSelectedRoleId("");
-    setSelectedChapterId("");
-    setAddError(null);
+
+    return errors;
   }
 
-  function updatePendingRole(key: string, value: string) {
-    const role = roles.find((r) => r.id.toString() === value);
-    setPendingAdds((prev) =>
-      prev.map((pa) =>
-        pa.key === key
-          ? {
-              ...pa,
-              roleId: parseInt(value, 10),
-              chapterId: role?.scope !== "chapter" ? undefined : pa.chapterId,
-            }
-          : pa,
-      ),
-    );
-  }
+  const chapterOptions = chapters.map((c) => ({
+    value: String(c.id),
+    label: c.name,
+  }));
 
-  function updatePendingChapter(key: string, value: string) {
-    setPendingAdds((prev) =>
-      prev.map((pa) =>
-        pa.key === key ? { ...pa, chapterId: parseInt(value, 10) } : pa,
-      ),
-    );
-  }
-
-  function removePending(key: string) {
-    setPendingAdds((prev) => prev.filter((pa) => pa.key !== key));
-  }
-
-  function handleMarkRemove(userRoleId: number) {
-    setPendingRemoveIds((prev) => [...prev, userRoleId]);
-  }
-
-  function handleSubmit() {
-    if (!managingRoles) return;
-
-    for (const pa of pendingAdds) {
-      const role = roles.find((r) => r.id === pa.roleId);
-      if (role?.scope === "chapter" && !pa.chapterId) {
-        toast.error("Missing chapter", {
-          description: `Please select a chapter for ${role.name}.`,
+  const handleGenerateQR = (id: number) => {
+    startQRTransition(async () => {
+      const result = await generateUserQR(id);
+      if (result.success) {
+        toast.success(result.title ?? "Success", {
+          description: result.description,
         });
-        return;
-      }
-    }
-
-    if (pendingAdds.length === 0 && pendingRemoveIds.length === 0) {
-      toast.error("No changes", {
-        description: "Please add or remove at least one role.",
-      });
-      return;
-    }
-
-    startSubmitTransition(async () => {
-      const results = await Promise.all([
-        ...pendingAdds.map((pa) =>
-          addUserRole(managingRoles.id, pa.roleId, pa.chapterId),
-        ),
-        ...pendingRemoveIds.map((id) => removeUserRole(managingRoles.id, id)),
-      ]);
-
-      const failed = results.find((r) => !r.success);
-      if (failed) {
-        toast.error("Something went wrong", {
-          description: failed.error ?? "Failed to update roles.",
+        setQrTarget(null);
+      } else {
+        toast.error(result.title ?? "Error", {
+          description: result.description,
         });
-        return;
       }
-
-      const warning = results
-        .map((r) => ("warning" in r ? r.warning : undefined))
-        .find(Boolean);
-
-      toast.success("Roles updated!", {
-        description: warning ?? "User roles have been updated successfully.",
-      });
-      setManagingRoles(null);
     });
-  }
+  };
 
   return (
     <>
-      <ReferenceTypeClient<UserRow, UserForm>
+      <ReferenceTypeClient<UserRow, UserFormData>
         entityLabel="User"
         pageTitle="User Management"
         pageDescription="View and manage all registered members in the system"
@@ -361,17 +183,39 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
           email: <TextCell value={row.email} />,
           contact_number: <TextCell value={row.contact_number} />,
           birthday: <DateCell date={row.birthday} dateOnly format="long" />,
-          status: <UserStatusBadge status={row.status} />,
+          account_status: <UserStatusBadge status={row.account_status} />,
           created_at: <DateCell date={row.created_at} />,
+          qr_code:
+            row.has_qr && row.member_qr ? (
+              <div onClick={(e) => e.stopPropagation()}>
+                <MemberQRDialog
+                  memberQr={row.member_qr}
+                  userName={row.name}
+                  onRegenerate={() => handleGenerateQR(row.id)}
+                  isPendingRegenerate={isPendingQR}
+                  triggerClassName="h-auto p-0 text-blue-600 hover:text-blue-700"
+                />
+              </div>
+            ) : (
+              <Button
+                variant="link"
+                size="sm"
+                className="h-auto p-0 text-primary hover:text-primary/80"
+                disabled={isPendingQR}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setQrTarget(row);
+                }}
+              >
+                Generate Code
+              </Button>
+            ),
         })}
         renderDetail={(row) => (
-          <>
+          <div>
             <DetailSection>
               <DetailField label={FIELD_LABELS.name}>
                 <UserCell user={row} />
-              </DetailField>
-              <DetailField label={FIELD_LABELS.email}>
-                <TextCell value={row.email} />
               </DetailField>
               <DetailField label={FIELD_LABELS.contact_number}>
                 <TextCell value={row.contact_number} />
@@ -379,124 +223,174 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
               <DetailField label={FIELD_LABELS.birthday}>
                 <DateCell date={row.birthday} dateOnly format="long" />
               </DetailField>
+              <DetailField label={FIELD_LABELS.email}>
+                <TextCell value={row.email} />
+              </DetailField>
               <DetailField label={FIELD_LABELS.chapter}>
                 <TextCell value={row.user_chapters[0]?.chapter?.name} />
               </DetailField>
               <DetailField label={FIELD_LABELS.status}>
-                <UserStatusBadge status={row.status} />
-              </DetailField>
-              <DetailField label={FIELD_LABELS.address} fullWidth>
-                <TextCell value={row.address} />
+                <UserStatusBadge status={row.account_status} />
               </DetailField>
               <DetailField label={FIELD_LABELS.roles} fullWidth>
-                {row.user_roles.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {row.user_roles.map((ur) => (
-                      <RemovableBadge
-                        key={ur.id}
-                        name={ur.role.name}
-                        sub={ur.chapter?.name}
-                        variant="secondary"
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <span className="text-sm text-muted-foreground">
-                    No roles assigned.
-                  </span>
-                )}
+                <div className="flex flex-wrap gap-2">
+                  {getDisplayRoles(row.user_roles).map((ur: any) => (
+                    <Badge
+                      key={ur.id}
+                      variant="secondary"
+                      className="h-auto rounded-md"
+                    >
+                      {ur.role.name}
+                      {ur.chapter && ` (${ur.chapter.name})`}
+                    </Badge>
+                  ))}
+                  {getDisplayRoles(row.user_roles).length === 0 && (
+                    <span className="text-muted-foreground">
+                      No roles assigned
+                    </span>
+                  )}
+                </div>
               </DetailField>
+              <DetailField label={FIELD_LABELS.address}>
+                <TextCell value={row.address} />
+              </DetailField>
+              <DetailMeta
+                id={row.id}
+                createdAt={row.created_at}
+                updatedAt={row.updated_at}
+                createdBy={row.creator}
+                updatedBy={row.updated_by}
+              >
+                {row.deactivated_at && (
+                  <DetailField
+                    label="Deactivated At"
+                    contentClassName="text-xs text-muted-foreground"
+                  >
+                    <DateCell date={row.deactivated_at} />
+                  </DetailField>
+                )}
+
+                {row.deactivated_by && (
+                  <DetailField
+                    label="Deactivated By"
+                    contentClassName="text-xs text-muted-foreground"
+                  >
+                    <UserCell user={row.deactivated_by} />
+                  </DetailField>
+                )}
+              </DetailMeta>
             </DetailSection>
-            <DetailMeta
-              id={row.id}
-              createdAt={row.created_at}
-              updatedAt={row.updated_at}
-            />
-          </>
-        )}
-        initialForm={EMPTY_FORM}
-        getFormFromRow={getFormFromRow}
-        renderForm={(form, setForm, isEditing) => (
-          <div className="space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-2">
-              <FormInput
-                label={FIELD_LABELS.first_name}
-                id="user-first-name"
-                value={form.first_name}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, first_name: e.target.value }))
-                }
-                required
-              />
-              <FormInput
-                label={FIELD_LABELS.last_name}
-                id="user-last-name"
-                value={form.last_name}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, last_name: e.target.value }))
-                }
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-2">
-              <FormInput
-                label={FIELD_LABELS.contact_number}
-                id="user-contact"
-                type="tel"
-                value={form.contact_number}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, contact_number: e.target.value }))
-                }
-                optional
-              />
-              <FormInput
-                label={FIELD_LABELS.email}
-                id="user-email"
-                type="email"
-                value={form.email}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, email: e.target.value }))
-                }
-                disabled={isEditing}
-                optional={!isEditing}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-2">
-              <FormInput
-                label={FIELD_LABELS.birthday}
-                id="user-birthday"
-                type="date"
-                value={form.birthday}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, birthday: e.target.value }))
-                }
-                optional
-              />
-              <FormSelect
-                label={FIELD_LABELS.status}
-                id="user-status"
-                value={form.status}
-                onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}
-                options={STATUS_OPTIONS}
-                required
-              />
-            </div>
-
-            <FormTextarea
-              label={FIELD_LABELS.address}
-              id="user-address"
-              value={form.address}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, address: e.target.value }))
-              }
-            />
           </div>
         )}
+        initialForm={EMPTY_FORM}
+        getFormFromRow={(row) => ({
+          first_name: row.first_name,
+          last_name: row.last_name,
+          contact_number: row.contact_number ?? "",
+          email: row.email ?? "",
+          birthday: row.birthday ? row.birthday.split("T")[0] : "",
+          account_status: row.account_status,
+          address: row.address ?? "",
+          chapter_id: row.user_chapters?.[0]?.chapter?.id,
+        })}
+        validate={validate}
+        renderForm={(form, setForm, isEditing, errors) => {
+          const isEmailEditable =
+            !isEditing || form.account_status === ACCOUNT_STATUS.PENDING;
+
+          return (
+            <div className="space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-5">
+                <FormInput
+                  label={FIELD_LABELS.first_name}
+                  id="first_name"
+                  value={form.first_name}
+                  onChange={(e) =>
+                    setForm({ ...form, first_name: e.target.value })
+                  }
+                  error={errors.first_name}
+                  required
+                />
+                <FormInput
+                  label={FIELD_LABELS.last_name}
+                  id="last_name"
+                  value={form.last_name}
+                  onChange={(e) =>
+                    setForm({ ...form, last_name: e.target.value })
+                  }
+                  error={errors.last_name}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-5">
+                <FormInput
+                  label={FIELD_LABELS.contact_number}
+                  id="contact_number"
+                  type="tel"
+                  maxLength={11}
+                  value={form.contact_number}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      contact_number: normalizePhoneNumber(e.target.value),
+                    })
+                  }
+                  error={errors.contact_number}
+                  placeholder="09123456789"
+                />
+                <FormInput
+                  label={FIELD_LABELS.birthday}
+                  id="birthday"
+                  type="date"
+                  value={form.birthday}
+                  onChange={(e) =>
+                    setForm({ ...form, birthday: e.target.value })
+                  }
+                />
+              </div>
+
+              <FormInput
+                label={FIELD_LABELS.email}
+                id="email"
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                error={errors.email}
+                disabled={!isEmailEditable}
+              />
+
+              {!isEmailEditable && (
+                <p className="text-xs text-muted-foreground -mt-3 italic">
+                  Email cannot be edited because the account is no longer
+                  pending
+                </p>
+              )}
+
+              <FormSelect
+                label={FIELD_LABELS.chapter}
+                id="chapter_id"
+                options={chapterOptions}
+                value={form.chapter_id ? String(form.chapter_id) : ""}
+                onValueChange={(val) =>
+                  setForm({ ...form, chapter_id: Number(val) || undefined })
+                }
+                placeholder="Select Chapter (Optional)"
+              />
+
+              <FormTextarea
+                label={FIELD_LABELS.address}
+                id="address"
+                value={form.address}
+                onChange={(e) => setForm({ ...form, address: e.target.value })}
+              />
+            </div>
+          );
+        }}
         onCreate={createUser}
         onUpdate={updateUser}
         onDelete={deleteUser}
+        canDelete={(row) => row.account_status === ACCOUNT_STATUS.PENDING}
         extraRowActions={(row) => [
           {
             label: "Manage Roles",
@@ -506,178 +400,51 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
         ]}
         confirmRowActions={[
           {
-            label: "Deactivate",
+            label: "Remove Access",
             icon: <FaPowerOff className="mb-0.5" />,
             condition: (row) =>
-              row.status === USER_STATUS.ACTIVE ||
-              row.status === USER_STATUS.REGISTERED ||
-              row.status === USER_STATUS.PENDING,
+              row.account_status !== ACCOUNT_STATUS.PENDING &&
+              !row.deactivated_at &&
+              getDisplayRoles(row.user_roles).length > 0,
             action: deactivateUser,
-            title: "Deactivate user?",
+            title: "Remove Access?",
             description:
-              "will be set to inactive and lose access to the system.",
-            successTitle: "User deactivated",
-            successDescription: (row) =>
-              `${formatName(row)} has been deactivated.`,
-            confirmingText: "Deactivating...",
+              "This will remove all active roles. The user can still log in but cannot access the dashboard.",
           },
           {
-            label: "Restore",
-            icon: <FaUserCheck className="mb-0.5" />,
-            condition: (row) => row.status === USER_STATUS.INACTIVE,
+            label: "Restore Access",
+            condition: (row) => !!row.deactivated_at,
+            icon: <FaSyncAlt className="mb-0.5" />,
             action: restoreUser,
-            title: "Restore user?",
-            description: "will be restored to active status.",
-            successTitle: "User restored",
-            successDescription: (row) =>
-              `${formatName(row)} has been restored to active.`,
-            confirmingText: "Restoring...",
+            title: "Restore Access?",
+            description:
+              "This will restore the roles that were removed. The user will regain access to the dashboard.",
           },
         ]}
       />
 
-      {/* Manage Roles Sheet */}
-      <AdminSheet
-        open={!!managingRoles}
+      <ManageRolesSheet
+        user={managingRoles}
         onClose={() => setManagingRoles(null)}
-        title="Manage Roles"
+        roles={roles}
+        chapters={chapters}
+      />
+
+      <DeleteConfirmDialog
+        open={!!qrTarget}
+        onClose={() => setQrTarget(null)}
+        onConfirm={() => qrTarget && handleGenerateQR(qrTarget.id)}
+        isDeleting={isPendingQR}
+        title="Generate QR Code?"
         description={
-          managingRoles
-            ? `Assign or remove roles for ${formatName(managingRoles)}`
-            : ""
+          <>
+            Generate a QR code for <strong>{qrTarget?.name}</strong>? For
+            security, members should generate their own QR code by logging into
+            their account.
+          </>
         }
-        onSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-        submitLabel="Update"
-      >
-        {managingRoles && (
-          <div className="space-y-5">
-            {/* Current roles — badge per role, click X to mark for removal */}
-            <DetailSection>
-              <DetailField label="Current Roles" fullWidth>
-                {managingRoles.user_roles.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {managingRoles.user_roles.map((ur) => {
-                      const marked = pendingRemoveSet.has(ur.id);
-                      return (
-                        <RemovableBadge
-                          key={ur.id}
-                          name={ur.role.name}
-                          sub={ur.chapter?.name}
-                          onRemove={() =>
-                            marked
-                              ? setPendingRemoveIds((prev) =>
-                                  prev.filter((id) => id !== ur.id),
-                                )
-                              : handleMarkRemove(ur.id)
-                          }
-                          variant="secondary"
-                          disabled={isSubmitting}
-                          markedForRemoval={marked}
-                        />
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <span className="text-sm text-muted-foreground">
-                    No roles assigned.
-                  </span>
-                )}
-              </DetailField>
-            </DetailSection>
-
-            {/* Add Role form: [Role] [Chapter?] [Add] */}
-            <div className="flex gap-2 items-center">
-              <FormSelect
-                label="Add Role"
-                id="manage-role-select"
-                value={selectedRoleId}
-                onValueChange={handleRoleSelect}
-                options={availableRoles.map((r) => ({
-                  value: r.id.toString(),
-                  label: r.name,
-                }))}
-                placeholder="Select a role..."
-                wrapperClassName="flex-1"
-                disabled={isSubmitting}
-                labelClassName="font-bold"
-              />
-              {needsChapter && (
-                <FormSelect
-                  label="Chapter"
-                  id="manage-role-chapter"
-                  value={selectedChapterId}
-                  onValueChange={handleChapterSelect}
-                  options={chapterOptions}
-                  placeholder="Select chapter..."
-                  wrapperClassName="flex-1"
-                  disabled={isSubmitting}
-                  labelClassName="font-bold"
-                />
-              )}
-              <Button
-                type="button"
-                onClick={handleAdd}
-                disabled={isSubmitting}
-                className="px-2 mt-3"
-              >
-                <MdLibraryAdd />
-              </Button>
-            </div>
-            {addError && <p className="text-xs text-destructive">{addError}</p>}
-
-            {/* Staged pending adds — editable rows */}
-            {pendingAdds.length > 0 && (
-              <div className="space-y-2">
-                {pendingAdds.map((pa) => {
-                  const paRole = roles.find((r) => r.id === pa.roleId);
-                  const paAvailable = getAvailableRolesForRow(
-                    pa.key,
-                    pa.roleId,
-                  );
-                  return (
-                    <div key={pa.key} className="flex gap-2 items-center">
-                      <FormSelect
-                        label="Role"
-                        id={`pending-role-${pa.key}`}
-                        value={pa.roleId.toString()}
-                        onValueChange={(v) => updatePendingRole(pa.key, v)}
-                        options={paAvailable.map((r) => ({
-                          value: r.id.toString(),
-                          label: r.name,
-                        }))}
-                        wrapperClassName="flex-1"
-                        disabled={isSubmitting}
-                      />
-                      {paRole?.scope === "chapter" && (
-                        <FormSelect
-                          label="Chapter"
-                          id={`pending-chapter-${pa.key}`}
-                          value={pa.chapterId?.toString() ?? ""}
-                          onValueChange={(v) => updatePendingChapter(pa.key, v)}
-                          options={chapterOptions}
-                          placeholder="Select chapter..."
-                          wrapperClassName="flex-1"
-                          disabled={isSubmitting}
-                        />
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => removePending(pa.key)}
-                        disabled={isSubmitting}
-                        className="text-primary cursor-pointer disabled:opacity-50 mt-3"
-                        aria-label="Remove pending role"
-                      >
-                        <X className="size-4" />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
-      </AdminSheet>
+        confirmingText="Generating..."
+      />
     </>
   );
 }

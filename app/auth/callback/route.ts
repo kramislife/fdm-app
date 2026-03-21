@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import crypto from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { backfillAttendance } from "@/lib/auth";
@@ -7,7 +8,7 @@ import { normalizeEmail, isValidEmailFormat } from "@/lib/format";
 import { splitName } from "@/lib/format";
 import { AUTH_ERROR_CODES, buildLoginErrorPath } from "@/lib/auth-errors";
 import { ROLE_KEYS } from "@/lib/app-roles";
-import { USER_STATUS } from "@/lib/status";
+import { ACCOUNT_STATUS } from "@/lib/status";
 
 // Upload user avatar to Cloudinary
 async function uploadAvatar(imageUrl: string, userId: number) {
@@ -137,12 +138,12 @@ export async function GET(request: NextRequest) {
 
   const { first_name: firstName, last_name: lastName } = splitName(fullName);
 
-  // Look up spiritual director as system actor for assigned_by
-  const sdUser = await prisma.user.findFirst({
+  // Look up director adviser as system actor for assigned_by
+  const daUser = await prisma.user.findFirst({
     where: {
       user_roles: {
         some: {
-          role: { key: ROLE_KEYS.SPIRITUAL_DIRECTOR },
+          role: { key: ROLE_KEYS.DIRECTOR_ADVISER },
           is_active: true,
         },
       },
@@ -155,7 +156,7 @@ export async function GET(request: NextRequest) {
     select: { id: true },
   });
 
-  if (!sdUser || !memberRole) {
+  if (!daUser || !memberRole) {
     return NextResponse.redirect(
       `${origin}${buildLoginErrorPath(AUTH_ERROR_CODES.AUTH_FAILED)}`,
     );
@@ -168,8 +169,10 @@ export async function GET(request: NextRequest) {
       last_name: lastName,
       email,
       auth_id: authUser.id,
-      status: USER_STATUS.REGISTERED,
+      account_status: ACCOUNT_STATUS.REGISTERED,
       is_temp_password: false,
+      has_qr: false,
+      member_qr: null,
     },
   });
 
@@ -192,7 +195,7 @@ export async function GET(request: NextRequest) {
     data: {
       user_id: newUser.id,
       role_id: memberRole.id,
-      assigned_by: sdUser.id,
+      assigned_by: daUser.id,
       is_active: true,
     },
   });

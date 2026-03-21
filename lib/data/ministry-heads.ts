@@ -1,7 +1,7 @@
 import "server-only";
 import { ROLE_KEYS } from "@/lib/app-roles";
 import { prisma } from "@/lib/prisma";
-import { USER_STATUS } from "@/lib/status";
+import { ACCOUNT_STATUS } from "@/lib/status";
 import {
   buildOrderBy,
   buildPaginationMeta,
@@ -119,7 +119,7 @@ export async function getMinistryHeads(
 export async function getChapterActiveUsers(chapterId: number) {
   return await prisma.user.findMany({
     where: {
-      status: USER_STATUS.ACTIVE,
+      account_status: ACCOUNT_STATUS.ACTIVE,
       user_chapters: {
         some: {
           chapter_id: chapterId,

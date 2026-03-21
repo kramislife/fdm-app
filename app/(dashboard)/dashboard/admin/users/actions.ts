@@ -1,12 +1,12 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { requireRole } from "@/lib/auth";
 import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/app-roles";
-import { USER_STATUS } from "@/lib/status";
-
-const REVALIDATE_PATH = "/dashboard/admin/users";
+import { ACCOUNT_STATUS } from "@/lib/status";
+import { revalidatePath } from "next/cache";
+import crypto from "node:crypto";
 
 export type UserFormData = {
   first_name: string;
@@ -14,55 +14,120 @@ export type UserFormData = {
   contact_number: string;
   email: string;
   birthday: string;
-  status: string;
+  account_status: string;
   address: string;
+  chapter_id?: number;
 };
 
-export async function createUser(
-  data: UserFormData,
-): Promise<{ success: boolean; error?: string }> {
-  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
+export type ActionResult = {
+  success: boolean;
+  title?: string;
+  description?: string;
+  errors?: Record<string, string>;
+  warning?: string;
+};
 
-  if (!data.first_name.trim())
-    return { success: false, error: "First name is required." };
-  if (!data.last_name.trim())
-    return { success: false, error: "Last name is required." };
+function generateTempPassword() {
+  // Simple alphanumeric 12-char password
+  return crypto.randomBytes(6).toString("hex").toUpperCase();
+}
 
-  if (data.email.trim()) {
-    const existing = await prisma.user.findFirst({
-      where: { email: data.email.trim(), deleted_at: null },
-    });
-    if (existing) return { success: false, error: "Email is already in use." };
-  }
-
-  if (data.contact_number.trim()) {
-    const existing = await prisma.user.findFirst({
-      where: { contact_number: data.contact_number.trim(), deleted_at: null },
-    });
-    if (existing)
-      return { success: false, error: "Contact number is already in use." };
-  }
+export async function createUser(data: UserFormData): Promise<ActionResult> {
+  const actor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
+  const actorId = actor.user.id;
 
   try {
+    const email = data.email?.trim() || null;
+    let authId: string | null = null;
+
+    if (email) {
+      // 1. Validate email uniqueness in public.users
+      const existing = await prisma.user.findUnique({
+        where: { email },
+        select: { id: true },
+      });
+
+      if (existing) {
+        return {
+          success: false,
+          title: "Email already registered",
+          description: "Try logging in or use a different email instead.",
+          errors: { email: "Email already exists in the system." },
+        };
+      }
+
+      const tempPassword = generateTempPassword();
+
+      // 2. Create Supabase Auth account first
+      const supabaseAdmin = createAdminClient();
+      const { data: authResult, error: authError } =
+        await supabaseAdmin.auth.admin.createUser({
+          email: email,
+          password: tempPassword,
+          email_confirm: true,
+        });
+
+      if (authError) {
+        console.error("[createUser] auth error:", authError);
+        return {
+          success: false,
+          title: "Auth Creation Failed",
+          description: authError.message,
+        };
+      }
+      authId = authResult.user.id;
+    }
+
+    // 3. Create public.users row
     await prisma.user.create({
       data: {
-        first_name: data.first_name.trim(),
-        last_name: data.last_name.trim(),
-        email: data.email.trim() || null,
-        contact_number: data.contact_number.trim() || null,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        email: email,
+        contact_number: data.contact_number,
         birthday: data.birthday ? new Date(data.birthday) : null,
-        status: data.status,
-        address: data.address.trim() || null,
-        created_by_admin: currentUser.user.id,
+        address: data.address,
+        account_status: ACCOUNT_STATUS.PENDING,
+        is_temp_password: !!email,
+        has_qr: false,
+        auth_id: authId,
+        created_by: actorId,
+        // If chapter provided, we'll create the relation
+        user_chapters:
+          data.chapter_id != null
+            ? {
+                create: {
+                  chapter_id: data.chapter_id,
+                  is_primary: true,
+                },
+              }
+            : undefined,
+        // Also assign Member role by default
+        user_roles: {
+          create: {
+            role: { connect: { key: ROLE_KEYS.MEMBER } },
+            assigner: { connect: { id: actor.user.id } },
+            is_active: true,
+          },
+        },
+        activation_email_resent: 0,
       },
     });
 
-    revalidatePath(REVALIDATE_PATH);
-    return { success: true };
-  } catch {
+    revalidatePath("/dashboard/admin/users");
+    return {
+      success: true,
+      title: "User Created",
+      description: email
+        ? "Temporary credentials have been sent to the registered email address."
+        : "User has been successfully added to the system.",
+    };
+  } catch (error: any) {
+    console.error("[createUser] error:", error);
     return {
       success: false,
-      error: "Failed to create user. Please try again.",
+      title: "Error",
+      description: error.message || "An unexpected error occurred.",
     };
   }
 }
@@ -70,315 +135,819 @@ export async function createUser(
 export async function updateUser(
   id: number,
   data: UserFormData,
-): Promise<{ success: boolean; error?: string }> {
-  await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
-
-  if (!data.first_name.trim())
-    return { success: false, error: "First name is required." };
-  if (!data.last_name.trim())
-    return { success: false, error: "Last name is required." };
-
-  if (data.contact_number.trim()) {
-    const existing = await prisma.user.findFirst({
-      where: {
-        contact_number: data.contact_number.trim(),
-        deleted_at: null,
-        id: { not: id },
-      },
-    });
-    if (existing)
-      return { success: false, error: "Contact number is already in use." };
-  }
+): Promise<ActionResult> {
+  const actor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
+  const actorId = actor.user.id;
 
   try {
+    const existing = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        first_name: true,
+        email: true,
+        account_status: true,
+        auth_id: true,
+        user_chapters: {
+          where: { is_primary: true },
+          select: { chapter_id: true, chapter: { select: { name: true } } },
+          take: 1,
+        },
+      },
+    });
+
+    if (!existing) {
+      return { success: false, description: "User not found." };
+    }
+
+    const email = data.email?.trim() || null;
+    const isEmailChanged = existing.email !== email;
+
+    // 1. If email changed, check if email is editable (only for pending accounts)
+    if (isEmailChanged) {
+      if (existing.account_status !== ACCOUNT_STATUS.PENDING) {
+        return {
+          success: false,
+          errors: { email: "Email can only be changed for pending accounts." },
+        };
+      }
+
+      // 2. Check email uniqueness
+      if (email) {
+        const dupe = await prisma.user.findFirst({
+          where: { email: email, NOT: { id } },
+          select: { id: true },
+        });
+
+        if (dupe) {
+          return {
+            success: false,
+            title: "Email already registered",
+            description: "Try logging in or use a different email.",
+            errors: { email: "Email already exists in the system." },
+          };
+        }
+      }
+
+      // 3. Update or Delete Supabase Auth account based on email status
+      const supabaseAdmin = createAdminClient();
+      if (email) {
+        if (existing.auth_id) {
+          const { error: authError } =
+            await supabaseAdmin.auth.admin.updateUserById(existing.auth_id, {
+              email: email,
+            });
+
+          if (authError) {
+            console.error("[updateUser] auth error:", authError);
+            return {
+              success: false,
+              title: "Auth Update Failed",
+              description: authError.message,
+            };
+          }
+        } else {
+          // No existing auth_id but new email added? Should create auth
+          const tempPassword = generateTempPassword();
+          const { data: authResult, error: authError } =
+            await supabaseAdmin.auth.admin.createUser({
+              email: email,
+              password: tempPassword,
+              email_confirm: true,
+            });
+          if (!authError) {
+            await prisma.user.update({
+              where: { id },
+              data: { auth_id: authResult.user.id, is_temp_password: true },
+            });
+          }
+        }
+      } else if (existing.auth_id) {
+        // Email removed, delete auth account
+        await supabaseAdmin.auth.admin.deleteUser(existing.auth_id);
+      }
+    }
+
+    // 4. Update public.users
     await prisma.user.update({
       where: { id },
       data: {
-        first_name: data.first_name.trim(),
-        last_name: data.last_name.trim(),
-        contact_number: data.contact_number.trim() || null,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        contact_number: data.contact_number,
+        email: email,
+        auth_id: email ? undefined : null,
         birthday: data.birthday ? new Date(data.birthday) : null,
-        status: data.status,
-        address: data.address.trim() || null,
+        address: data.address,
+        updated_by: actorId,
+        // Chapter update if chapter_id changed
+        user_chapters:
+          data.chapter_id !== undefined
+            ? {
+                deleteMany: { is_primary: true },
+                ...(data.chapter_id != null && {
+                  create: {
+                    chapter_id: data.chapter_id,
+                    is_primary: true,
+                  },
+                }),
+              }
+            : undefined,
       },
     });
 
-    revalidatePath(REVALIDATE_PATH);
-    return { success: true };
-  } catch {
+    revalidatePath("/dashboard/admin/users");
+
+    // Warn if home chapter changed and user has active chapter-scoped roles in old chapter
+    const oldChapterId = existing.user_chapters[0]?.chapter_id ?? null;
+    const oldChapterName = existing.user_chapters[0]?.chapter?.name ?? null;
+    if (data.chapter_id && oldChapterId && data.chapter_id !== oldChapterId) {
+      const activeChapterRoles = await prisma.userRole.findMany({
+        where: {
+          user_id: id,
+          is_active: true,
+          chapter_id: oldChapterId,
+          role: { scope: "chapter" },
+        },
+        include: { role: { select: { name: true } } },
+      });
+
+      if (activeChapterRoles.length > 0) {
+        const roleNames = activeChapterRoles
+          .map((ur) => ur.role.name)
+          .join(", ");
+        return {
+          success: true,
+          title: "User Updated",
+          warning: `${existing.first_name} has active roles in ${oldChapterName}: ${roleNames}. Changing home chapter does not affect these roles. Update them via Manage Roles if needed.`,
+        };
+      }
+    }
+
+    return { success: true, title: "User Updated" };
+  } catch (error: any) {
+    console.error("[updateUser] error:", error);
     return {
       success: false,
-      error: "Failed to update user. Please try again.",
+      title: "Error",
+      description: error.message || "An unexpected error occurred.",
     };
   }
 }
 
-export async function deactivateUser(
-  id: number,
-): Promise<{ success: boolean; error?: string }> {
-  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
+export async function deactivateUser(id: number): Promise<ActionResult> {
+  const actor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
+  const actorId = actor.user.id;
 
-  if (id === currentUser.user.id)
-    return { success: false, error: "You cannot deactivate your own account." };
-
-  const user = await prisma.user.findUnique({
-    where: { id },
-    include: {
-      user_roles: {
-        where: { is_active: true },
-        include: { role: { select: { key: true } } },
-      },
-    },
-  });
-
-  if (!user) return { success: false, error: "User not found." };
-  if (user.deleted_at)
-    return { success: false, error: "User is already deleted." };
-  if (user.status === USER_STATUS.INACTIVE)
-    return { success: false, error: "User is already deactivated." };
-
-  const hasSD = user.user_roles.some(
-    (ur) => ur.role.key === ROLE_KEYS.SPIRITUAL_DIRECTOR,
-  );
-  if (hasSD)
+  if (id === actorId) {
     return {
       success: false,
-      error: "Spiritual Director account cannot be deactivated.",
+      title: "Action Denied",
+      description: "You cannot remove your own dashboard access.",
     };
+  }
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: {
+        user_roles: { where: { is_active: true }, include: { role: true } },
+      },
+    });
+
+    if (!user) return { success: false, description: "User not found." };
+
+    const isDA = user.user_roles.some(
+      (ur) => ur.role.key === ROLE_KEYS.DIRECTOR_ADVISER,
+    );
+    if (isDA) {
+      return {
+        success: false,
+        description: "The Director Adviser account cannot be deactivated.",
+      };
+    }
+
+    const now = new Date();
+
     await prisma.$transaction([
-      prisma.user.update({
-        where: { id },
-        data: { status: USER_STATUS.INACTIVE },
-      }),
+      // 1. Deactivate all active roles
       prisma.userRole.updateMany({
         where: { user_id: id, is_active: true },
-        data: { is_active: false },
+        data: { is_active: false, deactivated_at: now },
+      }),
+      // 2. Mark user as deactivated
+      prisma.user.update({
+        where: { id },
+        data: { deactivated_at: now, deactivated_by: actorId },
       }),
     ]);
 
-    revalidatePath(REVALIDATE_PATH);
-    return { success: true };
-  } catch {
+    revalidatePath("/dashboard/admin/users");
     return {
-      success: false,
-      error: "Failed to deactivate user. Please try again.",
+      success: true,
+      title: "Access Removed",
+      description:
+        "Dashboard access has been restricted. All active roles have been archived.",
     };
+  } catch (error: any) {
+    return { success: false, description: error.message };
   }
 }
 
-export async function restoreUser(
-  id: number,
-): Promise<{ success: boolean; error?: string }> {
-  await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
-
-  const user = await prisma.user.findUnique({ where: { id } });
-
-  if (!user) return { success: false, error: "User not found." };
-  if (user.deleted_at)
-    return {
-      success: false,
-      error: "Deleted users cannot be restored. Create a new account.",
-    };
-  if (user.status !== USER_STATUS.INACTIVE)
-    return { success: false, error: "User account is already active." };
+export async function restoreUser(id: number): Promise<ActionResult> {
+  const actor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: { deactivated_at: true, first_name: true },
+    });
+
+    if (!user || !user.deactivated_at) {
+      return {
+        success: false,
+        description: "Access is already fully active for this user.",
+      };
+    }
+
+    await prisma.$transaction([
+      // 1. Restore roles that were deactivated in the same batch
+      prisma.userRole.updateMany({
+        where: {
+          user_id: id,
+          is_active: false,
+          deactivated_at: user.deactivated_at,
+        },
+        data: { is_active: true, deactivated_at: null },
+      }),
+      // 2. Clear deactivation status on user
+      prisma.user.update({
+        where: { id },
+        data: { deactivated_at: null, deactivated_by: null },
+      }),
+    ]);
+
+    revalidatePath("/dashboard/admin/users");
+    return {
+      success: true,
+      title: "Access Restored",
+      description: `Access has been restored. Visit Manage Roles if changes are needed.`,
+    };
+  } catch (error: any) {
+    return { success: false, description: error.message };
+  }
+}
+
+export async function deleteUser(id: number): Promise<ActionResult> {
+  const actor = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: { auth_id: true, account_status: true },
+    });
+
+    if (!user) return { success: false, description: "User not found." };
+
+    // 1. Only allow deletion if account is still PENDING
+    // Once registered/active, use deactivation instead for data integrity
+    if (user.account_status !== ACCOUNT_STATUS.PENDING) {
+      return {
+        success: false,
+        description: "Registered accounts cannot be deleted.",
+      };
+    }
+
+    // 2. Delete Supabase Auth account
+    if (user.auth_id) {
+      const supabaseAdmin = createAdminClient();
+      await supabaseAdmin.auth.admin.deleteUser(user.auth_id);
+    }
+
+    // 3. Delete from public.users (explicitly clear relations first to avoid FK errors)
+    await prisma.$transaction([
+      prisma.userRole.deleteMany({ where: { user_id: id } }),
+      prisma.userChapter.deleteMany({ where: { user_id: id } }),
+      prisma.user.delete({ where: { id } }),
+    ]);
+
+    revalidatePath("/dashboard/admin/users");
+    return { success: true, title: "User Deleted" };
+  } catch (error: any) {
+    return { success: false, description: error.message };
+  }
+}
+
+export async function generateUserQR(id: number): Promise<ActionResult> {
+  // 1. Authorized roles: Director Adviser, Elder, Head Servant
+  const actor = await requireRole([
+    ROLE_KEYS.DIRECTOR_ADVISER,
+    ROLE_KEYS.ELDER,
+    ROLE_KEYS.HEAD_SERVANT,
+  ]);
+
+  try {
+    const targetUser = await prisma.user.findUnique({
+      where: { id },
+      include: { user_chapters: { where: { is_primary: true } } },
+    });
+
+    if (!targetUser) return { success: false, description: "User not found." };
+
+    // 2. Cooldown Check (Once per week)
+    // Elder/Director Adviser can bypass this restriction
+    const isBypassed =
+      actor.roles.includes(ROLE_KEYS.DIRECTOR_ADVISER) ||
+      actor.roles.includes(ROLE_KEYS.ELDER);
+
+    const now = new Date();
+    if (!isBypassed && targetUser.qr_generated_at) {
+      const lastGenDate = new Date(targetUser.qr_generated_at);
+      const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+      const cooldownEnd = lastGenDate.getTime() + sevenDaysInMs;
+
+      if (now.getTime() < cooldownEnd) {
+        const remainingDays = Math.ceil(
+          (cooldownEnd - now.getTime()) / (24 * 60 * 60 * 1000),
+        );
+        return {
+          success: false,
+          title: "Generation Cooldown",
+          description: `QR Code was recently generated on ${lastGenDate.toLocaleDateString()}. You can regenerate again after ${new Date(cooldownEnd).toLocaleDateString()} (${remainingDays} ${remainingDays === 1 ? "day" : "days"} remaining).`,
+        };
+      }
+    }
+
+    // 3. Head Servant Check: Can only generate for users in their own chapter
+    const isHeadServantOnly =
+      actor.roles.includes(ROLE_KEYS.HEAD_SERVANT) && !isBypassed;
+
+    if (isHeadServantOnly) {
+      const targetChapterId = targetUser.user_chapters[0]?.chapter_id;
+
+      if (!actor.chapter || actor.chapter.id !== targetChapterId) {
+        return {
+          success: false,
+          description:
+            "You can only generate QR codes for members of your own chapter.",
+        };
+      }
+    }
+
+    // 4. Generate unique QR value
+    const qrValue = crypto.randomUUID();
+
     await prisma.user.update({
       where: { id },
-      data: { status: USER_STATUS.ACTIVE },
+      data: {
+        member_qr: qrValue,
+        has_qr: true,
+        qr_generated_at: now,
+        qr_regenerated_count: { increment: 1 },
+        updated_by: actor.user.id,
+      },
     });
 
-    revalidatePath(REVALIDATE_PATH);
-    return { success: true };
-  } catch {
+    revalidatePath("/dashboard/admin/users");
     return {
-      success: false,
-      error: "Failed to restore user. Please try again.",
+      success: true,
+      title: "QR Code Generated",
+      description: "Member's unique QR code has been successfully updated.",
     };
+  } catch (error: any) {
+    return { success: false, description: error.message };
   }
 }
 
-export async function deleteUser(
-  id: number,
-): Promise<{ success: boolean; error?: string }> {
-  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
+export type UserRoleInput = {
+  roleId: number;
+  chapterId?: number;
+};
 
-  if (id === currentUser.user.id)
-    return { success: false, error: "You cannot delete your own account." };
-
-  const user = await prisma.user.findUnique({
-    where: { id },
-    include: {
-      user_roles: {
-        where: { is_active: true },
-        include: { role: { select: { key: true } } },
-      },
-    },
-  });
-
-  if (!user) return { success: false, error: "User not found." };
-
-  const hasSD = user.user_roles.some(
-    (ur) => ur.role.key === ROLE_KEYS.SPIRITUAL_DIRECTOR,
-  );
-  if (hasSD)
-    return {
-      success: false,
-      error: "Spiritual Director account cannot be deleted.",
-    };
+export async function updateUserRoles(
+  userId: number,
+  removeIds: number[],
+  adds: UserRoleInput[],
+): Promise<ActionResult> {
+  const actor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
 
   try {
-    await prisma.$transaction([
-      prisma.user.update({
-        where: { id },
-        data: {
-          deleted_at: new Date(),
-          deleted_by: currentUser.user.id,
-          status: USER_STATUS.INACTIVE,
-        },
-      }),
-      prisma.userRole.updateMany({
-        where: { user_id: id, is_active: true },
-        data: { is_active: false },
-      }),
-    ]);
-
-    revalidatePath(REVALIDATE_PATH);
-    return { success: true };
-  } catch {
-    return {
-      success: false,
-      error: "Failed to delete user. Please try again.",
-    };
-  }
-}
-
-export async function addUserRole(
-  userId: number,
-  roleId: number,
-  chapterId?: number,
-): Promise<{ success: boolean; error?: string; userRoleId?: number }> {
-  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
-
-  const [role, user] = await Promise.all([
-    prisma.role.findUnique({
-      where: { id: roleId },
-      select: { key: true, scope: true },
-    }),
-    prisma.user.findUnique({
+    // 1. Load target user's current roles (include inactive for upsert logic)
+    const targetUser = await prisma.user.findUnique({
       where: { id: userId },
       include: {
         user_roles: {
-          where: { is_active: true },
-          include: { chapter: { select: { name: true } } },
+          include: { role: true, chapter: true },
         },
-        user_chapters: { select: { id: true }, take: 1 },
       },
-    }),
-  ]);
+    });
 
-  if (!role) return { success: false, error: "Role not found." };
-  if (!user) return { success: false, error: "User not found." };
-  if (user.deleted_at)
-    return { success: false, error: "Cannot assign role to a deleted user." };
-  if (role.key === ROLE_KEYS.MINISTRY_HEAD)
-    return {
-      success: false,
-      error: "Ministry Head is assigned via Ministry Heads page.",
-    };
-  if (role.scope === "chapter" && !chapterId)
-    return { success: false, error: "Chapter is required for this role." };
+    if (!targetUser) {
+      return {
+        success: false,
+        title: "User Not Found",
+        description: "The targeted user account does not exist.",
+      };
+    }
 
-  const resolvedChapterId =
-    role.scope === "chapter" ? (chapterId ?? null) : null;
-
-  const duplicate = user.user_roles.find(
-    (ur) =>
-      ur.role_id === roleId &&
-      (ur.chapter_id ?? null) === (resolvedChapterId ?? null),
-  );
-  if (duplicate) {
-    const chapterName = duplicate.chapter?.name ?? "Global";
-    return {
-      success: false,
-      error: `This role is already assigned for ${chapterName}.`,
-    };
-  }
-
-  try {
-    let createdId: number | undefined;
-
-    await prisma.$transaction(async (tx) => {
-      const created = await tx.userRole.create({
-        data: {
-          user_id: userId,
-          role_id: roleId,
-          chapter_id: resolvedChapterId ?? undefined,
-          assigned_by: currentUser.user.id,
-          is_active: true,
-        },
-      });
-      createdId = created.id;
-
-      // Auto-set home chapter if none exists yet
-      if (resolvedChapterId && user.user_chapters.length === 0) {
-        await tx.userChapter.create({
-          data: {
-            user_id: userId,
-            chapter_id: resolvedChapterId,
-            is_primary: true,
-          },
-        });
+    // 2. Validate removes — block DA self-removal
+    for (const removeId of removeIds) {
+      const ur = targetUser.user_roles.find((r) => r.id === removeId);
+      if (!ur) continue;
+      if (
+        ur.role.key === ROLE_KEYS.DIRECTOR_ADVISER &&
+        userId === actor.user.id
+      ) {
+        return {
+          success: false,
+          title: "Cannot Remove Role",
+          description:
+            "You cannot remove your own Director Adviser role. Assign it to someone else first.",
+        };
       }
-    });
+    }
 
-    revalidatePath(REVALIDATE_PATH);
-    return { success: true, userRoleId: createdId };
-  } catch {
-    return { success: false, error: "Failed to add role. Please try again." };
-  }
-}
+    // 3. Compute remaining active roles (after removes applied)
+    const remainingRoles = targetUser.user_roles.filter(
+      (ur) => ur.is_active && !removeIds.includes(ur.id),
+    );
 
-export async function removeUserRole(
-  userId: number,
-  userRoleId: number,
-): Promise<{ success: boolean; error?: string; warning?: string }> {
-  await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
+    // 4. Resolve role details for all adds upfront
+    const addRoleIds = [...new Set(adds.map((a) => a.roleId))];
+    const resolvedRoleList =
+      addRoleIds.length > 0
+        ? await prisma.role.findMany({
+            where: { id: { in: addRoleIds } },
+            select: { id: true, key: true, name: true, scope: true },
+          })
+        : [];
+    const roleById = new Map(resolvedRoleList.map((r) => [r.id, r]));
 
-  const userRole = await prisma.userRole.findUnique({
-    where: { id: userRoleId },
-    include: { role: { select: { key: true } } },
-  });
+    // 5. Resolve chapter names for error messages
+    const allChapterIds = [
+      ...adds.filter((a) => a.chapterId).map((a) => a.chapterId!),
+      ...remainingRoles
+        .filter((ur) => ur.chapter_id)
+        .map((ur) => ur.chapter_id!),
+    ];
+    const chapterList =
+      allChapterIds.length > 0
+        ? await prisma.chapter.findMany({
+            where: { id: { in: allChapterIds } },
+            select: { id: true, name: true },
+          })
+        : [];
+    const chapterById = new Map(chapterList.map((c) => [c.id, c.name]));
 
-  if (!userRole || userRole.user_id !== userId)
-    return { success: false, error: "Role not found." };
+    // 6. Validate each add, tracking queued adds for within-submit conflict detection
+    const queuedAdds: { roleKey: string; chapterId?: number }[] = [];
+    let existingDAUserRoleId: number | null = null;
 
-  if (userRole.role.key === ROLE_KEYS.MINISTRY_HEAD)
+    for (const add of adds) {
+      const role = roleById.get(add.roleId);
+      if (!role) {
+        return { success: false, description: `Role ${add.roleId} not found.` };
+      }
+
+      if (role.scope === "chapter" && !add.chapterId) {
+        return {
+          success: false,
+          description: `Chapter is required for ${role.name}.`,
+        };
+      }
+
+      const chapterName = add.chapterId
+        ? (chapterById.get(add.chapterId) ?? "selected chapter")
+        : null;
+
+      switch (role.key) {
+        case ROLE_KEYS.DIRECTOR_ADVISER: {
+          if (!actor.roles.includes(ROLE_KEYS.DIRECTOR_ADVISER)) {
+            return {
+              success: false,
+              title: "Unauthorized",
+              description:
+                "Only the current Director Adviser can assign this role.",
+            };
+          }
+          // Capture existing DA to deactivate them in the transaction
+          const existingDA = await prisma.userRole.findFirst({
+            where: {
+              role: { key: ROLE_KEYS.DIRECTOR_ADVISER },
+              is_active: true,
+              user_id: { not: userId },
+            },
+          });
+          if (existingDA) {
+            existingDAUserRoleId = existingDA.id;
+          }
+          break;
+        }
+
+        case ROLE_KEYS.ELDER: {
+          const alreadyHas =
+            remainingRoles.some((ur) => ur.role.key === ROLE_KEYS.ELDER) ||
+            queuedAdds.some((q) => q.roleKey === ROLE_KEYS.ELDER);
+          if (alreadyHas)
+            return {
+              success: false,
+              description: "Elder is already assigned to this user.",
+            };
+          break;
+        }
+
+        case ROLE_KEYS.MINISTRY_COORDINATOR: {
+          const alreadyHas =
+            remainingRoles.some(
+              (ur) => ur.role.key === ROLE_KEYS.MINISTRY_COORDINATOR,
+            ) ||
+            queuedAdds.some(
+              (q) => q.roleKey === ROLE_KEYS.MINISTRY_COORDINATOR,
+            );
+          if (alreadyHas)
+            return {
+              success: false,
+              description:
+                "Ministry Coordinator is already assigned to this user.",
+            };
+          break;
+        }
+
+        case ROLE_KEYS.FINANCE_HEAD: {
+          const alreadyHas =
+            remainingRoles.some(
+              (ur) => ur.role.key === ROLE_KEYS.FINANCE_HEAD,
+            ) || queuedAdds.some((q) => q.roleKey === ROLE_KEYS.FINANCE_HEAD);
+          if (alreadyHas)
+            return {
+              success: false,
+              description: "Finance Head is already assigned to this user.",
+            };
+          break;
+        }
+
+        case ROLE_KEYS.HEAD_SERVANT: {
+          // One chapter only — block if already has HS anywhere
+          const existingHS = remainingRoles.find(
+            (ur) => ur.role.key === ROLE_KEYS.HEAD_SERVANT,
+          );
+          const queuedHS = queuedAdds.find(
+            (q) => q.roleKey === ROLE_KEYS.HEAD_SERVANT,
+          );
+          if (existingHS) {
+            const c = existingHS.chapter_id
+              ? (chapterById.get(existingHS.chapter_id) ?? "another chapter")
+              : "another chapter";
+            return {
+              success: false,
+              title: "Validation Error",
+              description: `Head Servant can only be assigned to one chapter. Remove Head Servant from ${c} first.`,
+            };
+          }
+          if (queuedHS)
+            return {
+              success: false,
+              title: "Validation Error",
+              description: "Head Servant can only be assigned to one chapter.",
+            };
+
+          // Block if another user is already HS of this chapter
+          const existingChapterHS = await prisma.userRole.findFirst({
+            where: {
+              role: { key: ROLE_KEYS.HEAD_SERVANT },
+              chapter_id: add.chapterId,
+              is_active: true,
+              user_id: { not: userId },
+            },
+            include: {
+              user: { select: { first_name: true, last_name: true } },
+            },
+          });
+          if (existingChapterHS) {
+            const name = `${existingChapterHS.user.first_name} ${existingChapterHS.user.last_name}`;
+            return {
+              success: false,
+              title: "Conflict Detected",
+              description: `${chapterName} already has a Head Servant. Please remove them first.`,
+            };
+          }
+          break;
+        }
+
+        case ROLE_KEYS.ASST_HEAD_SERVANT: {
+          const sameChapter =
+            remainingRoles.find(
+              (ur) =>
+                ur.role.key === ROLE_KEYS.ASST_HEAD_SERVANT &&
+                ur.chapter_id === add.chapterId,
+            ) ||
+            queuedAdds.find(
+              (q) =>
+                q.roleKey === ROLE_KEYS.ASST_HEAD_SERVANT &&
+                q.chapterId === add.chapterId,
+            );
+          if (sameChapter)
+            return {
+              success: false,
+              description: `Asst. Head Servant is already assigned for ${chapterName}.`,
+            };
+
+          const diffChapter =
+            remainingRoles.find(
+              (ur) =>
+                ur.role.key === ROLE_KEYS.ASST_HEAD_SERVANT &&
+                ur.chapter_id !== add.chapterId,
+            ) ||
+            queuedAdds.find(
+              (q) =>
+                q.roleKey === ROLE_KEYS.ASST_HEAD_SERVANT &&
+                q.chapterId !== add.chapterId,
+            );
+          if (diffChapter)
+            return {
+              success: false,
+              description:
+                "Asst. Head Servant can only be assigned to one chapter.",
+            };
+          break;
+        }
+
+        case ROLE_KEYS.FINANCE: {
+          // Same chapter block; multiple chapters allowed
+          const sameChapter =
+            remainingRoles.find(
+              (ur) =>
+                ur.role.key === ROLE_KEYS.FINANCE &&
+                ur.chapter_id === add.chapterId,
+            ) ||
+            queuedAdds.find(
+              (q) =>
+                q.roleKey === ROLE_KEYS.FINANCE &&
+                q.chapterId === add.chapterId,
+            );
+          if (sameChapter)
+            return {
+              success: false,
+              description: `Finance is already assigned for ${chapterName}.`,
+            };
+          break;
+        }
+
+        case ROLE_KEYS.BUILDER: {
+          const sameChapter =
+            remainingRoles.find(
+              (ur) =>
+                ur.role.key === ROLE_KEYS.BUILDER &&
+                ur.chapter_id === add.chapterId,
+            ) ||
+            queuedAdds.find(
+              (q) =>
+                q.roleKey === ROLE_KEYS.BUILDER &&
+                q.chapterId === add.chapterId,
+            );
+          if (sameChapter)
+            return {
+              success: false,
+              description: `Builder is already assigned for ${chapterName}.`,
+            };
+
+          const diffChapter =
+            remainingRoles.find(
+              (ur) =>
+                ur.role.key === ROLE_KEYS.BUILDER &&
+                ur.chapter_id !== add.chapterId,
+            ) ||
+            queuedAdds.find(
+              (q) =>
+                q.roleKey === ROLE_KEYS.BUILDER &&
+                q.chapterId !== add.chapterId,
+            );
+          if (diffChapter)
+            return {
+              success: false,
+              description: "Builder can only be assigned to one chapter.",
+            };
+          break;
+        }
+
+        case ROLE_KEYS.CLUSTER_HEAD: {
+          const sameChapter =
+            remainingRoles.find(
+              (ur) =>
+                ur.role.key === ROLE_KEYS.CLUSTER_HEAD &&
+                ur.chapter_id === add.chapterId,
+            ) ||
+            queuedAdds.find(
+              (q) =>
+                q.roleKey === ROLE_KEYS.CLUSTER_HEAD &&
+                q.chapterId === add.chapterId,
+            );
+          if (sameChapter)
+            return {
+              success: false,
+              description: `Cluster Head is already assigned for ${chapterName}.`,
+            };
+
+          const diffChapter =
+            remainingRoles.find(
+              (ur) =>
+                ur.role.key === ROLE_KEYS.CLUSTER_HEAD &&
+                ur.chapter_id !== add.chapterId,
+            ) ||
+            queuedAdds.find(
+              (q) =>
+                q.roleKey === ROLE_KEYS.CLUSTER_HEAD &&
+                q.chapterId !== add.chapterId,
+            );
+          if (diffChapter)
+            return {
+              success: false,
+              description: "Cluster Head can only be assigned to one chapter.",
+            };
+          break;
+        }
+      }
+
+      queuedAdds.push({ roleKey: role.key, chapterId: add.chapterId });
+    }
+
+    // 7. Build and execute transaction
+    const now = new Date();
+    const ops: any[] = [];
+
+    if (removeIds.length > 0) {
+      ops.push(
+        prisma.userRole.updateMany({
+          where: { id: { in: removeIds }, user_id: userId, is_active: true },
+          data: { is_active: false, deactivated_at: now },
+        }),
+      );
+    }
+
+    if (existingDAUserRoleId !== null) {
+      ops.push(
+        prisma.userRole.update({
+          where: { id: existingDAUserRoleId },
+          data: { is_active: false, deactivated_at: now },
+        }),
+      );
+    }
+
+    for (const { roleId, chapterId } of adds) {
+      // Find existing record for this user-role-chapter combo (active or inactive)
+      const existingRecord = targetUser.user_roles.find(
+        (ur) => ur.role_id === roleId && ur.chapter_id === (chapterId ?? null),
+      );
+
+      if (existingRecord) {
+        ops.push(
+          prisma.userRole.update({
+            where: { id: existingRecord.id },
+            data: {
+              is_active: true,
+              deactivated_at: null,
+              assigned_by: actor.user.id,
+              assigned_at: now,
+            },
+          }),
+        );
+      } else {
+        ops.push(
+          prisma.userRole.create({
+            data: {
+              user_id: userId,
+              role_id: roleId,
+              chapter_id: chapterId,
+              assigned_by: actor.user.id,
+              is_active: true,
+            },
+          }),
+        );
+      }
+    }
+
+    if (ops.length > 0) {
+      await prisma.$transaction(ops);
+    } else if (removeIds.length === 0) {
+      return {
+        success: true,
+        title: "No Changes",
+        description: "No roles were added or removed.",
+      };
+    }
+
+    revalidatePath("/dashboard/admin/users");
     return {
-      success: false,
-      error: "Remove Ministry Head via Ministry Heads page.",
+      success: true,
+      title: "Roles Updated",
+      description: "User roles have been successfully updated.",
     };
-
-  const activeRoleCount = await prisma.userRole.count({
-    where: { user_id: userId, is_active: true },
-  });
-  const warning =
-    activeRoleCount === 1 ? "This is the user's only active role." : undefined;
-
-  try {
-    await prisma.userRole.update({
-      where: { id: userRoleId },
-      data: { is_active: false },
-    });
-
-    revalidatePath(REVALIDATE_PATH);
-    return { success: true, warning };
-  } catch {
+  } catch (error: any) {
+    console.error("[updateUserRoles] error:", error);
     return {
       success: false,
-      error: "Failed to remove role. Please try again.",
+      title: "Update Failed",
+      description: error.message || "An unexpected error occurred.",
     };
   }
 }

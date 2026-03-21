@@ -2,24 +2,58 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { requireRole, getUser } from "@/lib/auth";
+import { requireRole } from "@/lib/auth";
 import { PERMISSION_ROLES } from "@/lib/app-roles";
 import { toKey } from "@/lib/utils/slugify";
 
 const REVALIDATE_PATH = "/dashboard/admin/event-types";
 
-type EventTypeData = {
+type EventTypeForm = {
   name: string;
-  description?: string;
+  description: string;
   is_active: boolean;
 };
 
-export async function createEventType(data: EventTypeData) {
-  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
+type ActionResult = {
+  success: boolean;
+  title?: string;
+  error?: string;
+  description?: string;
+  errors?: Record<string, string>;
+};
 
-  if (!data.name.trim()) {
-    return { success: false, error: "Name is required." };
+// ------------------------------- Helpers -----------------------------------------
+
+function validateEventType(data: EventTypeForm): ActionResult | null {
+  const name = data.name.trim();
+
+  if (!name) {
+    return {
+      success: false,
+      title: "Form Incomplete",
+      description: "Please check the highlighted fields and try again.",
+      errors: {
+        name: "Name is required.",
+      },
+    };
   }
+  return null;
+}
+
+const handleActionError = (message: string): ActionResult => ({
+  success: false,
+  title: "Error",
+  description: message,
+});
+
+// ------------------------------- Actions -----------------------------------------
+
+export async function createEventType(
+  data: EventTypeForm,
+): Promise<ActionResult> {
+  const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
+  const validationError = validateEventType(data);
+  if (validationError) return validationError;
 
   try {
     const key = toKey(data.name);
@@ -30,7 +64,9 @@ export async function createEventType(data: EventTypeData) {
     if (existing) {
       return {
         success: false,
-        error: "An event type with this name already exists.",
+        title: "Already Exists",
+        description: "An event type with this name already exists.",
+        errors: { name: "An event type with this name already exists." },
       };
     }
 
@@ -45,27 +81,44 @@ export async function createEventType(data: EventTypeData) {
     });
 
     revalidatePath(REVALIDATE_PATH);
-    return { success: true };
-  } catch (e: unknown) {
     return {
-      success: false,
-      error: "Failed to create event type. Please try again.",
+      success: true,
+      title: "Event Type Created",
+      description: `"${data.name}" has been created successfully.`,
     };
+  } catch {
+    return handleActionError("Failed to create event type. Please try again.");
   }
 }
 
-export async function updateEventType(id: number, data: EventTypeData) {
+export async function updateEventType(
+  id: number,
+  data: EventTypeForm,
+): Promise<ActionResult> {
   const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
-
-  if (!data.name.trim()) {
-    return { success: false, error: "Name is required." };
-  }
+  const validationError = validateEventType(data);
+  if (validationError) return validationError;
 
   try {
+    const key = toKey(data.name);
+    const existing = await prisma.eventType.findFirst({
+      where: { key, id: { not: id }, deleted_at: null },
+    });
+
+    if (existing) {
+      return {
+        success: false,
+        title: "Already Exists",
+        description: "An event type with this name already exists.",
+        errors: { name: "An event type with this name already exists." },
+      };
+    }
+
     await prisma.eventType.update({
       where: { id },
       data: {
         name: data.name.trim(),
+        key,
         description: data.description?.trim() || null,
         is_active: data.is_active,
         updated_by: currentUser.user.id,
@@ -73,20 +126,20 @@ export async function updateEventType(id: number, data: EventTypeData) {
     });
 
     revalidatePath(REVALIDATE_PATH);
-    return { success: true };
-  } catch {
     return {
-      success: false,
-      error: "Failed to update event type. Please try again.",
+      success: true,
+      title: "Event Type Updated",
+      description: `"${data.name}" has been updated successfully.`,
     };
+  } catch {
+    return handleActionError("Failed to update event type. Please try again.");
   }
 }
 
-export async function deleteEventType(id: number) {
+export async function deleteEventType(id: number): Promise<ActionResult> {
   const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   try {
-    // Check if event type is being used by any events
     const eventCount = await prisma.event.count({
       where: { event_type_id: id },
     });
@@ -94,7 +147,8 @@ export async function deleteEventType(id: number) {
     if (eventCount > 0) {
       return {
         success: false,
-        error: `Cannot delete event type. it is currently being used by ${eventCount} event(s).`,
+        title: "Deletion Prevented",
+        description: `This event type is currently being used by ${eventCount} event(s).`,
       };
     }
 
@@ -107,11 +161,12 @@ export async function deleteEventType(id: number) {
     });
 
     revalidatePath(REVALIDATE_PATH);
-    return { success: true };
-  } catch {
     return {
-      success: false,
-      error: "Failed to delete event type. Please try again.",
+      success: true,
+      title: "Event Type Deleted",
+      description: "Event type has been removed successfully.",
     };
+  } catch {
+    return handleActionError("Failed to delete event type. Please try again.");
   }
 }

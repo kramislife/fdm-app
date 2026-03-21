@@ -23,6 +23,8 @@ import { ReferenceTypeClient } from "@/components/admin/reference-type-client";
 import { ChapterAddressForm } from "@/components/admin/chapter-address-form";
 import { createChapter, updateChapter, deleteChapter } from "./actions";
 
+// ------------------------------- Constants --------------------------------------
+
 const DAYS_OF_WEEK = [
   "Monday",
   "Tuesday",
@@ -31,6 +33,22 @@ const DAYS_OF_WEEK = [
   "Friday",
   "Saturday",
 ];
+
+const FIELD_LABELS = {
+  name: "Chapter",
+  region: "Region",
+  province: "Province",
+  city: "City",
+  barangay: "Barangay",
+  street: "Street Address",
+  gmaps: "Address Link",
+  landmark: "Landmark",
+  fellowship_day: "Schedule",
+  status: "Status",
+  members: "Members",
+};
+
+// ------------------------------- Types -----------------------------------------
 
 export type ChapterRow = {
   id: number;
@@ -78,33 +96,18 @@ const EMPTY_FORM: ChapterForm = {
   is_active: true,
 };
 
-const FIELD_LABELS = {
-  name: "Chapter",
-  region: "Region",
-  province: "Province",
-  city: "City",
-  barangay: "Barangay",
-  street: "Street Address",
-  gmaps: "Address Link",
-  landmark: "Landmark",
-  fellowship_day: "Schedule",
-  status: "Status",
-  members: "Members",
-};
-
 const columns: Column[] = [
   { key: "name", label: FIELD_LABELS.name, sortable: true },
   {
     key: "street",
     label: FIELD_LABELS.street,
-    maxWidth: "500px",
+    maxWidth: "400px",
     sortable: true,
   },
   { key: "gmaps", label: FIELD_LABELS.gmaps, maxWidth: "300px" },
   {
     key: "fellowship_day",
     label: FIELD_LABELS.fellowship_day,
-    align: "center",
     sortable: true,
   },
   {
@@ -116,20 +119,34 @@ const columns: Column[] = [
   { key: "actions", label: "Actions", align: "center" },
 ];
 
+// ------------------------------- Component --------------------------------------
+
 type Props = {
   chapters: ChapterRow[];
   pagination: Pagination;
 };
 
 export function ChaptersClient({ chapters, pagination }: Props) {
+  function validate(form: ChapterForm) {
+    const errors: Record<string, string | undefined> = {};
+    if (!form.name.trim()) errors.name = "Chapter name is required";
+    if (!form.fellowship_day) errors.fellowship_day = "Schedule is required";
+    if (!form.region) errors.region = "Region is required";
+    if (!form.province) errors.province = "Province is required";
+    if (!form.city) errors.city = "City is required";
+    if (!form.barangay) errors.barangay = "Barangay is required";
+    return errors;
+  }
+
   return (
-    <ReferenceTypeClient
+    <ReferenceTypeClient<ChapterRow, ChapterForm>
       entityLabel="Chapter"
       pageTitle="Chapter Management"
       pageDescription="View and manage all community chapters"
       rows={chapters}
       pagination={pagination}
       columns={columns}
+      // ----------------------------- Row Rendering -----------------------------
       renderRow={(row) => ({
         name: <TextCell value={row.name} capitalize />,
         street: <TextCell value={row.street} />,
@@ -138,6 +155,7 @@ export function ChaptersClient({ chapters, pagination }: Props) {
         members: <TextCell value={row.member_count} />,
         status: <StatusBadge isActive={row.is_active} />,
       })}
+      // ----------------------------- Detail View -------------------------------
       renderDetail={(row) => (
         <>
           <DetailSection>
@@ -190,6 +208,7 @@ export function ChaptersClient({ chapters, pagination }: Props) {
           />
         </>
       )}
+      // ----------------------------- Form Handling -----------------------------
       initialForm={EMPTY_FORM}
       getFormFromRow={(row) => ({
         name: row.name,
@@ -207,18 +226,19 @@ export function ChaptersClient({ chapters, pagination }: Props) {
         fellowship_day: row.fellowship_day ?? "",
         is_active: row.is_active,
       })}
-      renderForm={(form, setForm) => (
+      validate={validate}
+      renderForm={(form, setForm, _isEditing, errors, _initialValues) => (
         <div className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-y-5 gap-x-2">
             <FormInput
               label={FIELD_LABELS.name}
               id="ch-name"
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              error={errors.name}
               wrapperClassName="col-span-1 md:col-span-2"
               required
             />
-
             <FormSelect
               label={FIELD_LABELS.fellowship_day}
               id="ch-fellowship-day"
@@ -230,6 +250,7 @@ export function ChaptersClient({ chapters, pagination }: Props) {
                 value: day,
                 label: day,
               }))}
+              error={errors.fellowship_day}
               wrapperClassName="col-span-1"
               required
             />
@@ -239,8 +260,8 @@ export function ChaptersClient({ chapters, pagination }: Props) {
             labels={FIELD_LABELS}
             value={form}
             onChange={(address) => setForm((f) => ({ ...f, ...address }))}
+            errors={errors}
           />
-
           <FormSwitch
             label={FIELD_LABELS.status}
             id="ch-status"
@@ -251,6 +272,7 @@ export function ChaptersClient({ chapters, pagination }: Props) {
           />
         </div>
       )}
+      // ----------------------------- Server Actions ---------------------------
       onCreate={createChapter}
       onUpdate={updateChapter}
       onDelete={deleteChapter}

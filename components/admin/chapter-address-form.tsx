@@ -8,12 +8,14 @@ interface ChapterAddressFormProps {
   labels: AddressLabels;
   value: AddressValue;
   onChange: (value: AddressValue) => void;
+  errors?: Record<string, string | undefined>;
 }
 
 export function ChapterAddressForm({
   labels,
   value,
   onChange,
+  errors = {},
 }: ChapterAddressFormProps) {
   const {
     regionList,
@@ -35,7 +37,7 @@ export function ChapterAddressForm({
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-5 gap-x-2">
         {/* Region */}
         <FormSelect
           label={labels.region}
@@ -46,6 +48,7 @@ export function ChapterAddressForm({
             value: r.region_code,
             label: r.region_name,
           }))}
+          error={errors.region}
           required
         />
 
@@ -62,6 +65,7 @@ export function ChapterAddressForm({
             value: p.province_code,
             label: p.province_name,
           }))}
+          error={errors.province}
           disabled={!provinceList.length}
           required
         />
@@ -79,6 +83,7 @@ export function ChapterAddressForm({
             value: c.city_code,
             label: c.city_name,
           }))}
+          error={errors.city}
           disabled={!provinceCode}
           required
         />
@@ -96,6 +101,7 @@ export function ChapterAddressForm({
             value: b.brgy_code,
             label: b.brgy_name,
           }))}
+          error={errors.barangay}
           disabled={!cityCode}
           required
         />
@@ -107,6 +113,7 @@ export function ChapterAddressForm({
           id="ch-street"
           value={value.street}
           onChange={(e) => handleStreetChange(e.target.value)}
+          error={errors.street}
           optional
         />
 
@@ -115,6 +122,7 @@ export function ChapterAddressForm({
           id="ch-gmaps"
           value={value.google_maps_url}
           onChange={(e) => handleMapsUrlChange(e.target.value)}
+          error={errors.google_maps_url}
           optional
         />
 
@@ -123,6 +131,7 @@ export function ChapterAddressForm({
           id="ch-landmark"
           value={value.landmark}
           onChange={(e) => handleLandmarkChange(e.target.value)}
+          error={errors.landmark}
           optional
         />
       </div>

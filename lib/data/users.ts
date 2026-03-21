@@ -5,7 +5,6 @@ import {
   buildPaginationMeta,
   type TableParams,
 } from "@/lib/table";
-import { USER_STATUS } from "@/lib/status";
 
 const ORDER_FIELDS: Record<string, string> = {
   name: "first_name",
@@ -22,8 +21,7 @@ export async function getUsers(params: TableParams = {}) {
   } = params;
 
   const baseWhere = {
-    status: { not: USER_STATUS.GUEST },
-    deleted_at: null,
+    account_status: { not: "guest" },
   };
 
   const where = search
@@ -70,10 +68,15 @@ export async function getUsers(params: TableParams = {}) {
         contact_number: true,
         birthday: true,
         address: true,
-        status: true,
+        account_status: true,
         photo_url: true,
+        has_qr: true,
+        member_qr: true,
+        deactivated_at: true,
         created_at: true,
+        creator: { select: { first_name: true, last_name: true } },
         updated_at: true,
+        updated_by_user: { select: { first_name: true, last_name: true } },
 
         // primary chapter via user_chapters
         user_chapters: {

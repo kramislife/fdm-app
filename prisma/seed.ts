@@ -2,7 +2,7 @@ import { PrismaClient } from "../lib/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { config } from "dotenv";
-import { USER_STATUS } from "../lib/status";
+import { ACCOUNT_STATUS } from "../lib/status";
 
 config({ path: ".env.local" });
 
@@ -19,14 +19,14 @@ async function main() {
   console.log("→ Roles...");
   const roles = await Promise.all([
     prisma.role.upsert({
-      where: { key: "spiritual_director" },
+      where: { key: "director_adviser" },
       update: {},
       create: {
-        key: "spiritual_director",
-        name: "Spiritual Director",
+        key: "director_adviser",
+        name: "Director Adviser",
         scope: "global",
         description:
-          "Overall spiritual leader of the FDM community. Full access across all chapters.",
+          "Overall director adviser of the FDM community. Full access across all chapters.",
       },
     }),
     prisma.role.upsert({
@@ -92,6 +92,17 @@ async function main() {
         scope: "chapter",
         description:
           "Leads a cluster. Reports enthronements to their Builder verbally.",
+      },
+    }),
+    prisma.role.upsert({
+      where: { key: "finance_head" },
+      update: {},
+      create: {
+        key: "finance_head",
+        name: "Finance Head",
+        scope: "global",
+        description:
+          "Oversees all chapter finance records. Full access to finance module across all chapters.",
       },
     }),
     prisma.role.upsert({
@@ -531,13 +542,13 @@ async function main() {
         last_name: user.last_name,
         email: user.email,
         contact_number: user.contact_number,
-        status: USER_STATUS.ACTIVE,
+        account_status: ACCOUNT_STATUS.ACTIVE,
       },
     });
     createdUsers[user.email] = created;
   }
 
-  const sd = createdUsers["jose.reyes@fdm.org"];
+  const da = createdUsers["jose.reyes@fdm.org"];
   const elder = createdUsers["ramon.santos@fdm.org"];
   const qcHS = createdUsers["maria.delacruz@fdm.org"];
   const qcAHS = createdUsers["jose.bautista@fdm.org"];
@@ -560,7 +571,7 @@ async function main() {
   // ============================================================
   console.log("→ User chapters...");
   const userChapterAssignments: { user: { id: number }; chapter: string }[] = [
-    { user: sd, chapter: "Quezon City" },
+    { user: da, chapter: "Quezon City" },
     { user: elder, chapter: "Quezon City" },
     { user: qcHS, chapter: "Quezon City" },
     { user: qcAHS, chapter: "Quezon City" },
@@ -607,8 +618,8 @@ async function main() {
     cluster_id: number | undefined;
   }[] = [
     {
-      user: sd,
-      role: "spiritual_director",
+      user: da,
+      role: "director_adviser",
       chapter_id: undefined,
       cluster_id: undefined,
     },
@@ -728,7 +739,7 @@ async function main() {
         chapter_id: a.chapter_id,
         ministry_head_id: undefined,
         cluster_id: a.cluster_id,
-        assigned_by: sd.id,
+        assigned_by: da.id,
         is_active: true,
       },
     });
@@ -801,7 +812,7 @@ async function main() {
       event_date: new Date("2026-03-08"),
       event_time: new Date("1970-01-01T09:00:00"),
       is_raffle_event: true,
-      created_by: sd.id,
+      created_by: da.id,
     },
   });
 
@@ -814,7 +825,7 @@ async function main() {
       event_date: new Date("2026-02-08"),
       event_time: new Date("1970-01-01T09:00:00"),
       is_raffle_event: false,
-      created_by: sd.id,
+      created_by: da.id,
     },
   });
 
@@ -855,7 +866,7 @@ async function main() {
       event_date: new Date("2026-04-05"),
       event_time: new Date("1970-01-01T10:00:00"),
       is_raffle_event: false,
-      created_by: sd.id,
+      created_by: da.id,
     },
   });
 
@@ -1063,7 +1074,7 @@ async function main() {
         title: "Rays of Mercy — March 2026",
         content:
           "Join us for this month's Rays of Mercy on March 8, 2026 at 9:00 AM. All chapters are invited. Raffle draw at 12:00 PM.",
-        posted_by: sd.id,
+        posted_by: da.id,
         type: "event",
         is_published: true,
         published_at: new Date("2026-03-01"),
@@ -1092,7 +1103,7 @@ async function main() {
         title: "Welcome New Members — March 2026",
         content:
           "Please welcome our new members who joined this month across all chapters. May they find a home in our community.",
-        posted_by: sd.id,
+        posted_by: da.id,
         type: "announcement",
         is_published: false,
       },

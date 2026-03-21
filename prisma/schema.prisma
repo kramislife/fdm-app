@@ -61,9 +61,9 @@ model MinistryType {
   deleted_at DateTime?
   deleted_by Int?
 
-  creator         User?      @relation("MinistryTypeCreator", fields: [created_by], references: [id])
-  updated_by_user User?      @relation("MinistryTypeUpdatedBy", fields: [updated_by], references: [id])
-  deleted_by_user User?      @relation("MinistryTypeDeletedBy", fields: [deleted_by], references: [id])
+  creator         User?          @relation("MinistryTypeCreator", fields: [created_by], references: [id])
+  updated_by_user User?          @relation("MinistryTypeUpdatedBy", fields: [updated_by], references: [id])
+  deleted_by_user User?          @relation("MinistryTypeDeletedBy", fields: [deleted_by], references: [id])
   ministry_heads  MinistryHead[]
 
   @@index([created_at])
@@ -100,34 +100,38 @@ model EventType {
 // ============================================================
 
 model User {
-  id             Int       @id @default(autoincrement())
-  auth_id        String?   @unique @db.VarChar(255)
-  first_name     String    @db.VarChar(100)
-  last_name      String    @db.VarChar(100)
-  email          String?   @unique @db.VarChar(255)
-  contact_number String?   @db.VarChar(20)
-  status         String    @default("guest") @db.VarChar(20)
-  birthday       DateTime? @db.Date
-  address        String?
-  photo_url      String?   @db.VarChar(500)
-  member_qr      String?   @db.VarChar(500)
+  id                   Int       @id @default(autoincrement())
+  auth_id              String?   @unique @db.VarChar(255)
+  first_name           String    @db.VarChar(100)
+  last_name            String    @db.VarChar(100)
+  email                String?   @unique @db.VarChar(255)
+  contact_number       String?   @db.VarChar(20)
+  account_status       String    @default("pending") @db.VarChar(20)
+  birthday             DateTime? @db.Date
+  address              String?
+  photo_url            String?   @db.VarChar(500)
+  has_qr               Boolean   @default(false)
+  member_qr            String?   @db.VarChar(500)
+  qr_generated_at      DateTime?
+  qr_regenerated_count Int       @default(0)
 
-  is_temp_password         Boolean   @default(false)
-  account_expires_at       DateTime?
-  created_by_admin         Int?
+  is_temp_password Boolean  @default(false)
+  created_at       DateTime @default(now())
+  created_by       Int?
+  updated_at       DateTime @updatedAt
+  updated_by       Int?
+
+  deactivated_at           DateTime?
+  deactivated_by           Int?
   activation_email_sent_at DateTime?
   activation_email_resent  Int       @default(0)
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  deleted_at DateTime?
-  deleted_by Int?
-
-  created_by_admin_user User?  @relation("AdminCreated", fields: [created_by_admin], references: [id])
-  provisioned_users     User[] @relation("AdminCreated")
-  deleted_by_user       User?  @relation("UserDeletedBy", fields: [deleted_by], references: [id])
-  users_deleted         User[] @relation("UserDeletedBy")
+  creator           User?  @relation("UserCreatedBy", fields: [created_by], references: [id])
+  users_created     User[] @relation("UserCreatedBy")
+  users_updated     User[] @relation("UserUpdatedBy")
+  updated_by_user   User?  @relation("UserUpdatedBy", fields: [updated_by], references: [id])
+  deactivator       User?  @relation("UserDeactivator", fields: [deactivated_by], references: [id])
+  deactivated_users User[] @relation("UserDeactivator")
 
   user_roles       UserRole[]       @relation("UserRoles")
   assigned_roles   UserRole[]       @relation("AssignedBy")
@@ -219,7 +223,7 @@ model Chapter {
 }
 
 model MinistryHead {
-  id               Int       @id @default(autoincrement())
+  id               Int @id @default(autoincrement())
   chapter_id       Int
   ministry_type_id Int
 
@@ -311,22 +315,23 @@ model Event {
 // ============================================================
 
 model UserRole {
-  id          Int      @id @default(autoincrement())
-  user_id     Int
-  role_id     Int
-  chapter_id  Int?
+  id               Int       @id @default(autoincrement())
+  user_id          Int
+  role_id          Int
+  chapter_id       Int?
   ministry_head_id Int?
-  cluster_id  Int?
-  assigned_by Int
-  assigned_at DateTime @default(now())
-  is_active   Boolean  @default(true)
+  cluster_id       Int?
+  assigned_by      Int?
+  assigned_at      DateTime  @default(now())
+  is_active        Boolean   @default(true)
+  deactivated_at   DateTime?
 
-  user     User      @relation("UserRoles", fields: [user_id], references: [id])
-  role     Role      @relation(fields: [role_id], references: [id])
+  user     User          @relation("UserRoles", fields: [user_id], references: [id])
+  role     Role          @relation(fields: [role_id], references: [id])
   chapter  Chapter?      @relation(fields: [chapter_id], references: [id])
   ministry MinistryHead? @relation(fields: [ministry_head_id], references: [id])
-  cluster  Cluster?  @relation(fields: [cluster_id], references: [id])
-  assigner User      @relation("AssignedBy", fields: [assigned_by], references: [id])
+  cluster  Cluster?      @relation(fields: [cluster_id], references: [id])
+  assigner User?         @relation("AssignedBy", fields: [assigned_by], references: [id])
 
   @@unique([user_id, role_id, chapter_id, ministry_head_id, cluster_id])
   @@index([user_id, is_active])

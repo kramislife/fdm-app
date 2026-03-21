@@ -25,6 +25,8 @@ import {
   deleteMinistryType,
 } from "./actions";
 
+// ------------------------------- Types -----------------------------------------
+
 export type MinistryTypeRow = {
   id: number;
   name: string;
@@ -42,10 +44,18 @@ type MinistryTypeForm = {
   is_active: boolean;
 };
 
+// ------------------------------- Constants --------------------------------------
+
 const FIELD_LABELS = {
   name: "Ministry Type",
   description: "Description",
   status: "Status",
+};
+
+const EMPTY_FORM: MinistryTypeForm = {
+  name: "",
+  description: "",
+  is_active: true,
 };
 
 const columns: Column[] = [
@@ -57,11 +67,7 @@ const columns: Column[] = [
   { key: "actions", label: "Actions", align: "center" },
 ];
 
-const EMPTY_FORM: MinistryTypeForm = {
-  name: "",
-  description: "",
-  is_active: true,
-};
+// ------------------------------- Component --------------------------------------
 
 type Props = {
   ministryTypes: MinistryTypeRow[];
@@ -69,14 +75,21 @@ type Props = {
 };
 
 export function MinistryTypesClient({ ministryTypes, pagination }: Props) {
+  function validate(form: MinistryTypeForm) {
+    const errors: Record<string, string | undefined> = {};
+    if (!form.name.trim()) errors.name = "Ministry Type is required";
+    return errors;
+  }
+
   return (
-    <ReferenceTypeClient
+    <ReferenceTypeClient<MinistryTypeRow, MinistryTypeForm>
       entityLabel="Ministry Type"
       pageTitle="Ministry Types"
       pageDescription="View and manage all types of ministries"
       rows={ministryTypes}
       pagination={pagination}
       columns={columns}
+      // ----------------------------- Row Rendering -----------------------------
       renderRow={(row) => ({
         name: <TextCell value={row.name} />,
         description: <TextCell value={row.description} />,
@@ -84,6 +97,7 @@ export function MinistryTypesClient({ ministryTypes, pagination }: Props) {
         created_by: <UserCell user={row.creator} />,
         created_at: <DateCell date={row.created_at} />,
       })}
+      // ----------------------------- Detail View -------------------------------
       renderDetail={(row) => (
         <>
           <DetailSection>
@@ -106,19 +120,22 @@ export function MinistryTypesClient({ ministryTypes, pagination }: Props) {
           />
         </>
       )}
+      // ----------------------------- Form Handling -----------------------------
       initialForm={EMPTY_FORM}
       getFormFromRow={(row) => ({
         name: row.name,
         description: row.description ?? "",
         is_active: row.is_active,
       })}
-      renderForm={(form, setForm) => (
+      validate={validate}
+      renderForm={(form, setForm, _isEditing, errors, _initialValues) => (
         <div className="space-y-5">
           <FormInput
             label={FIELD_LABELS.name}
             id="mt-name"
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+            error={errors.name}
             required
           />
 
@@ -129,6 +146,7 @@ export function MinistryTypesClient({ ministryTypes, pagination }: Props) {
             onChange={(e) =>
               setForm((f) => ({ ...f, description: e.target.value }))
             }
+            error={errors.description}
           />
 
           <FormSwitch
@@ -139,6 +157,7 @@ export function MinistryTypesClient({ ministryTypes, pagination }: Props) {
           />
         </div>
       )}
+      // ----------------------------- Server Actions ---------------------------
       onCreate={createMinistryType}
       onUpdate={updateMinistryType}
       onDelete={deleteMinistryType}

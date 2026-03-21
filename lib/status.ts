@@ -1,28 +1,22 @@
-export const USER_STATUS = {
-  GUEST: "guest",
+export const ACCOUNT_STATUS = {
   PENDING: "pending",
   REGISTERED: "registered",
   ACTIVE: "active",
-  INACTIVE: "inactive",
 } as const;
 
-export type UserStatus = (typeof USER_STATUS)[keyof typeof USER_STATUS];
+export type AccountStatus =
+  (typeof ACCOUNT_STATUS)[keyof typeof ACCOUNT_STATUS];
 
-export const USER_STATUS_VALUES = Object.values(USER_STATUS) as UserStatus[];
+export const ACCOUNT_STATUS_VALUES = Object.values(
+  ACCOUNT_STATUS,
+) as AccountStatus[];
 
-export const USER_STATUS_LABELS: Record<UserStatus, string> = {
-  [USER_STATUS.GUEST]: "Guest",
-  [USER_STATUS.PENDING]: "Pending",
-  [USER_STATUS.REGISTERED]: "Registered",
-  [USER_STATUS.ACTIVE]: "Active",
-  [USER_STATUS.INACTIVE]: "Inactive",
+export const ACCOUNT_STATUS_LABELS: Record<AccountStatus, string> = {
+  [ACCOUNT_STATUS.PENDING]: "Pending",
+  [ACCOUNT_STATUS.REGISTERED]: "Registered",
+  [ACCOUNT_STATUS.ACTIVE]: "Active",
 };
 
-export const ACTIVE_STATE_LABELS = {
-  ACTIVE: "Active",
-  INACTIVE: "Inactive",
-} as const;
-
-export function isUserStatus(value: string): value is UserStatus {
-  return USER_STATUS_VALUES.includes(value as UserStatus);
+export function isAccountStatus(value: string): value is AccountStatus {
+  return ACCOUNT_STATUS_VALUES.includes(value as AccountStatus);
 }

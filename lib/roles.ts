@@ -37,7 +37,7 @@ export const getUserWithRole = cache(async (authId: string) => {
     },
   });
 
-  if (!user) return null;
+  if (!user || user.deactivated_at) return null;
 
   const roles = user.user_roles.map((ur) => ur.role.key as RoleKey);
   const chapter = user.user_chapters[0]?.chapter ?? null;

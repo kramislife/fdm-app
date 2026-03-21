@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
-import { USER_STATUS } from "@/lib/status";
+import { ACCOUNT_STATUS } from "@/lib/status";
 import crypto from "node:crypto";
 
 export type SetPasswordState = {
@@ -68,10 +68,10 @@ export async function setPasswordAction(
       where: { id: dbUser.id },
       data: {
         auth_id: user.id,
-        status: USER_STATUS.REGISTERED,
+        account_status: ACCOUNT_STATUS.REGISTERED,
         is_temp_password: false,
-        account_expires_at: null,
-        member_qr: crypto.randomUUID(),
+        has_qr: false,
+        member_qr: null,
       },
     });
 

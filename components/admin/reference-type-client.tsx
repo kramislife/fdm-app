@@ -16,8 +16,18 @@ import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 import type { Column } from "./data-table";
 import type { Pagination } from "@/lib/table";
 
+// ------------------------------- Types -----------------------------------------
+
 type BaseRow = { id: number; name: string };
-type ActionResult = { success: boolean; error?: string; description?: string };
+
+type ActionResult = {
+  success: boolean;
+  title?: string;
+  error?: string;
+  description?: string;
+  errors?: Record<string, string>;
+  warning?: string;
+};
 
 export type ConfirmRowAction<TRow extends BaseRow> = {
   label: string;
@@ -49,10 +59,14 @@ export type ReferenceTypeClientProps<TRow extends BaseRow, TForm = {}> = {
     form: TForm,
     setForm: Dispatch<SetStateAction<TForm>>,
     isEditing: boolean,
+    errors: Record<string, string | undefined>,
+    initialValues: TForm,
   ) => ReactNode;
+  validate?: (form: TForm) => Record<string, string | undefined>;
   onCreate?: (data: TForm) => Promise<ActionResult>;
   onUpdate?: (id: number, data: TForm) => Promise<ActionResult>;
   onDelete?: (id: number) => Promise<ActionResult>;
+  canDelete?: (row: TRow) => boolean;
   extraRowActions?: (row: TRow) => ExtraAction[];
   confirmRowActions?: ConfirmRowAction<TRow>[];
 };
@@ -72,18 +86,21 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
     getFormFromRow,
     renderForm,
     renderDetail,
+    validate,
     onCreate,
     onUpdate,
     onDelete,
+    canDelete,
     extraRowActions,
     confirmRowActions,
   } = props;
+
+  // ------------------------------- State -----------------------------------------
+
   const [viewing, setViewing] = useState<TRow | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [editing, setEditing] = useState<TRow | null>(null);
   const [deleting, setDeleting] = useState<TRow | null>(null);
-  // Tracks edit vs add mode separately so the sheet title/description doesn't
-  // flicker to "Add" while the close animation is still running.
   const [isEditMode, setIsEditMode] = useState(false);
   const [confirmingAction, setConfirmingAction] = useState<{
     row: TRow;
@@ -91,19 +108,22 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
   } | null>(null);
 
   const [form, setForm] = useState<TForm>(initialForm ?? ({} as TForm));
+  const [initialValues, setInitialValues] = useState<TForm>(
+    initialForm ?? ({} as TForm),
+  );
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({});
+
   const [isPending, startTransition] = useTransition();
   const [isDeleting, startDeleteTransition] = useTransition();
   const [isConfirming, startConfirmTransition] = useTransition();
 
   const isSheetOpen = isAdding || !!editing;
-
-  const sheetTitle = isEditMode
-    ? `Edit ${entityLabel}`
-    : `Add ${entityLabel}`;
-
+  const sheetTitle = isEditMode ? `Edit ${entityLabel}` : `Add ${entityLabel}`;
   const sheetDescription = isEditMode
     ? `Update the details and settings for this ${entityLabel.toLowerCase()}`
     : `Fill in the details to create a new ${entityLabel.toLowerCase()}`;
+
+  // ------------------------------- Handlers: Navigation ---------------------------
 
   function openView(row: TRow) {
     setViewing(row);
@@ -117,6 +137,8 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
     if (!initialForm || !onCreate) return;
     setIsEditMode(false);
     setForm(initialForm);
+    setInitialValues(initialForm);
+    setErrors({});
     setIsAdding(true);
   }
 
@@ -125,17 +147,31 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
     setViewing(null);
     setIsEditMode(true);
     setEditing(row);
-    setForm(getFormFromRow(row));
+    const initialData = getFormFromRow(row);
+    setForm(initialData);
+    setInitialValues(initialData);
+    setErrors({});
   }
 
   function closeSheet() {
     setIsAdding(false);
     setEditing(null);
-    // isEditMode intentionally not reset here — prevents title flicker during close animation
+    setErrors({});
   }
+
+  // ------------------------------- Handlers: Actions -----------------------------
 
   function handleSubmit() {
     const isEditing = !!editing;
+
+    if (validate) {
+      const fieldErrors = validate(form);
+      const hasErrors = Object.values(fieldErrors).some(Boolean);
+      if (hasErrors) {
+        setErrors(fieldErrors);
+        return;
+      }
+    }
 
     startTransition(async () => {
       const result = editing
@@ -145,17 +181,25 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
       if (!result) return;
 
       if (result.success) {
-        toast.success(isEditing ? "Changes saved!" : "All set!", {
-          description:
-            result.description ??
-            (isEditing
-              ? `${entityLabel} has been updated successfully.`
-              : `${entityLabel} has been created and is ready to use.`),
-        });
+        toast.success(
+          result.title ?? (isEditing ? "Changes saved!" : "All set!"),
+          {
+            description:
+              result.description ??
+              (isEditing
+                ? `${entityLabel} has been updated successfully.`
+                : `${entityLabel} has been created and is ready to use.`),
+          },
+        );
+        if (result.warning) {
+          toast.warning("Note", { description: result.warning });
+        }
         closeSheet();
       } else {
-        toast.error("Something went wrong", {
+        if (result.errors) setErrors(result.errors);
+        toast.error(result.title ?? "Something went wrong", {
           description:
+            result.error ??
             result.description ??
             `We couldn't save the ${entityLabel.toLowerCase()}. Please try again.`,
         });
@@ -170,12 +214,12 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
       const result = await onDelete(deleting.id);
 
       if (result.success) {
-        toast.success("Deleted successfully", {
+        toast.success(result.title ?? "Deleted successfully", {
           description: result.description ?? `${entityLabel} has been removed.`,
         });
         setDeleting(null);
       } else {
-        toast.error("Couldn't delete", {
+        toast.error(result.title ?? "Couldn't delete", {
           description:
             result.error ??
             result.description ??
@@ -193,17 +237,19 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
       const result = await def.action(row.id);
 
       if (result.success) {
-        toast.success(def.successTitle ?? "Done!", {
+        toast.success(result.title ?? def.successTitle ?? "Done!", {
           description: result.description ?? def.successDescription?.(row),
         });
         setConfirmingAction(null);
       } else {
-        toast.error("Something went wrong", {
+        toast.error(result.title ?? "Something went wrong", {
           description: result.error ?? result.description,
         });
       }
     });
   }
+
+  // ------------------------------- Data Processing ---------------------------------
 
   const data = rows.map((row) => {
     const confirmItems: ExtraAction[] = (confirmRowActions ?? [])
@@ -220,12 +266,18 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
         <RowActionMenu
           onViewDetails={renderDetail ? () => openView(row) : undefined}
           onEdit={onUpdate ? () => openEdit(row) : undefined}
-          onDelete={onDelete ? () => setDeleting(row) : undefined}
+          onDelete={
+            onDelete && (!canDelete || canDelete(row))
+              ? () => setDeleting(row)
+              : undefined
+          }
           extraItems={[...(extraRowActions?.(row) ?? []), ...confirmItems]}
         />
       ),
     };
   });
+
+  // ------------------------------- Render -----------------------------------------
 
   return (
     <>
@@ -265,7 +317,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
           isSubmitting={isPending}
           submitLabel={isEditMode ? "Update" : "Save"}
         >
-          {renderForm(form, setForm, isEditMode)}
+          {renderForm(form, setForm, isEditMode, errors, initialValues)}
         </AdminSheet>
       )}
 

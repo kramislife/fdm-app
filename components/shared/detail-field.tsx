@@ -39,7 +39,9 @@ export function DetailField({
     <div
       className={cn("space-y-2", fullWidth ? "w-full" : "min-w-50", className)}
     >
-      <Label htmlFor={label} className="font-bold">{label}</Label>
+      <Label htmlFor={label} className="font-bold">
+        {label}
+      </Label>
       <div className={cn("text-sm", contentClassName)}>{children}</div>
     </div>
   );
@@ -53,6 +55,7 @@ interface DetailMetaProps {
   updatedAt?: string | null;
   createdBy?: { first_name: string; last_name: string } | null;
   updatedBy?: { first_name: string; last_name: string } | null;
+  children?: ReactNode;
 }
 
 export function DetailMeta({
@@ -61,6 +64,7 @@ export function DetailMeta({
   updatedAt,
   createdBy,
   updatedBy,
+  children,
 }: DetailMetaProps) {
   return (
     <DetailSection className="pt-5 border-t gap-5">
@@ -78,6 +82,7 @@ export function DetailMeta({
         >
           <DateCell date={createdAt} />
         </DetailField>
+
         {createdBy && (
           <DetailField
             label="Created By"
@@ -95,6 +100,7 @@ export function DetailMeta({
             <DateCell date={updatedAt} />
           </DetailField>
         )}
+
         {updatedBy && (
           <DetailField
             label="Updated By"
@@ -103,6 +109,8 @@ export function DetailMeta({
             <UserCell user={updatedBy} />
           </DetailField>
         )}
+
+        {children}
       </div>
     </DetailSection>
   );

@@ -26,9 +26,9 @@ export default async function RolesPage({ searchParams }: PageProps) {
     description: role.description ?? null,
     is_active: role.is_active,
     creator: role.creator ?? null,
-    updated_by: role.updated_by_user ?? null,
     created_at: role.created_at.toISOString(),
     updated_at: role.updated_at.toISOString(),
+    updated_by: role.updated_by_user ?? null,
   }));
 
   return <RolesClient roles={roles} pagination={toPagination(result)} />;

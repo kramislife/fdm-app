@@ -6,10 +6,9 @@ import {
   formatName,
 } from "@/lib/format";
 import {
-  ACTIVE_STATE_LABELS,
-  USER_STATUS,
-  USER_STATUS_LABELS,
-  isUserStatus,
+  ACCOUNT_STATUS,
+  ACCOUNT_STATUS_LABELS,
+  isAccountStatus,
 } from "@/lib/status";
 
 // ------------------------------- Status Badge -----------------------------------------
@@ -21,13 +20,13 @@ interface StatusBadgeProps {
 
 export function StatusBadge({
   isActive,
-  activeLabel = ACTIVE_STATE_LABELS.ACTIVE,
-  inactiveLabel = ACTIVE_STATE_LABELS.INACTIVE,
+  activeLabel = "Active",
+  inactiveLabel = "Inactive",
 }: StatusBadgeProps) {
   return isActive ? (
     <Badge variant="success">{activeLabel}</Badge>
   ) : (
-    <Badge variant="secondary">{inactiveLabel}</Badge>
+    <Badge variant="error">{inactiveLabel}</Badge>
   );
 }
 
@@ -37,17 +36,14 @@ interface UserStatusBadgeProps {
 }
 
 export function UserStatusBadge({ status }: UserStatusBadgeProps) {
-  let variant: "secondary" | "outline" | "default" | "success" | "destructive" =
-    "secondary";
+  let variant: "secondary" | "error" | "info" | "success" = "secondary";
 
-  if (status === USER_STATUS.GUEST) variant = "secondary";
-  else if (status === USER_STATUS.PENDING) variant = "outline";
-  else if (status === USER_STATUS.REGISTERED) variant = "default";
-  else if (status === USER_STATUS.ACTIVE) variant = "success";
-  else if (status === USER_STATUS.INACTIVE) variant = "destructive";
+  if (status === ACCOUNT_STATUS.PENDING) variant = "error";
+  else if (status === ACCOUNT_STATUS.REGISTERED) variant = "info";
+  else if (status === ACCOUNT_STATUS.ACTIVE) variant = "success";
 
-  const label = isUserStatus(status)
-    ? USER_STATUS_LABELS[status]
+  const label = isAccountStatus(status)
+    ? ACCOUNT_STATUS_LABELS[status]
     : capitalizeWords(status);
   return <Badge variant={variant}>{label}</Badge>;
 }

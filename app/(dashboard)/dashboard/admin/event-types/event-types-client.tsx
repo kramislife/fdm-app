@@ -21,6 +21,8 @@ import {
 import { ReferenceTypeClient } from "@/components/admin/reference-type-client";
 import { createEventType, updateEventType, deleteEventType } from "./actions";
 
+// ------------------------------- Types -----------------------------------------
+
 export type EventTypeRow = {
   id: number;
   name: string;
@@ -32,12 +34,24 @@ export type EventTypeRow = {
   updated_by: { first_name: string; last_name: string } | null;
 };
 
-type EventTypeForm = { name: string; description: string; is_active: boolean };
+type EventTypeForm = {
+  name: string;
+  description: string;
+  is_active: boolean;
+};
+
+// ------------------------------- Constants --------------------------------------
 
 const FIELD_LABELS = {
   name: "Event Type",
   description: "Description",
   status: "Status",
+};
+
+const EMPTY_FORM: EventTypeForm = {
+  name: "",
+  description: "",
+  is_active: true,
 };
 
 const columns: Column[] = [
@@ -49,11 +63,7 @@ const columns: Column[] = [
   { key: "actions", label: "Actions", align: "center" },
 ];
 
-const EMPTY_FORM: EventTypeForm = {
-  name: "",
-  description: "",
-  is_active: true,
-};
+// ------------------------------- Component --------------------------------------
 
 type Props = {
   eventTypes: EventTypeRow[];
@@ -61,14 +71,21 @@ type Props = {
 };
 
 export function EventTypesClient({ eventTypes, pagination }: Props) {
+  function validate(form: EventTypeForm) {
+    const errors: Record<string, string | undefined> = {};
+    if (!form.name.trim()) errors.name = "Event Type is required";
+    return errors;
+  }
+
   return (
-    <ReferenceTypeClient
+    <ReferenceTypeClient<EventTypeRow, EventTypeForm>
       entityLabel="Event Type"
       pageTitle="Event Types"
       pageDescription="View and manage all types of events"
       rows={eventTypes}
       pagination={pagination}
       columns={columns}
+      // ----------------------------- Row Rendering -----------------------------
       renderRow={(row) => ({
         name: <TextCell value={row.name} />,
         description: <TextCell value={row.description} />,
@@ -76,6 +93,7 @@ export function EventTypesClient({ eventTypes, pagination }: Props) {
         created_at: <DateCell date={row.created_at} />,
         created_by: <UserCell user={row.creator} />,
       })}
+      // ----------------------------- Detail View -------------------------------
       renderDetail={(row) => (
         <>
           <DetailSection>
@@ -98,19 +116,22 @@ export function EventTypesClient({ eventTypes, pagination }: Props) {
           />
         </>
       )}
+      // ----------------------------- Form Handling -----------------------------
       initialForm={EMPTY_FORM}
       getFormFromRow={(row) => ({
         name: row.name,
         description: row.description ?? "",
         is_active: row.is_active,
       })}
-      renderForm={(form, setForm) => (
+      validate={validate}
+      renderForm={(form, setForm, _isEditing, errors, _initialValues) => (
         <div className="space-y-5">
           <FormInput
             label={FIELD_LABELS.name}
             id="et-name"
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+            error={errors.name}
             required
           />
 
@@ -121,6 +142,7 @@ export function EventTypesClient({ eventTypes, pagination }: Props) {
             onChange={(e) =>
               setForm((f) => ({ ...f, description: e.target.value }))
             }
+            error={errors.description}
           />
 
           <FormSwitch
@@ -131,6 +153,7 @@ export function EventTypesClient({ eventTypes, pagination }: Props) {
           />
         </div>
       )}
+      // ----------------------------- Server Actions ---------------------------
       onCreate={createEventType}
       onUpdate={updateEventType}
       onDelete={deleteEventType}
