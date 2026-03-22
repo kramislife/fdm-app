@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface RevealProps {
-  children: ReactNode;
+  children?: ReactNode;
   className?: string;
   direction?: "up" | "left" | "right" | "none";
   delay?: number;

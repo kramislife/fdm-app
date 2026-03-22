@@ -1,5 +1,16 @@
+import type { Metadata } from "next";
 import { LoginForm } from "./login-form";
-import { AUTH_ERROR_CODES, isAuthErrorCode, type AuthErrorCode } from "@/lib/auth-errors";
+import {
+  AUTH_ERROR_CODES,
+  isAuthErrorCode,
+  type AuthErrorCode,
+} from "@/lib/auth-errors";
+
+export const metadata: Metadata = {
+  title: "Login | FDM",
+  description:
+    "Sign in to access your Friends of the Divine Mercy community portal.",
+};
 
 interface LoginPageProps {
   searchParams: Promise<{ error?: string; date?: string }>;
