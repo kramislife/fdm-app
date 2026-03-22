@@ -1,269 +1,28 @@
-"use client";
+import type { Metadata } from "next";
+import { ContactHero } from "./_components/contact-hero";
+import { ContactInfo } from "./_components/contact-info";
+import { ContactForm } from "./_components/contact-form";
+import { ContactMap } from "./_components/contact-map";
 
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { MapPin } from "lucide-react";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  FormInput,
-  FormSelect,
-  FormTextarea,
-} from "@/components/shared/form-fields";
-
-import {
-  useScrollAnimation,
-  fadeInUp,
-  fadeInLeft,
-  fadeInRight,
-  staggerContainer,
-} from "@/hooks/use-scroll-animation";
-
-import {
-  heroContent,
-  contactSection,
-  inquiryTypes,
-  socialLinks,
-  mapContent,
-  formContent,
-} from "@/config/contact";
-
-const FIELD_LABEL_STYLE =
-  "text-xs font-bold tracking-wider uppercase text-muted-foreground";
+export const metadata: Metadata = {
+  title: "Contact Us | FDM",
+  description:
+    "Connect with us to share prayer requests, seek guidance, or learn how to serve in our community of faith.",
+};
 
 export default function ContactPage() {
-  const { getAnimationProps } = useScrollAnimation();
-
   return (
-    <main>
-      {/* -------------------------- Hero --------------------------- */}
-      <section className="bg-muted/50 px-5 py-10 md:px-10 md:py-20">
-        <motion.div
-          className="space-y-5 text-center"
-          {...getAnimationProps(fadeInUp)}
-        >
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-7xl font-extrabold leading-tight">
-            {heroContent.title}
-          </h1>
-
-          <p className="text-sm md:text-base leading-relaxed text-muted-foreground max-w-2xl mx-auto">
-            {heroContent.description}
-          </p>
-        </motion.div>
-      </section>
-
-      {/* -------------------- Contact Info + Form --------------------- */}
+    <main className="min-h-screen">
+      <ContactHero />
+      
       <section className="px-5 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:items-start">
-          <motion.div
-            className="flex flex-col gap-5"
-            {...getAnimationProps(staggerContainer)}
-          >
-            {/* Church Image */}
-            <motion.div
-              variants={fadeInLeft}
-              className="relative hidden aspect-video w-full overflow-hidden rounded-md shadow-md md:flex"
-            >
-              <Image
-                src={contactSection.image.src}
-                alt={contactSection.image.alt}
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-                placeholder="blur"
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent" />
-              <div className="absolute bottom-4 right-4">
-                <Badge className="items-center gap-2 px-3 py-5 text-sm font-bold uppercase tracking-widest rounded-none [&>svg]:size-5!">
-                  <MapPin className="mb-1" />
-                  {contactSection.image.badge}
-                </Badge>
-              </div>
-            </motion.div>
-
-            {/* Contact Info */}
-            <motion.div
-              className="flex flex-col gap-5"
-              {...getAnimationProps(staggerContainer)}
-            >
-              <motion.div
-                variants={fadeInUp}
-                className="flex items-center gap-3"
-              >
-                <div className="h-7 w-1 rounded-full bg-primary" />
-                <h2 className="font-serif text-xl font-bold md:text-2xl lg:text-3xl">
-                  {contactSection.title}
-                </h2>
-              </motion.div>
-
-              {contactSection.items.map(({ Icon, label, value, href }) => (
-                <motion.div
-                  key={label}
-                  variants={fadeInUp}
-                  className="flex items-start gap-2"
-                >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center">
-                    <Icon className="h-4 w-4 text-primary mb-1" />
-                  </div>
-                  <div className="flex flex-col">
-                    <h3 className="text-lg font-extrabold text-primary">
-                      {label}
-                    </h3>
-                    {href ? (
-                      <a
-                        href={href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-info leading-relaxed underline underline-offset-4 break-all"
-                      >
-                        {value}
-                      </a>
-                    ) : (
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {value}
-                      </p>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
-
-          {/*------------------------ Right: Contact Form -------------------------*/}
-          <motion.div
-            {...getAnimationProps(fadeInRight)}
-            className="lg:sticky lg:top-20"
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-serif text-2xl font-bold md:text-3xl">
-                  {formContent.title}
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  {formContent.description}
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent className="p-3">
-                <form className="flex flex-col gap-5">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-y-5 gap-x-2">
-                    {/* Full Name */}
-                    <FormInput
-                      label="Full Name"
-                      id="full-name"
-                      name="full-name"
-                      type="text"
-                      autoComplete="name"
-                      placeholder="Your full name"
-                      className="h-12"
-                      wrapperClassName="md:col-span-2"
-                      labelClassName={FIELD_LABEL_STYLE}
-                      required
-                    />
-
-                    {/* Inquiry Type */}
-                    <FormSelect
-                      label="Inquiry Type"
-                      id="inquiry-type"
-                      onValueChange={() => {}} // Handle change if needed
-                      value="" // Bind to state if needed
-                      placeholder="Select inquiry type"
-                      options={inquiryTypes.map(({ label, value }) => ({
-                        label,
-                        value,
-                      }))}
-                      className="h-12"
-                      labelClassName={FIELD_LABEL_STYLE}
-                      required
-                    />
-                  </div>
-
-                  {/* Email */}
-                  <FormInput
-                    label="Email Address"
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    placeholder="you@gmail.com"
-                    className="h-12"
-                    labelClassName={FIELD_LABEL_STYLE}
-                    required
-                  />
-
-                  {/* Message */}
-                  <FormTextarea
-                    label="Message"
-                    id="message"
-                    name="message"
-                    placeholder="Write your message here..."
-                    labelClassName={FIELD_LABEL_STYLE}
-                    required
-                  />
-
-                  {/* Submit */}
-                  <Button type="submit" className="h-12">
-                    {formContent.submitLabel}
-                  </Button>
-                </form>
-
-                {/* Social Links */}
-                <div className="flex items-center justify-center gap-5 mt-5">
-                  {socialLinks.map(({ Icon, label, href }) => (
-                    <a
-                      key={label}
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={label}
-                      className="text-primary transition-transform hover:scale-110 cursor-pointer"
-                    >
-                      <Icon className="w-6 h-6" />
-                    </a>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <ContactInfo />
+          <ContactForm />
         </div>
       </section>
 
-      {/* ---------------------------- Our Location ------------------------------------- */}
-      <section className="bg-muted/50 px-5 py-10">
-        <motion.div
-          className="flex flex-col gap-5"
-          {...getAnimationProps(staggerContainer)}
-        >
-          <motion.div variants={fadeInUp} className="flex items-center gap-3">
-            <div className="h-7 w-1 rounded-full bg-primary" />
-            <h2 className="font-serif text-xl font-bold md:text-2xl lg:text-3xl">
-              {mapContent.title}
-            </h2>
-          </motion.div>
-
-          <motion.div
-            variants={fadeInUp}
-            className="overflow-hidden rounded-md shadow-md"
-          >
-            <iframe
-              title="Home of Mercy - Pasay"
-              src={mapContent.src}
-              width="100%"
-              height="500"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
-          </motion.div>
-        </motion.div>
-      </section>
+      <ContactMap />
     </main>
   );
 }
