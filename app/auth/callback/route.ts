@@ -169,10 +169,11 @@ export async function GET(request: NextRequest) {
       last_name: lastName,
       email,
       auth_id: authUser.id,
-      account_status: ACCOUNT_STATUS.REGISTERED,
+      account_status: ACCOUNT_STATUS.VERIFIED,
       is_temp_password: false,
-      has_qr: false,
-      member_qr: null,
+      is_qr_only: false,
+      member_qr: crypto.randomUUID(),
+      qr_generated_at: new Date(),
     },
   });
 

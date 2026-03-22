@@ -20,6 +20,8 @@ interface MemberQRDialogProps {
   onRegenerate?: () => void;
   isPendingRegenerate?: boolean;
   triggerClassName?: string;
+  defaultOpen?: boolean;
+  onClose?: () => void;
 }
 
 export function MemberQRDialog({
@@ -28,9 +30,17 @@ export function MemberQRDialog({
   onRegenerate,
   isPendingRegenerate,
   triggerClassName,
+  defaultOpen,
+  onClose,
 }: MemberQRDialogProps) {
+  const [open, setOpen] = useState(defaultOpen ?? false);
   const [dataUrl, setDataUrl] = useState<string>("");
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
+
+  function handleOpenChange(val: boolean) {
+    setOpen(val);
+    if (!val) onClose?.();
+  }
 
   useEffect(() => {
     if (memberQr) {
@@ -60,12 +70,14 @@ export function MemberQRDialog({
 
   return (
     <>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="link" className={`h-auto p-0 ${triggerClassName}`}>
-            View QR Code
-          </Button>
-        </DialogTrigger>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        {!defaultOpen && (
+          <DialogTrigger asChild>
+            <Button variant="link" className={`h-auto p-0 ${triggerClassName}`}>
+              View QR Code
+            </Button>
+          </DialogTrigger>
+        )}
 
         <DialogContent className="sm:max-w-sm overflow-hidden flex flex-col items-center text-center gap-3">
           <DialogTitle className="sr-only">

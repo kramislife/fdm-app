@@ -64,14 +64,16 @@ export async function setPasswordAction(
       return err("User profile email is missing. Please contact an administrator.");
     }
 
+    const now = new Date();
     await prisma.user.update({
       where: { id: dbUser.id },
       data: {
         auth_id: user.id,
-        account_status: ACCOUNT_STATUS.REGISTERED,
+        account_status: ACCOUNT_STATUS.VERIFIED,
         is_temp_password: false,
-        has_qr: false,
-        member_qr: null,
+        // Auto-generate QR on first login if not already set (QR-only converted users keep theirs)
+        member_qr: dbUser.member_qr ?? crypto.randomUUID(),
+        qr_generated_at: dbUser.member_qr ? undefined : now,
       },
     });
 
@@ -103,10 +105,18 @@ export async function setPasswordAction(
         }),
       ]);
     }
+
+    // Check active roles to determine redirect target
+    const activeRoles = await prisma.userRole.count({
+      where: { user_id: dbUser.id, is_active: true },
+    });
+
+    redirect(activeRoles > 0 ? "/dashboard" : "/");
   } catch (error) {
     console.error("First login data update error:", error);
     return err("Failed to finalize account setup. Please try again.");
   }
 
-  redirect("/dashboard");
+  // Fallback (redirect in try block handles normal flow)
+  redirect("/");
 }

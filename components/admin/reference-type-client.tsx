@@ -341,8 +341,7 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
           onConfirm={handleConfirmAction}
           isDeleting={isConfirming}
           title={confirmingAction?.def.title ?? ""}
-          name={confirmingAction?.row.name}
-          nameSuffix={confirmingAction?.def.description}
+          description={confirmingAction?.def.description}
           confirmingText={confirmingAction?.def.confirmingText}
         />
       )}

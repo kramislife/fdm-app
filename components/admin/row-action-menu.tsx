@@ -55,7 +55,7 @@ export function RowActionMenu({
           <span className="sr-only">Open menu</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-40 space-y-1">
+      <DropdownMenuContent align="end" className="w-full space-y-1">
         {onViewDetails && (
           <DropdownMenuItem onClick={onViewDetails}>
             <FaEye className="mb-0.5" />

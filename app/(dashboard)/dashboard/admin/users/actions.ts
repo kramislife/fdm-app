@@ -17,6 +17,7 @@ export type UserFormData = {
   account_status: string;
   address: string;
   chapter_id?: number;
+  is_qr_only: boolean;
 };
 
 export type ActionResult = {
@@ -25,92 +26,137 @@ export type ActionResult = {
   description?: string;
   errors?: Record<string, string>;
   warning?: string;
+  member_qr?: string;
 };
 
 function generateTempPassword() {
-  // Simple alphanumeric 12-char password
   return crypto.randomBytes(6).toString("hex").toUpperCase();
 }
+
+// ─── Create User ───────────────────────────────────────────────────────────────
 
 export async function createUser(data: UserFormData): Promise<ActionResult> {
   const actor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
   const actorId = actor.user.id;
 
   try {
-    const email = data.email?.trim() || null;
-    let authId: string | null = null;
+    // ── TYPE 2: QR-Only Member ─────────────────────────────────────────────
+    if (data.is_qr_only) {
+      const memberQr = crypto.randomUUID();
 
-    if (email) {
-      // 1. Validate email uniqueness in public.users
-      const existing = await prisma.user.findUnique({
-        where: { email },
-        select: { id: true },
+      await prisma.user.create({
+        data: {
+          first_name: data.first_name,
+          last_name: data.last_name,
+          email: null,
+          contact_number: null,
+          birthday: data.birthday ? new Date(data.birthday) : null,
+          address: data.address,
+          account_status: ACCOUNT_STATUS.PENDING,
+          is_qr_only: true,
+          is_temp_password: false,
+          member_qr: memberQr,
+          qr_generated_at: new Date(),
+          auth_id: null,
+          created_by: actorId,
+          user_chapters:
+            data.chapter_id != null
+              ? { create: { chapter_id: data.chapter_id, is_primary: true } }
+              : undefined,
+          user_roles: {
+            create: {
+              role: { connect: { key: ROLE_KEYS.MEMBER } },
+              assigner: { connect: { id: actorId } },
+              is_active: true,
+            },
+          },
+          activation_email_resent: 0,
+        },
       });
 
-      if (existing) {
-        return {
-          success: false,
-          title: "Email already registered",
-          description: "Try logging in or use a different email instead.",
-          errors: { email: "Email already exists in the system." },
-        };
-      }
-
-      const tempPassword = generateTempPassword();
-
-      // 2. Create Supabase Auth account first
-      const supabaseAdmin = createAdminClient();
-      const { data: authResult, error: authError } =
-        await supabaseAdmin.auth.admin.createUser({
-          email: email,
-          password: tempPassword,
-          email_confirm: true,
-        });
-
-      if (authError) {
-        console.error("[createUser] auth error:", authError);
-        return {
-          success: false,
-          title: "Auth Creation Failed",
-          description: authError.message,
-        };
-      }
-      authId = authResult.user.id;
+      revalidatePath("/dashboard/admin/users");
+      return {
+        success: true,
+        title: "QR Member Created",
+        description: "QR code generated. Print it and hand it to the member.",
+        member_qr: memberQr,
+      };
     }
+
+    // ── TYPE 1: Normal Member ──────────────────────────────────────────────
+    const email = data.email?.trim() || null;
+
+    if (!email) {
+      return {
+        success: false,
+        errors: { email: "Email is required for normal members." },
+      };
+    }
+
+    // 1. Validate email uniqueness
+    const existing = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    if (existing) {
+      return {
+        success: false,
+        title: "Email already registered",
+        description: "Try logging in or use a different email instead.",
+        errors: { email: "Email already exists in the system." },
+      };
+    }
+
+    const tempPassword = generateTempPassword();
+
+    // 2. Create Supabase Auth account
+    const supabaseAdmin = createAdminClient();
+    const { data: authResult, error: authError } =
+      await supabaseAdmin.auth.admin.createUser({
+        email,
+        password: tempPassword,
+        email_confirm: true,
+      });
+
+    if (authError) {
+      console.error("[createUser] auth error:", authError);
+      return {
+        success: false,
+        title: "Auth Creation Failed",
+        description: authError.message,
+      };
+    }
+
+    const authId = authResult.user.id;
 
     // 3. Create public.users row
     await prisma.user.create({
       data: {
         first_name: data.first_name,
         last_name: data.last_name,
-        email: email,
-        contact_number: data.contact_number,
+        email,
+        contact_number: data.contact_number || null,
         birthday: data.birthday ? new Date(data.birthday) : null,
         address: data.address,
         account_status: ACCOUNT_STATUS.PENDING,
-        is_temp_password: !!email,
-        has_qr: false,
+        is_qr_only: false,
+        is_temp_password: true,
+        member_qr: null,
         auth_id: authId,
         created_by: actorId,
-        // If chapter provided, we'll create the relation
+        activation_email_resent: 0,
         user_chapters:
           data.chapter_id != null
-            ? {
-                create: {
-                  chapter_id: data.chapter_id,
-                  is_primary: true,
-                },
-              }
+            ? { create: { chapter_id: data.chapter_id, is_primary: true } }
             : undefined,
-        // Also assign Member role by default
         user_roles: {
           create: {
             role: { connect: { key: ROLE_KEYS.MEMBER } },
-            assigner: { connect: { id: actor.user.id } },
+            assigner: { connect: { id: actorId } },
             is_active: true,
           },
         },
-        activation_email_resent: 0,
       },
     });
 
@@ -118,9 +164,8 @@ export async function createUser(data: UserFormData): Promise<ActionResult> {
     return {
       success: true,
       title: "User Created",
-      description: email
-        ? "Temporary credentials have been sent to the registered email address."
-        : "User has been successfully added to the system.",
+      description:
+        "Account created. Temporary credentials has been sent to the registered email address.",
     };
   } catch (error: any) {
     console.error("[createUser] error:", error);
@@ -131,6 +176,8 @@ export async function createUser(data: UserFormData): Promise<ActionResult> {
     };
   }
 }
+
+// ─── Update User ───────────────────────────────────────────────────────────────
 
 export async function updateUser(
   id: number,
@@ -148,6 +195,7 @@ export async function updateUser(
         email: true,
         account_status: true,
         auth_id: true,
+        is_qr_only: true,
         user_chapters: {
           where: { is_primary: true },
           select: { chapter_id: true, chapter: { select: { name: true } } },
@@ -160,25 +208,37 @@ export async function updateUser(
       return { success: false, description: "User not found." };
     }
 
+    // Block normal → QR-only conversion
+    if (data.is_qr_only && !existing.is_qr_only) {
+      return {
+        success: false,
+        description: "Cannot convert a normal account to QR-only.",
+      };
+    }
+
+    const isConvertingToNormal = existing.is_qr_only && !data.is_qr_only;
     const email = data.email?.trim() || null;
     const isEmailChanged = existing.email !== email;
 
-    // 1. If email changed, check if email is editable (only for pending accounts)
+    // Email edit rules
     if (isEmailChanged) {
-      if (existing.account_status !== ACCOUNT_STATUS.PENDING) {
+      const canEditEmail =
+        existing.account_status === ACCOUNT_STATUS.PENDING ||
+        isConvertingToNormal;
+
+      if (!canEditEmail) {
         return {
           success: false,
           errors: { email: "Email can only be changed for pending accounts." },
         };
       }
 
-      // 2. Check email uniqueness
+      // Uniqueness check
       if (email) {
         const dupe = await prisma.user.findFirst({
-          where: { email: email, NOT: { id } },
+          where: { email, NOT: { id } },
           select: { id: true },
         });
-
         if (dupe) {
           return {
             success: false,
@@ -189,17 +249,15 @@ export async function updateUser(
         }
       }
 
-      // 3. Update or Delete Supabase Auth account based on email status
       const supabaseAdmin = createAdminClient();
+
       if (email) {
         if (existing.auth_id) {
           const { error: authError } =
             await supabaseAdmin.auth.admin.updateUserById(existing.auth_id, {
-              email: email,
+              email,
             });
-
           if (authError) {
-            console.error("[updateUser] auth error:", authError);
             return {
               success: false,
               title: "Auth Update Failed",
@@ -207,49 +265,90 @@ export async function updateUser(
             };
           }
         } else {
-          // No existing auth_id but new email added? Should create auth
+          // No auth yet (QR-only → normal conversion)
           const tempPassword = generateTempPassword();
           const { data: authResult, error: authError } =
             await supabaseAdmin.auth.admin.createUser({
-              email: email,
+              email,
               password: tempPassword,
               email_confirm: true,
             });
-          if (!authError) {
-            await prisma.user.update({
-              where: { id },
-              data: { auth_id: authResult.user.id, is_temp_password: true },
-            });
+
+          if (authError) {
+            return {
+              success: false,
+              title: "Auth Creation Failed",
+              description: authError.message,
+            };
           }
+
+          // Save auth_id + is_qr_only + is_temp_password immediately
+          await prisma.user.update({
+            where: { id },
+            data: {
+              auth_id: authResult.user.id,
+              is_qr_only: false,
+              is_temp_password: true,
+            },
+          });
+
+          await prisma.user.update({
+            where: { id },
+            data: {
+              first_name: data.first_name,
+              last_name: data.last_name,
+              contact_number: data.contact_number || null,
+              email,
+              birthday: data.birthday ? new Date(data.birthday) : null,
+              address: data.address,
+              updated_by: actorId,
+              user_chapters:
+                data.chapter_id !== undefined
+                  ? {
+                      deleteMany: { is_primary: true },
+                      ...(data.chapter_id != null && {
+                        create: {
+                          chapter_id: data.chapter_id,
+                          is_primary: true,
+                        },
+                      }),
+                    }
+                  : undefined,
+            },
+          });
+
+          revalidatePath("/dashboard/admin/users");
+          return {
+            success: true,
+            title: "Account Converted",
+            description:
+              "QR-only account converted. Share credentials with the member manually.",
+          };
         }
       } else if (existing.auth_id) {
-        // Email removed, delete auth account
+        // Email removed → delete auth account
         await supabaseAdmin.auth.admin.deleteUser(existing.auth_id);
       }
     }
 
-    // 4. Update public.users
+    // Main update
     await prisma.user.update({
       where: { id },
       data: {
         first_name: data.first_name,
         last_name: data.last_name,
-        contact_number: data.contact_number,
-        email: email,
+        contact_number: data.contact_number || null,
+        email,
         auth_id: email ? undefined : null,
         birthday: data.birthday ? new Date(data.birthday) : null,
         address: data.address,
         updated_by: actorId,
-        // Chapter update if chapter_id changed
         user_chapters:
           data.chapter_id !== undefined
             ? {
                 deleteMany: { is_primary: true },
                 ...(data.chapter_id != null && {
-                  create: {
-                    chapter_id: data.chapter_id,
-                    is_primary: true,
-                  },
+                  create: { chapter_id: data.chapter_id, is_primary: true },
                 }),
               }
             : undefined,
@@ -295,6 +394,8 @@ export async function updateUser(
   }
 }
 
+// ─── Deactivate User ───────────────────────────────────────────────────────────
+
 export async function deactivateUser(id: number): Promise<ActionResult> {
   const actor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
   const actorId = actor.user.id;
@@ -330,12 +431,10 @@ export async function deactivateUser(id: number): Promise<ActionResult> {
     const now = new Date();
 
     await prisma.$transaction([
-      // 1. Deactivate all active roles
       prisma.userRole.updateMany({
         where: { user_id: id, is_active: true },
-        data: { is_active: false, deactivated_at: now },
+        data: { is_active: false, deactivated_at: now, access_revoked: true },
       }),
-      // 2. Mark user as deactivated
       prisma.user.update({
         where: { id },
         data: { deactivated_at: now, deactivated_by: actorId },
@@ -354,8 +453,10 @@ export async function deactivateUser(id: number): Promise<ActionResult> {
   }
 }
 
+// ─── Restore User ──────────────────────────────────────────────────────────────
+
 export async function restoreUser(id: number): Promise<ActionResult> {
-  const actor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
+  await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
 
   try {
     const user = await prisma.user.findUnique({
@@ -371,16 +472,11 @@ export async function restoreUser(id: number): Promise<ActionResult> {
     }
 
     await prisma.$transaction([
-      // 1. Restore roles that were deactivated in the same batch
+      // Restore roles that were batch-deactivated with access_revoked flag
       prisma.userRole.updateMany({
-        where: {
-          user_id: id,
-          is_active: false,
-          deactivated_at: user.deactivated_at,
-        },
-        data: { is_active: true, deactivated_at: null },
+        where: { user_id: id, is_active: false, access_revoked: true },
+        data: { is_active: true, deactivated_at: null, access_revoked: false },
       }),
-      // 2. Clear deactivation status on user
       prisma.user.update({
         where: { id },
         data: { deactivated_at: null, deactivated_by: null },
@@ -391,15 +487,17 @@ export async function restoreUser(id: number): Promise<ActionResult> {
     return {
       success: true,
       title: "Access Restored",
-      description: `Access has been restored. Visit Manage Roles if changes are needed.`,
+      description: "Access restored. Visit Manage Roles if changes are needed.",
     };
   } catch (error: any) {
     return { success: false, description: error.message };
   }
 }
 
+// ─── Delete User ───────────────────────────────────────────────────────────────
+
 export async function deleteUser(id: number): Promise<ActionResult> {
-  const actor = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
+  await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   try {
     const user = await prisma.user.findUnique({
@@ -409,22 +507,22 @@ export async function deleteUser(id: number): Promise<ActionResult> {
 
     if (!user) return { success: false, description: "User not found." };
 
-    // 1. Only allow deletion if account is still PENDING
-    // Once registered/active, use deactivation instead for data integrity
-    if (user.account_status !== ACCOUNT_STATUS.PENDING) {
+    const isDeletable =
+      user.account_status === ACCOUNT_STATUS.PENDING ||
+      user.account_status === ACCOUNT_STATUS.EXPIRED;
+
+    if (!isDeletable) {
       return {
         success: false,
-        description: "Registered accounts cannot be deleted.",
+        description: "Only pending or expired accounts can be deleted.",
       };
     }
 
-    // 2. Delete Supabase Auth account
     if (user.auth_id) {
       const supabaseAdmin = createAdminClient();
       await supabaseAdmin.auth.admin.deleteUser(user.auth_id);
     }
 
-    // 3. Delete from public.users (explicitly clear relations first to avoid FK errors)
     await prisma.$transaction([
       prisma.userRole.deleteMany({ where: { user_id: id } }),
       prisma.userChapter.deleteMany({ where: { user_id: id } }),
@@ -438,8 +536,100 @@ export async function deleteUser(id: number): Promise<ActionResult> {
   }
 }
 
+// ─── Resend Credentials ────────────────────────────────────────────────────────
+
+export async function resendCredentials(id: number): Promise<ActionResult> {
+  await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        first_name: true,
+        last_name: true,
+        email: true,
+        auth_id: true,
+        is_qr_only: true,
+        account_status: true,
+        is_temp_password: true,
+      },
+    });
+
+    if (!user) return { success: false, description: "User not found." };
+
+    if (user.is_qr_only) {
+      return {
+        success: false,
+        description: "QR-only members do not have login credentials.",
+      };
+    }
+
+    if (!user.is_temp_password) {
+      return {
+        success: false,
+        description: "This account has already been activated.",
+      };
+    }
+
+    const isEligible =
+      user.account_status === ACCOUNT_STATUS.PENDING ||
+      user.account_status === ACCOUNT_STATUS.EXPIRED;
+
+    if (!isEligible) {
+      return {
+        success: false,
+        description:
+          "Credentials can only be resent for pending or expired accounts.",
+      };
+    }
+
+    if (!user.auth_id || !user.email) {
+      return {
+        success: false,
+        description:
+          "Account is missing auth credentials. Please contact support.",
+      };
+    }
+
+    const tempPassword = generateTempPassword();
+    const supabaseAdmin = createAdminClient();
+
+    const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(
+      user.auth_id,
+      { password: tempPassword },
+    );
+
+    if (authError) {
+      return {
+        success: false,
+        title: "Auth Update Failed",
+        description: authError.message,
+      };
+    }
+
+    await prisma.user.update({
+      where: { id },
+      data: {
+        activation_email_sent_at: new Date(),
+        activation_email_resent: { increment: 1 },
+      },
+    });
+
+    revalidatePath("/dashboard/admin/users");
+    return {
+      success: true,
+      title: "Password Reset",
+      description:
+        "A new temporary password has been generated. Share credentials with the member manually.",
+    };
+  } catch (error: any) {
+    return { success: false, description: error.message };
+  }
+}
+
+// ─── Generate User QR ──────────────────────────────────────────────────────────
+
 export async function generateUserQR(id: number): Promise<ActionResult> {
-  // 1. Authorized roles: Director Adviser, Elder, Head Servant
   const actor = await requireRole([
     ROLE_KEYS.DIRECTOR_ADVISER,
     ROLE_KEYS.ELDER,
@@ -454,8 +644,6 @@ export async function generateUserQR(id: number): Promise<ActionResult> {
 
     if (!targetUser) return { success: false, description: "User not found." };
 
-    // 2. Cooldown Check (Once per week)
-    // Elder/Director Adviser can bypass this restriction
     const isBypassed =
       actor.roles.includes(ROLE_KEYS.DIRECTOR_ADVISER) ||
       actor.roles.includes(ROLE_KEYS.ELDER);
@@ -478,13 +666,11 @@ export async function generateUserQR(id: number): Promise<ActionResult> {
       }
     }
 
-    // 3. Head Servant Check: Can only generate for users in their own chapter
     const isHeadServantOnly =
       actor.roles.includes(ROLE_KEYS.HEAD_SERVANT) && !isBypassed;
 
     if (isHeadServantOnly) {
       const targetChapterId = targetUser.user_chapters[0]?.chapter_id;
-
       if (!actor.chapter || actor.chapter.id !== targetChapterId) {
         return {
           success: false,
@@ -494,14 +680,12 @@ export async function generateUserQR(id: number): Promise<ActionResult> {
       }
     }
 
-    // 4. Generate unique QR value
     const qrValue = crypto.randomUUID();
 
     await prisma.user.update({
       where: { id },
       data: {
         member_qr: qrValue,
-        has_qr: true,
         qr_generated_at: now,
         qr_regenerated_count: { increment: 1 },
         updated_by: actor.user.id,
@@ -512,12 +696,14 @@ export async function generateUserQR(id: number): Promise<ActionResult> {
     return {
       success: true,
       title: "QR Code Generated",
-      description: "Member's unique QR code has been successfully updated.",
+      description: "Member's unique QR code has been successfully generated.",
     };
   } catch (error: any) {
     return { success: false, description: error.message };
   }
 }
+
+// ─── Update User Roles ─────────────────────────────────────────────────────────
 
 export type UserRoleInput = {
   roleId: number;
@@ -532,7 +718,6 @@ export async function updateUserRoles(
   const actor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
 
   try {
-    // 1. Load target user's current roles (include inactive for upsert logic)
     const targetUser = await prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -550,7 +735,7 @@ export async function updateUserRoles(
       };
     }
 
-    // 2. Validate removes — block DA self-removal
+    // Validate removes — block DA self-removal
     for (const removeId of removeIds) {
       const ur = targetUser.user_roles.find((r) => r.id === removeId);
       if (!ur) continue;
@@ -567,12 +752,10 @@ export async function updateUserRoles(
       }
     }
 
-    // 3. Compute remaining active roles (after removes applied)
     const remainingRoles = targetUser.user_roles.filter(
       (ur) => ur.is_active && !removeIds.includes(ur.id),
     );
 
-    // 4. Resolve role details for all adds upfront
     const addRoleIds = [...new Set(adds.map((a) => a.roleId))];
     const resolvedRoleList =
       addRoleIds.length > 0
@@ -583,7 +766,6 @@ export async function updateUserRoles(
         : [];
     const roleById = new Map(resolvedRoleList.map((r) => [r.id, r]));
 
-    // 5. Resolve chapter names for error messages
     const allChapterIds = [
       ...adds.filter((a) => a.chapterId).map((a) => a.chapterId!),
       ...remainingRoles
@@ -599,7 +781,6 @@ export async function updateUserRoles(
         : [];
     const chapterById = new Map(chapterList.map((c) => [c.id, c.name]));
 
-    // 6. Validate each add, tracking queued adds for within-submit conflict detection
     const queuedAdds: { roleKey: string; chapterId?: number }[] = [];
     let existingDAUserRoleId: number | null = null;
 
@@ -630,7 +811,6 @@ export async function updateUserRoles(
                 "Only the current Director Adviser can assign this role.",
             };
           }
-          // Capture existing DA to deactivate them in the transaction
           const existingDA = await prisma.userRole.findFirst({
             where: {
               role: { key: ROLE_KEYS.DIRECTOR_ADVISER },
@@ -638,9 +818,7 @@ export async function updateUserRoles(
               user_id: { not: userId },
             },
           });
-          if (existingDA) {
-            existingDAUserRoleId = existingDA.id;
-          }
+          if (existingDA) existingDAUserRoleId = existingDA.id;
           break;
         }
 
@@ -687,7 +865,6 @@ export async function updateUserRoles(
         }
 
         case ROLE_KEYS.HEAD_SERVANT: {
-          // One chapter only — block if already has HS anywhere
           const existingHS = remainingRoles.find(
             (ur) => ur.role.key === ROLE_KEYS.HEAD_SERVANT,
           );
@@ -711,7 +888,6 @@ export async function updateUserRoles(
               description: "Head Servant can only be assigned to one chapter.",
             };
 
-          // Block if another user is already HS of this chapter
           const existingChapterHS = await prisma.userRole.findFirst({
             where: {
               role: { key: ROLE_KEYS.HEAD_SERVANT },
@@ -724,7 +900,6 @@ export async function updateUserRoles(
             },
           });
           if (existingChapterHS) {
-            const name = `${existingChapterHS.user.first_name} ${existingChapterHS.user.last_name}`;
             return {
               success: false,
               title: "Conflict Detected",
@@ -773,7 +948,6 @@ export async function updateUserRoles(
         }
 
         case ROLE_KEYS.FINANCE: {
-          // Same chapter block; multiple chapters allowed
           const sameChapter =
             remainingRoles.find(
               (ur) =>
@@ -871,7 +1045,6 @@ export async function updateUserRoles(
       queuedAdds.push({ roleKey: role.key, chapterId: add.chapterId });
     }
 
-    // 7. Build and execute transaction
     const now = new Date();
     const ops: any[] = [];
 
@@ -894,7 +1067,6 @@ export async function updateUserRoles(
     }
 
     for (const { roleId, chapterId } of adds) {
-      // Find existing record for this user-role-chapter combo (active or inactive)
       const existingRecord = targetUser.user_roles.find(
         (ur) => ur.role_id === roleId && ur.chapter_id === (chapterId ?? null),
       );

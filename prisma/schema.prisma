@@ -110,7 +110,7 @@ model User {
   birthday             DateTime? @db.Date
   address              String?
   photo_url            String?   @db.VarChar(500)
-  has_qr               Boolean   @default(false)
+  is_qr_only           Boolean   @default(false)
   member_qr            String?   @db.VarChar(500)
   qr_generated_at      DateTime?
   qr_regenerated_count Int       @default(0)
@@ -325,6 +325,7 @@ model UserRole {
   assigned_at      DateTime  @default(now())
   is_active        Boolean   @default(true)
   deactivated_at   DateTime?
+  access_revoked   Boolean   @default(false)
 
   user     User          @relation("UserRoles", fields: [user_id], references: [id])
   role     Role          @relation(fields: [role_id], references: [id])

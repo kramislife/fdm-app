@@ -41,7 +41,7 @@ async function main() {
       email,
       contact_number,
       birthday,
-      account_status: ACCOUNT_STATUS.ACTIVE,
+      account_status: ACCOUNT_STATUS.VERIFIED,
     };
   });
 

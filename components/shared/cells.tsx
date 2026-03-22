@@ -36,11 +36,11 @@ interface UserStatusBadgeProps {
 }
 
 export function UserStatusBadge({ status }: UserStatusBadgeProps) {
-  let variant: "secondary" | "error" | "info" | "success" = "secondary";
+  let variant: "secondary" | "warning" | "error" | "info" | "success" = "secondary";
 
-  if (status === ACCOUNT_STATUS.PENDING) variant = "error";
-  else if (status === ACCOUNT_STATUS.REGISTERED) variant = "info";
-  else if (status === ACCOUNT_STATUS.ACTIVE) variant = "success";
+  if (status === ACCOUNT_STATUS.PENDING) variant = "warning";
+  else if (status === ACCOUNT_STATUS.EXPIRED) variant = "error";
+  else if (status === ACCOUNT_STATUS.VERIFIED) variant = "success";
 
   const label = isAccountStatus(status)
     ? ACCOUNT_STATUS_LABELS[status]

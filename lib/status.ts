@@ -1,7 +1,8 @@
 export const ACCOUNT_STATUS = {
-  PENDING: "pending",
-  REGISTERED: "registered",
-  ACTIVE: "active",
+  GUEST: "guest", // in guest_logs only, no users row
+  PENDING: "pending", // account created, not logged in yet
+  EXPIRED: "expired", // pending > 7 days, never activated
+  VERIFIED: "verified", // logged in + QR auto-generated
 } as const;
 
 export type AccountStatus =
@@ -12,9 +13,10 @@ export const ACCOUNT_STATUS_VALUES = Object.values(
 ) as AccountStatus[];
 
 export const ACCOUNT_STATUS_LABELS: Record<AccountStatus, string> = {
+  [ACCOUNT_STATUS.GUEST]: "Guest",
   [ACCOUNT_STATUS.PENDING]: "Pending",
-  [ACCOUNT_STATUS.REGISTERED]: "Registered",
-  [ACCOUNT_STATUS.ACTIVE]: "Active",
+  [ACCOUNT_STATUS.EXPIRED]: "Expired",
+  [ACCOUNT_STATUS.VERIFIED]: "Verified",
 };
 
 export function isAccountStatus(value: string): value is AccountStatus {

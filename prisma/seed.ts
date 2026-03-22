@@ -542,7 +542,7 @@ async function main() {
         last_name: user.last_name,
         email: user.email,
         contact_number: user.contact_number,
-        account_status: ACCOUNT_STATUS.ACTIVE,
+        account_status: ACCOUNT_STATUS.VERIFIED,
       },
     });
     createdUsers[user.email] = created;

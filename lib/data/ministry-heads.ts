@@ -119,7 +119,7 @@ export async function getMinistryHeads(
 export async function getChapterActiveUsers(chapterId: number) {
   return await prisma.user.findMany({
     where: {
-      account_status: ACCOUNT_STATUS.ACTIVE,
+      account_status: ACCOUNT_STATUS.VERIFIED,
       user_chapters: {
         some: {
           chapter_id: chapterId,

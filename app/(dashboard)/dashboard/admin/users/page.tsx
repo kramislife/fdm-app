@@ -8,7 +8,8 @@ import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
 import { UsersClient, type UserRow } from "./users-client";
 
 export default async function UsersPage({ searchParams }: PageProps) {
-  await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
+  const actor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
+  const currentUserId = actor.user.id;
 
   const { search, page, perPage, sort, order } = parseTableParams(
     await searchParams,
@@ -33,14 +34,15 @@ export default async function UsersPage({ searchParams }: PageProps) {
     account_status: user.account_status,
     photo_url: user.photo_url,
     photoUrl: user.photo_url,
-    has_qr: user.has_qr,
+    is_qr_only: user.is_qr_only,
+    is_temp_password: user.is_temp_password,
     member_qr: user.member_qr,
     user_chapters: user.user_chapters,
     user_roles: user.user_roles,
     created_at: user.created_at.toISOString(),
     creator: user.creator,
     updated_at: user.updated_at.toISOString(),
-    updated_by_user: user.updated_by_user ?? null,
+    updated_by: user.updated_by_user ?? null,
     deactivated_at: user.deactivated_at?.toISOString() ?? null,
   }));
 
@@ -50,6 +52,7 @@ export default async function UsersPage({ searchParams }: PageProps) {
       pagination={toPagination(result)}
       chapters={chapters}
       roles={roles}
+      currentUserId={currentUserId}
     />
   );
 }
