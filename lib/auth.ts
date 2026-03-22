@@ -73,16 +73,21 @@ export async function backfillAttendance(
     select: { id: true, attendance_id: true },
   });
 
-  for (const log of guestLogs) {
-    await prisma.$transaction([
-      prisma.attendance.updateMany({
-        where: { id: log.attendance_id, user_id: null },
-        data: { user_id: userId },
-      }),
-      prisma.guestLog.update({
-        where: { id: log.id },
-        data: { linked_user_id: userId },
-      }),
-    ]);
-  }
+  if (guestLogs.length === 0) return;
+
+  const attendanceIds = guestLogs
+    .map((gl) => gl.attendance_id)
+    .filter((id): id is number => id !== null);
+  const guestLogIds = guestLogs.map((gl) => gl.id);
+
+  await prisma.$transaction([
+    prisma.attendance.updateMany({
+      where: { id: { in: attendanceIds }, user_id: null },
+      data: { user_id: userId },
+    }),
+    prisma.guestLog.updateMany({
+      where: { id: { in: guestLogIds } },
+      data: { linked_user_id: userId },
+    }),
+  ]);
 }

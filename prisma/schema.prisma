@@ -159,6 +159,8 @@ model User {
   ministry_heads_deleted MinistryHead[] @relation("MinistryHeadDeleter")
 
   @@index([auth_id])
+  @@index([first_name])
+  @@index([last_name])
   @@index([email])
   @@index([contact_number])
   @@index([created_at])
