@@ -14,7 +14,7 @@ import {
 import { FaSyncAlt } from "react-icons/fa";
 import { MdFileDownload } from "react-icons/md";
 import { BsQrCode } from "react-icons/bs";
-import { DeleteConfirmDialog } from "@/components/admin/delete-confirm-dialog";
+import { ConfirmActionDialog } from "@/components/admin/confirm-dialog";
 import { regenerateMyQR, type QRActionResult } from "./qr-code.actions";
 
 interface UserQRDialogProps {
@@ -191,11 +191,11 @@ export function UserQRDialog({
                 Regenerate
               </button>
 
-              <DeleteConfirmDialog
+              <ConfirmActionDialog
                 open={showRegenerateConfirm}
                 onClose={() => setShowRegenerateConfirm(false)}
                 onConfirm={confirmRegenerate}
-                isDeleting={isPending}
+                isPending={isPending}
                 title="Regenerate QR Code?"
                 description="Are you sure you want to regenerate this QR code? The current code will no longer work."
                 confirmingText="Regenerating..."

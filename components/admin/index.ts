@@ -6,9 +6,9 @@ export { AdminPage } from "./admin-page";
 export { RowActionMenu, type RowActionMenuProps } from "./row-action-menu";
 export { AdminSheet, type AdminSheetProps } from "./admin-sheet";
 export {
-  DeleteConfirmDialog,
-  type DeleteConfirmDialogProps,
-} from "./delete-confirm-dialog";
+  ConfirmActionDialog,
+  type ConfirmActionDialogProps,
+} from "./confirm-dialog";
 export {
   ReferenceTypeClient,
   type ReferenceTypeClientProps,

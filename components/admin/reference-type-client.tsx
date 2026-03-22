@@ -12,7 +12,7 @@ import { AdminPage } from "./admin-page";
 import { RowActionMenu, type ExtraAction } from "./row-action-menu";
 import { AdminSheet } from "./admin-sheet";
 import { DetailSheet } from "./detail-sheet";
-import { DeleteConfirmDialog } from "./delete-confirm-dialog";
+import { ConfirmActionDialog } from "./confirm-dialog";
 import type { Column } from "./data-table";
 import type { Pagination } from "@/lib/table";
 
@@ -323,11 +323,11 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
 
       {/* Delete Confirm Dialog */}
       {onDelete && (
-        <DeleteConfirmDialog
+        <ConfirmActionDialog
           open={!!deleting}
           onClose={() => setDeleting(null)}
           onConfirm={handleDelete}
-          isDeleting={isDeleting}
+          isPending={isDeleting}
           title={`Delete ${entityLabel}?`}
           name={deleting?.name}
         />
@@ -335,11 +335,11 @@ export function ReferenceTypeClient<TRow extends BaseRow, TForm = {}>(
 
       {/* Confirm Row Action Dialog */}
       {confirmRowActions && confirmRowActions.length > 0 && (
-        <DeleteConfirmDialog
+        <ConfirmActionDialog
           open={!!confirmingAction}
           onClose={() => setConfirmingAction(null)}
           onConfirm={handleConfirmAction}
-          isDeleting={isConfirming}
+          isPending={isConfirming}
           title={confirmingAction?.def.title ?? ""}
           description={confirmingAction?.def.description}
           confirmingText={confirmingAction?.def.confirmingText}

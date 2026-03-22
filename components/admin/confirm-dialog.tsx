@@ -41,11 +41,11 @@ function DescriptionContent({
   return <>Item {nameSuffix}</>;
 }
 
-export type DeleteConfirmDialogProps = {
+export type ConfirmActionDialogProps = {
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  isDeleting?: boolean;
+  isPending?: boolean;
   title?: ReactNode;
   description?: ReactNode;
   name?: string;
@@ -53,19 +53,19 @@ export type DeleteConfirmDialogProps = {
   confirmingText?: string;
 };
 
-export function DeleteConfirmDialog({
+export function ConfirmActionDialog({
   open,
   onClose,
   onConfirm,
-  isDeleting = false,
-  title = "Delete this item?",
+  isPending = false,
+  title = "Confirm this action?",
   description,
   name,
-  nameSuffix = "will be permanently removed. This action cannot be undone.",
-  confirmingText = "Deleting...",
-}: DeleteConfirmDialogProps) {
+  nameSuffix = "will be processed. This action cannot be undone.",
+  confirmingText = "Confirming...",
+}: ConfirmActionDialogProps) {
   const handleOpenChange = (nextOpen: boolean) => {
-    if (!nextOpen && !isDeleting) {
+    if (!nextOpen && !isPending) {
       onClose();
     }
   };
@@ -86,12 +86,16 @@ export function DeleteConfirmDialog({
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onClose} disabled={isDeleting}>
+          <AlertDialogCancel onClick={onClose} disabled={isPending}>
             Cancel
           </AlertDialogCancel>
 
-          <Button onClick={onConfirm} disabled={isDeleting}>
-            {isDeleting ? (
+          <Button 
+             variant="default"
+             onClick={onConfirm} 
+             disabled={isPending}
+          >
+            {isPending ? (
               <Loading size="sm" variant="white" text={confirmingText} />
             ) : (
               "Confirm"
@@ -102,3 +106,6 @@ export function DeleteConfirmDialog({
     </AlertDialog>
   );
 }
+
+// Keep an alias for backwards compatibility if needed, but let's encourage the new name.
+export { ConfirmActionDialog as ConfirmDialog };

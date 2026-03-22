@@ -42,7 +42,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { UserQRDialog } from "@/components/shared/qr-code";
-import { DeleteConfirmDialog } from "@/components/admin/delete-confirm-dialog";
+import { ConfirmActionDialog } from "@/components/admin/confirm-dialog";
 import { toast } from "sonner";
 import { ManageRolesSheet, getDisplayRoles } from "./manage-roles-sheet";
 
@@ -569,11 +569,11 @@ export function UsersClient({
       />
 
       {/* Confirm dialog for generating QR from table */}
-      <DeleteConfirmDialog
+      <ConfirmActionDialog
         open={!!qrTarget}
         onClose={() => setQrTarget(null)}
         onConfirm={() => qrTarget && handleGenerateQR(qrTarget.id)}
-        isDeleting={isPendingQR}
+        isPending={isPendingQR}
         title="Generate QR Code?"
         description="This will create a secure QR code for attendance tracking linked to the selected account."
         confirmingText="Generating..."
