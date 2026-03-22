@@ -60,6 +60,7 @@ export function DashboardHeader({
           onSignOut={handleSignOut}
           isPending={isPending}
           fallbackSecondary={ROLE_LABELS[sessionUser.roles[0]]}
+          memberQr={sessionUser.memberQr}
         />
       </div>
     </header>

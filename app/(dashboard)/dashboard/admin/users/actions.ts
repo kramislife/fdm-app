@@ -696,7 +696,7 @@ export async function generateUserQR(id: number): Promise<ActionResult> {
     return {
       success: true,
       title: "QR Code Generated",
-      description: "Member's unique QR code has been successfully generated.",
+      description: "New QR code has been successfully generated.",
     };
   } catch (error: any) {
     return { success: false, description: error.message };

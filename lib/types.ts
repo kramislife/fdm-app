@@ -59,6 +59,7 @@ export interface BaseUser {
 
 export interface DashboardSessionUser extends BaseUser {
   roles: RoleKey[];
+  memberQr?: string | null;
 }
 
 // ---------------------------- Address Types ----------------------------

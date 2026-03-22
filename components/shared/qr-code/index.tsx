@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,46 +11,67 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FaQrcode, FaSyncAlt } from "react-icons/fa";
+import { FaSyncAlt } from "react-icons/fa";
 import { MdFileDownload } from "react-icons/md";
 import { BsQrCode } from "react-icons/bs";
 import { DeleteConfirmDialog } from "@/components/admin/delete-confirm-dialog";
+import { regenerateMyQR, type QRActionResult } from "./qr-code.actions";
 
-interface MemberQRDialogProps {
+interface UserQRDialogProps {
   memberQr: string;
   userName: string;
-  onRegenerate?: () => void;
-  isPendingRegenerate?: boolean;
+  regenerateAction?: () => Promise<QRActionResult>;
+  showRegenerate?: boolean;
   triggerClassName?: string;
   defaultOpen?: boolean;
   onClose?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function MemberQRDialog({
+export function UserQRDialog({
   memberQr,
   userName,
-  onRegenerate,
-  isPendingRegenerate,
+  regenerateAction,
+  showRegenerate = true,
   triggerClassName,
   defaultOpen,
   onClose,
-}: MemberQRDialogProps) {
-  const [open, setOpen] = useState(defaultOpen ?? false);
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+}: UserQRDialogProps) {
+  const router = useRouter();
+  const isControlled = controlledOpen !== undefined;
+  const [internalOpen, setInternalOpen] = useState(defaultOpen ?? false);
+  const open = isControlled ? controlledOpen : internalOpen;
   const [dataUrl, setDataUrl] = useState<string>("");
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  // Holds the toast to fire once the new QR image is rendered
+  const pendingToast = useRef<{ title: string; description?: string } | null>(null);
+
+  const resolvedAction = regenerateAction ?? regenerateMyQR;
 
   function handleOpenChange(val: boolean) {
-    setOpen(val);
+    if (!isControlled) setInternalOpen(val);
+    controlledOnOpenChange?.(val);
     if (!val) onClose?.();
   }
 
   useEffect(() => {
     if (memberQr) {
-      QRCode.toDataURL(memberQr, {
-        width: 512,
-        margin: 2,
-      })
-        .then((url) => setDataUrl(url))
+      QRCode.toDataURL(memberQr, { width: 512, margin: 2 })
+        .then((url) => {
+          setDataUrl(url);
+          // Fire the deferred success toast only after the new QR is rendered
+          if (pendingToast.current) {
+            toast.success(pendingToast.current.title, {
+              description: pendingToast.current.description,
+            });
+            pendingToast.current = null;
+            setIsPending(false);
+          }
+        })
         .catch((err) => console.error("Failed to generate QR code:", err));
     }
   }, [memberQr]);
@@ -63,15 +86,42 @@ export function MemberQRDialog({
     document.body.removeChild(link);
   };
 
-  const confirmRegenerate = () => {
-    onRegenerate?.();
+  async function confirmRegenerate() {
     setShowRegenerateConfirm(false);
-  };
+    setDataUrl("");
+    setIsPending(true);
+    try {
+      const result = await resolvedAction();
+      if (result.success) {
+        // Store the toast — it fires inside the useEffect once the new QR renders
+        pendingToast.current = {
+          title: result.title ?? "Success",
+          description: result.description,
+        };
+        router.refresh();
+      } else {
+        toast.error(result.title ?? "Error", {
+          description: result.description,
+        });
+        // Restore the existing QR image — memberQr didn't change so useEffect won't re-run
+        QRCode.toDataURL(memberQr, { width: 512, margin: 2 })
+          .then(setDataUrl)
+          .catch((err) => console.error("Failed to restore QR code:", err));
+        setIsPending(false);
+      }
+    } catch {
+      toast.error("Error", { description: "Something went wrong." });
+      QRCode.toDataURL(memberQr, { width: 512, margin: 2 })
+        .then(setDataUrl)
+        .catch((err) => console.error("Failed to restore QR code:", err));
+      setIsPending(false);
+    }
+  }
 
   return (
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        {!defaultOpen && (
+        {!isControlled && !defaultOpen && (
           <DialogTrigger asChild>
             <Button variant="link" className={`h-auto p-0 ${triggerClassName}`}>
               View QR Code
@@ -86,7 +136,7 @@ export function MemberQRDialog({
 
           {/* Title block */}
           <div className="space-y-1">
-            <h2 className="text-lg font-bold">Member QR Code</h2>
+            <h2 className="text-lg font-bold">Attendance Code</h2>
             <p className="text-xs text-muted-foreground">
               Open and show this at session check-in
             </p>
@@ -103,7 +153,7 @@ export function MemberQRDialog({
                 />
               ) : (
                 <div className="w-full h-full animate-pulse flex items-center justify-center">
-                  <BsQrCode className="w-52 h-52 text-muted-foreground/20" />
+                  <BsQrCode className="w-48 h-48 text-muted-foreground/20" />
                 </div>
               )}
             </div>
@@ -127,16 +177,16 @@ export function MemberQRDialog({
           </Button>
 
           {/* Regenerate link */}
-          {onRegenerate && (
+          {showRegenerate && (
             <>
               <button
                 type="button"
                 onClick={() => setShowRegenerateConfirm(true)}
-                disabled={isPendingRegenerate}
+                disabled={isPending}
                 className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors duration-150 disabled:opacity-50 cursor-pointer"
               >
                 <FaSyncAlt
-                  className={`text-xs ${isPendingRegenerate ? "animate-spin" : ""}`}
+                  className={`text-xs ${isPending ? "animate-spin" : ""}`}
                 />
                 Regenerate
               </button>
@@ -145,7 +195,7 @@ export function MemberQRDialog({
                 open={showRegenerateConfirm}
                 onClose={() => setShowRegenerateConfirm(false)}
                 onConfirm={confirmRegenerate}
-                isDeleting={isPendingRegenerate}
+                isDeleting={isPending}
                 title="Regenerate QR Code?"
                 description="Are you sure you want to regenerate this QR code? The current code will no longer work."
                 confirmingText="Regenerating..."

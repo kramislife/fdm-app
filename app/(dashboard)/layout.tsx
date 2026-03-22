@@ -22,6 +22,7 @@ export default async function DashboardLayout({
     email: user.email,
     photoUrl: user.photo_url,
     roles,
+    memberQr: user.member_qr,
   };
 
   return (

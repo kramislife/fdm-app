@@ -41,5 +41,6 @@ export function buildSessionUser(dbUser: UserWithRoles) {
     photoUrl: dbUser.photo_url,
     roles,
     isMember: isMemberOnly(roles),
+    memberQr: dbUser.member_qr,
   };
 }

@@ -45,7 +45,7 @@ export function RolesClient({ roles, pagination }: Props) {
   return (
     <ReferenceTypeClient<RoleRow>
       entityLabel="Role"
-      pageTitle="Role Management"
+      pageTitle="User Roles"
       pageDescription="View all system fixed community roles"
       rows={roles}
       pagination={pagination}

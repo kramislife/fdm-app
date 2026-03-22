@@ -20,6 +20,7 @@ import type { BaseUser } from "@/lib/types";
 interface SessionUser extends BaseUser {
   isMember: boolean;
   roles: RoleKey[];
+  memberQr?: string | null;
 }
 
 interface PublicHeaderProps {
@@ -79,6 +80,7 @@ export function PublicHeader({ sessionUser }: PublicHeaderProps) {
                 onSignOut={handleSignOut}
                 isPending={isPending}
                 fallbackSecondary={roleFallback}
+                memberQr={sessionUser.memberQr}
               />
             </div>
           ) : (
@@ -95,6 +97,7 @@ export function PublicHeader({ sessionUser }: PublicHeaderProps) {
             showDashboardLink={showDashboardLink}
             onSignOut={handleSignOut}
             roleFallback={roleFallback}
+            memberQr={sessionUser?.memberQr}
           />
         </div>
       </div>

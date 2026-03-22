@@ -41,7 +41,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { MemberQRDialog } from "@/components/shared/qr-code";
+import { UserQRDialog } from "@/components/shared/qr-code";
 import { DeleteConfirmDialog } from "@/components/admin/delete-confirm-dialog";
 import { toast } from "sonner";
 import { ManageRolesSheet, getDisplayRoles } from "./manage-roles-sheet";
@@ -223,11 +223,10 @@ export function UsersClient({
           account_status: <UserStatusBadge status={row.account_status} />,
           qr_code: row.member_qr ? (
             <div onClick={(e) => e.stopPropagation()}>
-              <MemberQRDialog
+              <UserQRDialog
                 memberQr={row.member_qr}
                 userName={row.name}
-                onRegenerate={() => handleGenerateQR(row.id)}
-                isPendingRegenerate={isPendingQR}
+                regenerateAction={() => generateUserQR(row.id)}
                 triggerClassName="h-auto p-0 text-blue-600 hover:text-blue-700"
               />
             </div>
@@ -266,7 +265,7 @@ export function UsersClient({
               size="sm"
               className="h-auto p-0 bg-transparent hover:bg-transparent"
             >
-              Unavailable
+              Not Activated
             </Button>
           ),
           created_at: <DateCell date={row.created_at} />,
@@ -582,13 +581,12 @@ export function UsersClient({
 
       {/* Show QR dialog immediately after QR-only user creation */}
       {newQrData && (
-        <MemberQRDialog
+        <UserQRDialog
           memberQr={newQrData.qr}
           userName={newQrData.name}
           defaultOpen
+          showRegenerate={false}
           onClose={() => setNewQrData(null)}
-          onRegenerate={() => {}}
-          isPendingRegenerate={false}
         />
       )}
     </>
