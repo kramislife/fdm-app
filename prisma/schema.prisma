@@ -28,18 +28,9 @@ model Role {
   is_active   Boolean @default(true)
 
   created_at DateTime @default(now())
-  created_by Int?
-
   updated_at DateTime @updatedAt
-  updated_by Int?
 
-  deleted_at DateTime?
-  deleted_by Int?
-
-  user_roles      UserRole[]
-  creator         User?      @relation("RoleCreator", fields: [created_by], references: [id])
-  updated_by_user User?      @relation("RoleUpdatedBy", fields: [updated_by], references: [id])
-  deleted_by_user User?      @relation("RoleDeletedBy", fields: [deleted_by], references: [id])
+  user_roles UserRole[]
 
   @@index([created_at])
   @@map("roles")
@@ -151,9 +142,6 @@ model User {
   finance_records FinanceRecord[]
   announcements   Announcement[]
 
-  roles_created          Role[]         @relation("RoleCreator")
-  roles_updated          Role[]         @relation("RoleUpdatedBy")
-  roles_deleted          Role[]         @relation("RoleDeletedBy")
   ministry_types_created MinistryType[] @relation("MinistryTypeCreator")
   ministry_types_updated MinistryType[] @relation("MinistryTypeUpdatedBy")
   ministry_types_deleted MinistryType[] @relation("MinistryTypeDeletedBy")

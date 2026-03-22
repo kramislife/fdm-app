@@ -22,7 +22,6 @@ export async function getRoles(params: TableParams = {}) {
   } = params;
 
   const where = {
-    deleted_at: null,
     ...(search
       ? {
           OR: [
@@ -41,14 +40,6 @@ export async function getRoles(params: TableParams = {}) {
       orderBy: buildOrderBy(sort, order, ORDER_FIELDS),
       skip: (page - 1) * perPage,
       take: perPage,
-      include: {
-        creator: {
-          select: { first_name: true, last_name: true },
-        },
-        updated_by_user: {
-          select: { first_name: true, last_name: true },
-        },
-      },
     }),
     prisma.role.count({ where }),
   ]);
@@ -58,10 +49,6 @@ export async function getRoles(params: TableParams = {}) {
 
 export async function getRolesForSelect() {
   return prisma.role.findMany({
-    where: {
-      deleted_at: null,
-      key: { notIn: ["member", "ministry_head"] },
-    },
     select: { id: true, key: true, name: true, scope: true },
     orderBy: { name: "asc" },
   });
