@@ -1,30 +1,101 @@
-// Format date and time
-export function formatDateTime(
-  date: Date | string,
-  format: "short" | "long" = "short",
-): string {
+// ------------------------------- Date & Time (Asia/Manila) ---------------------------------
+const PH_TIMEZONE = "Asia/Manila";
+
+function parseSafeDate(date: Date | string | null | undefined): Date | null {
+  if (!date) return null;
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleString("en-PH", {
-    month: format,
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function formatCore(
+  date: Date | string | null | undefined,
+  options: Intl.DateTimeFormatOptions,
+): string {
+  const d = parseSafeDate(date);
+  if (!d) return "—";
+
+  try {
+    return d.toLocaleString("en-PH", {
+      timeZone: PH_TIMEZONE,
+      ...options,
+    });
+  } catch {
+    return String(date);
+  }
+}
+
+/** Full date and time: "Jan 23, 2026, 04:33 PM" */
+export function formatDateTime(
+  date: Date | string | null | undefined,
+  monthFormat: "short" | "long" = "short",
+) {
+  return formatCore(date, {
+    month: monthFormat,
     day: "numeric",
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    hour12: true,
   });
 }
 
-// Format date only
+/** Date only: "Jan 23, 2026" */
 export function formatDate(
-  date: Date | string,
-  format: "short" | "long" = "short",
-): string {
-  const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleDateString("en-PH", {
-    month: format,
+  date: Date | string | null | undefined,
+  monthFormat: "short" | "long" = "short",
+) {
+  return formatCore(date, {
+    month: monthFormat,
     day: "numeric",
     year: "numeric",
   });
 }
+
+/** Time only: "04:33 PM" */
+export function formatTime(date: Date | string | null | undefined) {
+  return formatCore(date, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+/** For HTML date input: "2026-03-23" */
+export function formatToISODate(
+  date: Date | string | null | undefined,
+): string {
+  const d = parseSafeDate(date);
+  if (!d) return "";
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: PH_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(d);
+}
+
+/** For HTML time input: "17:38" */
+export function formatToISOTime(
+  date: Date | string | null | undefined,
+): string {
+  const d = parseSafeDate(date);
+  if (!d) return "";
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: PH_TIMEZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(d);
+}
+
+export const DAYS_OF_WEEK = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 // Capitalize first letter of each word (for names/titles)
 export function capitalizeWords(str: string) {

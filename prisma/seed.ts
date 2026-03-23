@@ -809,9 +809,7 @@ async function main() {
     create: {
       name: "Rays of Mercy — Manila March 2026",
       event_type_id: eventTypeMap["rays_of_mercy"].id,
-      event_date: new Date("2026-03-08"),
-      event_time: new Date("1970-01-01T09:00:00"),
-      is_raffle_event: true,
+      event_date: new Date("2026-03-08T09:00:00+08:00"),
       created_by: da.id,
     },
   });
@@ -822,9 +820,7 @@ async function main() {
     create: {
       name: "Rays of Mercy — February 2026",
       event_type_id: eventTypeMap["rays_of_mercy"].id,
-      event_date: new Date("2026-02-08"),
-      event_time: new Date("1970-01-01T09:00:00"),
-      is_raffle_event: false,
+      event_date: new Date("2026-02-08T09:00:00+08:00"),
       created_by: da.id,
     },
   });
@@ -836,9 +832,7 @@ async function main() {
       name: "Catholic Life in the Spirit Experience — QC 2026",
       chapter_id: chapterMap["Quezon City"].id,
       event_type_id: eventTypeMap["clse"].id,
-      event_date: new Date("2026-02-21"),
-      event_time: new Date("1970-01-01T08:00:00"),
-      is_raffle_event: false,
+      event_date: new Date("2026-02-21T08:00:00+08:00"),
       created_by: qcHS.id,
     },
   });
@@ -850,9 +844,7 @@ async function main() {
       name: "Biyayang Bigas — Bataan Outreach",
       chapter_id: chapterMap["Bataan"].id,
       event_type_id: eventTypeMap["biyayang_bigas"].id,
-      event_date: new Date("2026-03-01"),
-      event_time: new Date("1970-01-01T07:00:00"),
-      is_raffle_event: false,
+      event_date: new Date("2026-03-01T07:00:00+08:00"),
       created_by: batHS.id,
     },
   });
@@ -863,9 +855,7 @@ async function main() {
     create: {
       name: "FDM Community Anniversary Celebration",
       event_type_id: eventTypeMap["special"].id,
-      event_date: new Date("2026-04-05"),
-      event_time: new Date("1970-01-01T10:00:00"),
-      is_raffle_event: false,
+      event_date: new Date("2026-04-05T10:00:00+08:00"),
       created_by: da.id,
     },
   });

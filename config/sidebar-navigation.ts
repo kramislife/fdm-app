@@ -109,13 +109,12 @@ export const SIDEBAR_NAV: NavGroup[] = [
     items: [
       {
         label: "Events",
-        href: "/dashboard/events",
+        href: "/dashboard/admin/events",
         icon: BsCalendar2DateFill,
         roles: [
           "director_adviser",
           "elder",
           "head_servant",
-          "asst_head_servant",
         ],
       },
       {

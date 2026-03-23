@@ -46,4 +46,9 @@ export const PERMISSION_ROLES = {
     ROLE_KEYS.HEAD_SERVANT,
     ROLE_KEYS.ASST_HEAD_SERVANT,
   ],
+  EVENTS_MANAGE: [
+    ROLE_KEYS.DIRECTOR_ADVISER,
+    ROLE_KEYS.ELDER,
+    ROLE_KEYS.HEAD_SERVANT,
+  ],
 } as const satisfies Record<string, readonly RoleKey[]>;

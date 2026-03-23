@@ -23,15 +23,14 @@ model Role {
   id          Int     @id @default(autoincrement())
   key         String  @unique @db.VarChar(50)
   name        String  @db.VarChar(100)
-  scope       String  @db.VarChar(20)
+  scope       String  @default("global") @db.VarChar(20)
   description String? @db.VarChar(255)
   is_active   Boolean @default(true)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  user_roles UserRole[]
-
+  user_roles     UserRole[]
   @@index([created_at])
   @@map("roles")
 }
@@ -131,9 +130,11 @@ model User {
   cluster_members  ClusterMember[]
 
   attendance         Attendance[]
-  events_created     Event[]
-  guest_logs_encoded GuestLog[]   @relation("EncodedBy")
-  guest_logs_linked  GuestLog[]   @relation("LinkedUser")
+  events_created     Event[]        @relation("EventCreatedBy")
+  events_updated     Event[]        @relation("EventUpdatedBy")
+  events_deleted     Event[]        @relation("EventDeletedBy")
+  guest_logs_encoded GuestLog[]     @relation("EncodedBy")
+  guest_logs_linked  GuestLog[]     @relation("LinkedUser")
 
   enthronements_contact   EnthronementRecord[] @relation("ContactMember")
   enthronements_performed EnthronementRecord[] @relation("EnthronedBy")
@@ -274,22 +275,29 @@ model Event {
   id            Int      @id @default(autoincrement())
   name          String   @db.VarChar(255)
   chapter_id    Int?
-  event_type_id Int
-  event_date    DateTime @db.Date
-  event_time    DateTime @db.Time
+  event_type_id Int?
+  scope         String   @default("global") @db.VarChar(10)
+  event_date DateTime
+  location   String? @db.VarChar(255)
+  location_url String? @db.VarChar(500)
 
+  qr_enabled    Boolean   @default(false)
   qr_token      String?   @db.VarChar(500)
   qr_expires_at DateTime?
   qr_interval   Int       @default(15)
 
-  is_raffle_event Boolean  @default(false)
-  created_by      Int
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  created_by Int
+  updated_by Int?
+  deleted_at DateTime?
+  deleted_by Int?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
 
-  chapter    Chapter?  @relation(fields: [chapter_id], references: [id])
-  event_type EventType @relation(fields: [event_type_id], references: [id])
-  creator    User      @relation(fields: [created_by], references: [id])
+  chapter         Chapter?  @relation(fields: [chapter_id], references: [id])
+  event_type      EventType? @relation(fields: [event_type_id], references: [id])
+  creator         User      @relation("EventCreatedBy", fields: [created_by], references: [id])
+  updated_by_user User?     @relation("EventUpdatedBy", fields: [updated_by], references: [id])
+  deleted_by_user User?     @relation("EventDeletedBy", fields: [deleted_by], references: [id])
 
   attendance Attendance[]
   guest_logs GuestLog[]
@@ -299,6 +307,7 @@ model Event {
   @@index([created_at])
   @@map("events")
 }
+
 
 // ============================================================
 // [3] RELATIONSHIP / JUNCTION TABLES

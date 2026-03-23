@@ -27,6 +27,7 @@ interface UserQRDialogProps {
   onClose?: () => void;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  expiresAt?: string | null;
 }
 
 export function UserQRDialog({
@@ -39,6 +40,7 @@ export function UserQRDialog({
   onClose,
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
+  expiresAt,
 }: UserQRDialogProps) {
   const router = useRouter();
   const isControlled = controlledOpen !== undefined;
@@ -48,7 +50,9 @@ export function UserQRDialog({
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
   const [isPending, setIsPending] = useState(false);
   // Holds the toast to fire once the new QR image is rendered
-  const pendingToast = useRef<{ title: string; description?: string } | null>(null);
+  const pendingToast = useRef<{ title: string; description?: string } | null>(
+    null,
+  );
 
   const resolvedAction = regenerateAction ?? regenerateMyQR;
 
@@ -76,6 +80,27 @@ export function UserQRDialog({
     }
   }, [memberQr]);
 
+  // Handle Automatic Refresh based on expiresAt
+  useEffect(() => {
+    if (!open || !expiresAt || isPending) return;
+
+    const checkRefresh = () => {
+      const expiry = new Date(expiresAt).getTime();
+      const now = Date.now();
+
+      // If already expired or expiring in less than 5 seconds
+      if (expiry - now < 5000) {
+        confirmRegenerate(true);
+      }
+    };
+
+    // Check every 10 seconds
+    const interval = setInterval(checkRefresh, 10000);
+    checkRefresh(); // Preliminary check
+
+    return () => clearInterval(interval);
+  }, [open, expiresAt, isPending]);
+
   const handleDownload = () => {
     if (!dataUrl) return;
     const link = document.createElement("a");
@@ -86,7 +111,7 @@ export function UserQRDialog({
     document.body.removeChild(link);
   };
 
-  async function confirmRegenerate() {
+  async function confirmRegenerate(isAuto = false) {
     setShowRegenerateConfirm(false);
     setDataUrl("");
     setIsPending(true);
@@ -95,14 +120,18 @@ export function UserQRDialog({
       if (result.success) {
         // Store the toast — it fires inside the useEffect once the new QR renders
         pendingToast.current = {
-          title: result.title ?? "Success",
-          description: result.description,
+          title: isAuto ? "QR Code Refreshed" : (result.title ?? "Success"),
+          description: isAuto
+            ? "Token updated for security."
+            : result.description,
         };
         router.refresh();
       } else {
-        toast.error(result.title ?? "Error", {
-          description: result.description,
-        });
+        if (!isAuto) {
+          toast.error(result.title ?? "Error", {
+            description: result.description,
+          });
+        }
         // Restore the existing QR image — memberQr didn't change so useEffect won't re-run
         QRCode.toDataURL(memberQr, { width: 512, margin: 2 })
           .then(setDataUrl)
@@ -110,7 +139,9 @@ export function UserQRDialog({
         setIsPending(false);
       }
     } catch {
-      toast.error("Error", { description: "Something went wrong." });
+      if (!isAuto) {
+        toast.error("Error", { description: "Something went wrong." });
+      }
       QRCode.toDataURL(memberQr, { width: 512, margin: 2 })
         .then(setDataUrl)
         .catch((err) => console.error("Failed to restore QR code:", err));
@@ -162,6 +193,11 @@ export function UserQRDialog({
               <p className="text-xs text-muted-foreground">
                 Friends of the Divine Mercy
               </p>
+              {expiresAt && (
+                <p className="text-[10px] text-blue-600 font-medium">
+                  Auto-refreshes every 15 minutes
+                </p>
+              )}
             </div>
           </div>
 
@@ -194,7 +230,7 @@ export function UserQRDialog({
               <ConfirmActionDialog
                 open={showRegenerateConfirm}
                 onClose={() => setShowRegenerateConfirm(false)}
-                onConfirm={confirmRegenerate}
+                onConfirm={() => confirmRegenerate(false)}
                 isPending={isPending}
                 title="Regenerate QR Code?"
                 description="Are you sure you want to regenerate this QR code? The current code will no longer work."

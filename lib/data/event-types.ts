@@ -48,3 +48,11 @@ export async function getEventTypes(params: TableParams = {}) {
 
   return { data, ...buildPaginationMeta(total, page, perPage) };
 }
+
+export async function getEventTypesForSelect() {
+  return prisma.eventType.findMany({
+    where: { is_active: true, deleted_at: null },
+    select: { id: true, key: true, name: true },
+    orderBy: { name: "asc" },
+  });
+}

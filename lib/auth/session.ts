@@ -26,9 +26,9 @@ export function getRoleKeys(dbUser: UserWithRoles): RoleKey[] {
   return dbUser.user_roles.map((ur) => ur.role.key as RoleKey);
 }
 
-/** True when the user has roles and ALL of them are ROLE_KEYS.MEMBER */
-export function isMemberOnly(roleKeys: RoleKey[]): boolean {
-  return roleKeys.length > 0 && roleKeys.every((k) => k === ROLE_KEYS.MEMBER);
+/** True when the user has no roles OR all of them are ROLE_KEYS.MEMBER */
+export function isGuestOrMember(roleKeys: RoleKey[]): boolean {
+  return roleKeys.length === 0 || roleKeys.every((k) => k === ROLE_KEYS.MEMBER);
 }
 
 /** Build the session user object passed to client components */
@@ -40,7 +40,7 @@ export function buildSessionUser(dbUser: UserWithRoles) {
     email: dbUser.email,
     photoUrl: dbUser.photo_url,
     roles,
-    isMember: isMemberOnly(roles),
+    isMember: isGuestOrMember(roles),
     memberQr: dbUser.member_qr,
   };
 }

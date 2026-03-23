@@ -9,513 +9,337 @@
 
 - Phase 1–12 ✅
 - Phase 13: Ministry Heads Management
-- Phase 14: Users CRUD
-- Phase 15: User Account State Management ← CURRENT
+- Phase 14: Users CRUD ✅
+- Phase 15: User Account State Management ✅
+- Phase 16: Events CRUD ← CURRENT
 
 ---
 
-## Phase 15: User Account State Management
+## Phase 16: Events CRUD
 
-> Goal: Clean, simple user lifecycle.
-> Two types of users: normal (web access) and QR-only (attendance only).
-> QR-only users have no email, no auth, no login — just a QR for attendance.
-> Normal users: two statuses only — pending and verified.
+> Goal: Admin and Head Servant can create, edit, and delete events.
+> Two scopes: global (all chapters) and chapter (specific chapter).
+> Meeting type unlocks invitees section.
+> QR toggle controls whether attendance is tracked.
+> Upcoming events on dashboard filtered by scope + invitees + role.
 
 ---
 
-### 15a. Schema Changes - DONE!
+### 16a. Schema Changes
 
-Add to `users` table:
-
-```prisma
-is_qr_only           Boolean   @default(false)
-// true  = elderly/no email, QR attendance only
-//         no Supabase auth, no login needed
-//         member_qr generated on creation
-// false = normal account with login
-
-```
-
-Add to `user_roles` table:
+Update `events` table:
 
 ```prisma
-access_revoked Boolean @default(false)
-// true  = role deactivated as part of Remove Access
-// false = role individually removed via Manage Roles
-// used to match correct batch on Restore Access
+model Event {
+  id            Int      @id @default(autoincrement())
+  name          String   @db.VarChar(255)
+  event_type_id Int
+  chapter_id    Int?     // null = global, set = chapter-scoped
+  scope         String   @db.VarChar(10) @default("chapter")
+  // global | chapter
+
+  date          DateTime @db.Date
+  time          DateTime @db.Time
+  location      String?  @db.VarChar(255)  // venue/address
+
+  qr_enabled    Boolean  @default(false)
+  // true  = QR token generated, attendance tracked via scan
+  // false = no QR, guest encoding only or notify only
+
+  qr_token      String?  @db.VarChar(500)
+  qr_expires_at DateTime?
+  qr_interval   Int      @default(15)
+
+  is_raffle_event Boolean @default(false)
+
+  created_by    Int
+  updated_by    Int?
+  deleted_at    DateTime?
+  deleted_by    Int?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  // relations
+  event_type    EventType @relation(...)
+  chapter       Chapter?  @relation(...)
+  creator       User      @relation(...)
+  attendance    Attendance[]
+  guest_logs    GuestLog[]
+  invitees      EventInvitee[]
+}
 ```
 
-Remove from `users` table:
+Add new `event_invitees` table:
 
-```
-has_qr       ← redundant, use member_qr != null instead
+```prisma
+model EventInvitee {
+  id          Int    @id @default(autoincrement())
+  event_id    Int
+  type        String @db.VarChar(20)
+  // everyone | role | chapter | user
+
+  role_id     Int?   // set when type = role
+  chapter_id  Int?   // set when type = chapter
+  user_id     Int?   // set when type = user
+
+  event       Event    @relation(...)
+  role        Role?    @relation(...)
+  chapter     Chapter? @relation(...)
+  user        User?    @relation(...)
+
+  @@index([event_id])
+  @@map("event_invitees")
+}
 ```
 
-Run SQL in Supabase: DONE!
+Run SQL in Supabase:
 
 ```sql
--- Add new columns
-ALTER TABLE users ADD COLUMN IF NOT EXISTS is_qr_only BOOLEAN DEFAULT false;
-ALTER TABLE user_roles ADD COLUMN IF NOT EXISTS access_revoked BOOLEAN DEFAULT false;
-
--- Remove old columns
-ALTER TABLE users DROP COLUMN IF EXISTS has_qr;
+ALTER TABLE events ADD COLUMN IF NOT EXISTS scope VARCHAR(10) DEFAULT 'chapter';
+ALTER TABLE events ADD COLUMN IF NOT EXISTS location VARCHAR(255);
+ALTER TABLE events ADD COLUMN IF NOT EXISTS qr_enabled BOOLEAN DEFAULT false;
+ALTER TABLE events ADD COLUMN IF NOT EXISTS updated_by INT REFERENCES users(id);
+ALTER TABLE events ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP;
+ALTER TABLE events ADD COLUMN IF NOT EXISTS deleted_by INT REFERENCES users(id);
 ```
 
 Then: `npx prisma generate` → `npx prisma db push`
 
-Update USER_STATUS constant: DONE!
+---
+
+### 16b. Data Fetchers
+
+`lib/data/events.ts`
+
+`getEvents(params: TableParams & { scope?: string, chapterId?: number })`
+
+- where: `{ deleted_at: null }`
+- Include: event_type, chapter, creator, invitees, \_count attendance
+- Search: name, event_type name, location
+- Sort: date desc by default
+- SD + Elder: all events
+- Head Servant: global + own chapter events only
+
+`getUpcomingEvents(userId, chapterIds, roles)`
+
+- Returns events for dashboard display
+- Filters:
+  1. Global events → always included for elevated roles
+  2. Chapter events WHERE chapter_id in user's chapters
+  3. Meeting events WHERE user is in invitees
+- date >= today
+- Limit 5, ordered by date asc
+- Used on dashboard homepage
+
+`getEventTypesForSelect()`
+
+- All active non-deleted event types
+- select: { id, key, name }
+- orderBy: name asc
+
+`getChaptersForSelect()` — already exists, reuse
+
+`getActiveUsersForInvite(search, chapterId?)`
+
+- For specific user search in invitees
+- Filter: account_status = verified, is_qr_only = false
+- Search: first_name, last_name, email
+- chapterId filter optional (for chapter-scoped meetings)
+- Limit 10 results
+- Returns: { id, first_name, last_name, photo_url, chapter }
+
+---
+
+### 16c. Events Page
+
+`app/(dashboard)/admin/events/page.tsx`
+
+Page header:
+
+- Title: "Event Management"
+- Description: "Manage community events and gatherings"
+- "+ Add Event" button top-right
+
+Table columns:
+Name | Type | Scope | Date | Time | Location | QR | Attendees | Actions
+
+Scope column:
+
+- Global → green badge "Global"
+- Chapter → chapter name badge
+
+QR column:
+
+- ON → green dot
+- OFF → gray dot
+
+Actions ellipsis:
+
+- View
+- Edit
+- Delete (soft delete)
+
+---
+
+### 16d. Create / Edit Event Sheet
+
+Single AdminSheet, title changes per mode.
+
+Form fields:
+
+```
+Event Name       Input, required
+
+Event Type       Select from getEventTypesForSelect()
+                 required
+
+Scope            Radio or Select: Global | Chapter
+                 Global:
+                   chapter select hidden
+                   chapter_id = null
+                 Chapter:
+                   chapter select shown, required
+                   SD/Elder: can select any chapter
+                   Head Servant: locked to own chapter
+
+Date             Date picker, required
+
+Time             Time picker, required
+
+Location         Text area, optional
+                 Venue name or address
+
+QR Attendance    Toggle on/off
+                 ON  → QR token auto-generated on save
+                 OFF → no QR token
+
+-- INVITEES SECTION --
+Shown ONLY when event_type = meeting
+
+Invite:
+  [+ Add Invitee Group] button
+  Each group is a tag:
+
+  Type select:
+    Everyone     → one tag: [Everyone ✕]
+                   replaces all other tags if selected
+    By Role      → role select appears → [Role Name ✕]
+    By Chapter   → chapter select appears → [Chapter Name ✕]
+    Specific User → search input → [User Name ✕]
+
+  Multiple tags allowed (except Everyone replaces all)
+  Each tag shown below the selects
+
+  Examples:
+    [All Elders ✕] [All Head Servants ✕]
+    [QC Chapter ✕] [Rosa Villanueva ✕]
+```
+
+---
+
+### 16e. Server Actions
+
+`app/(dashboard)/admin/events/actions.ts`
+
+`createEvent(data)`
+
+- `requireRole(['director_adviser', 'elder', 'head_servant'])`
+- Head Servant validation:
+  - Cannot create global events
+    error: "Head Servants can only create chapter events."
+  - Cannot create events for other chapters
+    error: "You can only create events for your own chapter."
+- Validate: name, event_type, date, time required
+- If qr_enabled = true:
+  - Generate qr_token: crypto.randomUUID()
+  - Set qr_expires_at if needed
+- Create event row
+- If meeting type + invitees provided:
+  - Create event_invitees rows for each invitee group
+- `revalidatePath('/dashboard/admin/events')`
+- Return `{ success: true }` or `{ success: false, error }`
+
+`updateEvent(id, data)`
+
+- `requireRole(['director_adviser', 'elder', 'head_servant'])`
+- Head Servant: can only update own chapter events
+- If qr_enabled toggled ON and no qr_token:
+  - Generate new qr_token
+- If qr_enabled toggled OFF:
+  - Clear qr_token, qr_expires_at
+- Update event_invitees:
+  - Delete existing invitees for this event
+  - Re-create from new invitees data
+- `revalidatePath('/dashboard/admin/events')`
+- Return `{ success: true }` or `{ success: false, error }`
+
+`deleteEvent(id)`
+
+- `requireRole(['director_adviser', 'elder', 'head_servant'])`
+- Head Servant: can only delete own chapter events
+- Soft delete:
+  ```ts
+  data: {
+    deleted_at: new Date(),
+    deleted_by: currentUser.id
+  }
+  ```
+- `revalidatePath('/dashboard/admin/events')`
+- Return `{ success: true }` or `{ success: false, error }`
+
+---
+
+### 16g. Fellowship Day Suggestion
+
+When event_type = fellowship AND scope = chapter:
+
+- System reads fellowship_day from selected chapter
+- Pre-fills date with next occurrence of that day
+- Admin can override
+- Example: QC fellowship_day = Friday
+  → Date pre-fills with next Friday from today
+
+Logic:
 
 ```ts
-export const USER_STATUS = {
-  GUEST: "guest", // in guest_logs only, no users row
-  PENDING: "pending", // account created, not logged in yet
-  EXPIRED: "expired", // pending > 7 days, never activated
-  VERIFIED: "verified", // logged in + QR auto-generated
-} as const;
-// is_qr_only users ignore account_status — irrelevant for them
+function getNextFellowshipDate(fellowshipDay: string): Date {
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const targetDay = days.indexOf(fellowshipDay);
+  const today = new Date();
+  const diff = (targetDay - today.getDay() + 7) % 7 || 7;
+  return new Date(today.setDate(today.getDate() + diff));
+}
 ```
 
 ---
 
-### 15b. Two User Types
-
-TYPE 1 — Normal Member (is_qr_only = false):
-
-```
-Has email (required)
-Has Supabase auth (auth_id set)
-is_temp_password = true on creation
-account_status: pending → verified on first login
-QR auto-generated on first login
-Can log in to web app
-Can access / and /dashboard based on roles
-```
-
-TYPE 2 — QR-Only Member (is_qr_only = true):
-
-```
-No email required
-No phone required
-No Supabase auth (auth_id = null)
-No login ever
-QR generated immediately on creation by admin
-member_qr set on creation
-account_status: pending
-Only purpose: attendance via QR scan
-If they later get email → admin converts to normal account
-```
-
----
-
-### 15c. Flow 1 — Create Normal Member
-
-```
-1. Admin fills create user form:
-     First Name (required)
-     Last Name (required)
-     Email (required for normal member)
-     Contact Number (optional)
-     Birthday (optional)
-     Chapter (optional — home chapter)
-     Address (optional)
-     "QR attendance only" toggle = OFF (default)
-
-2. Validations:
-     email required + valid format
-     email uniqueness check
-
-3. On Save:
-     a. Create public.users:
-          account_status = pending
-          is_temp_password = true
-          is_qr_only = false
-          member_qr = null
-          auth_id = null (set next)
-     b. Create user_chapters if chapter provided
-     c. Create Supabase Auth account:
-          supabase.auth.admin.createUser({
-            email,
-            password: [auto-generated temp password],
-            email_confirm: true
-          })
-     d. Save auth_id to public.users
-     e. Send invite email with temp password
-        On email send fail → toast:
-          "Account created but invite email failed.
-           Use Resend Credentials to try again."
-```
-
----
-
-### 15d. Flow 2 — Create QR-Only Member (Elderly)
-
-```
-1. Admin fills create user form:
-     First Name (required)
-     Last Name (required)
-     Email (hidden — not needed)
-     Contact (hidden — not needed)
-     Birthday (optional)
-     Chapter (optional)
-     "QR attendance only" toggle = ON
-
-2. On Save:
-     a. Create public.users:
-          is_qr_only = true
-          account_status = pending
-          is_temp_password = false
-          auth_id = null (never created)
-          member_qr = auto-generated immediately
-          qr_generated_at = now()
-     b. Create user_chapters if chapter provided
-
-3. Show QR immediately after creation:
-     QR image displayed
-     [Download QR] button
-
-4. Admin prints QR and hands to elderly member
-   Secretariat scans QR at events → attendance recorded
-   Member never needs phone, email, or web app
-```
-
----
-
-### 15e. Flow 3 — Convert QR-Only to Normal Account
-
-```
-Elderly member later gets an email and wants web access:
-
-1. Admin opens Edit User for QR-only member
-2. Toggles OFF "QR attendance only"
-   → Email input appears
-3. Admin adds their email
-4. On Save:
-     a. Validate email uniqueness
-     b. Update public.users:
-          is_qr_only = false
-          email = new email
-          is_temp_password = true
-     c. Create Supabase Auth account:
-          supabase.auth.admin.createUser({
-            email,
-            password: [new temp password],
-            email_confirm: true
-          })
-     d. Save auth_id
-     e. Send invite email
-     f. member_qr preserved → NOT regenerated
-        Existing printed QR still works
-
-5. Member logs in with temp password
-   → /first-login → changes password
-   → account_status = verified
-   → member_qr unchanged (already exists)
-   → Attendance history preserved
-```
-
----
-
-### 15f. Flow 4 — First Login (Pending → Verified)
-
-```
-1. Member enters email + temp password at /login
-2. Supabase validates → proceed
-3. is_temp_password = true → redirect to /first-login
-4. Member changes password on /first-login
-
-5. On submit — completeFirstLogin():
-   a. supabase.auth.updateUser({ password: newPassword })
-   b. Check if member_qr exists:
-        member_qr = null → auto-generate QR:
-          member_qr = crypto.randomUUID()
-          qr_generated_at = now()
-        member_qr exists (converted QR-only) → keep existing QR
-   c. Update public.users:
-        is_temp_password = false
-        account_status = verified
-   d. Run attendance backfill:
-        find guest_logs WHERE email matches AND linked_user_id null
-        update attendance.user_id for matching records
-        set guest_logs.linked_user_id = user.id
-
-6. Check user_roles:
-   → has active roles → /dashboard
-   → no active roles → /
-```
-
----
-
-### 15g. Flow 5 — Normal Login (Returning Member)
-
-```
-1. Member enters email + password
-2. Supabase validates
-3. is_temp_password check:
-   → true → /first-login
-   → false → proceed
-4. Check user_roles:
-   → has active roles → /dashboard
-   → no active roles → /
-```
-
----
-
-### 15h. Flow 6 — Gmail OAuth Login
-
-```
-In /auth/callback after OAuth:
-
-CASE 1 — email matches pending account:
-  → Sign out from Supabase
-  → Redirect to /login?error=provisioned&date=[created_at]
-  → "Your account was created by our admin on [date].
-     Check your email for your login credentials."
-
-CASE 2 — email matches existing verified account:
-  → Link auth_id if not yet linked
-  → Run attendance backfill
-  → Check user_roles → /dashboard or /
-
-CASE 3 — email not found (new Gmail user):
-  → Upload Google avatar to Cloudinary
-  → Auto-generate QR:
-       member_qr = unique value
-       qr_generated_at = now()
-  → Create public.users:
-       name from Google display name
-       email from Google
-       photo_url = Cloudinary URL
-       account_status = verified
-       is_temp_password = false
-       is_qr_only = false
-       auth_id = linked
-  → Run attendance backfill
-  → Redirect to /
-```
-
----
-
-### 15i. Flow 7 — Expired Account (Pending > 7 Days)
-
-```
-Scheduled job or on-demand check:
-  Find users WHERE:
-    account_status = pending
-    AND is_qr_only = false
-    AND created_at < 7 days ago
-
-  → Set account_status = expired
-
-Expired account in admin table:
-  Status badge: expired = red
-  Ellipsis shows:
-    View | Edit | Manage Roles | Resend Credentials | Delete Account
-
-Resend Credentials:
-  → Generate new temp password
-  → Update Supabase auth
-  → Send invite email
-  → Show temp password once
-  → Update activation_email_sent_at
-  → Increment activation_email_resent
-
-Delete Account (expired only):
-  → Confirm dialog:
-      "Delete [Name]'s account?
-       Created [X days ago], never activated.
-       This cannot be undone."
-  → Hard delete: user + user_roles + user_chapters
-  → supabase.auth.admin.deleteUser(auth_id)
-  → guest_logs + attendance preserved
-```
-
----
-
-### 15j. Flow 8 — QR Code (User Side)
-
-```
-Verified member goes to My QR page:
-  → QR image displayed
-  → [Download QR] button
-  → [Regenerate] button:
-      Basic member (no elevated roles):
-        7-day cooldown from qr_generated_at
-        If < 7 days: button disabled + tooltip showing available date
-        If > 7 days: simple confirm → regenerate
-      Elevated role (HS, Elder, SD, etc.):
-        No cooldown — regenerate anytime
-      On regenerate:
-        member_qr = new unique value
-        qr_generated_at = now()
-        qr_regenerated_count += 1
-```
-
----
-
-### 15k. Flow 9 — QR Code (Admin Side)
-
-```
-Admin opens user detail:
-
-Normal member (is_qr_only = false):
-  member_qr = null (not yet logged in):
-    → No generate button
-    → Note: "QR will be auto-generated when member logs in."
-    → [Resend Credentials] button if pending/expired
-
-  member_qr exists:
-    → Show QR image + [Download] button
-    → [Regenerate] button
-         SD + Elder + Head Servant: no cooldown
-         Simple confirm dialog → regenerate
-
-QR-only member (is_qr_only = true):
-  member_qr = null (just created, shouldn't happen):
-    → [Generate QR] button → generates immediately, no dialog
-  member_qr exists:
-    → Show QR image + [Download] button
-    → [Regenerate] button with confirm:
-    → SD + Elder + Head Servant: no cooldown
-```
-
----
-
-### 15l. Flow 10 — Resend Credentials
-
-```
-Available when:
-  is_qr_only = false
-  AND (account_status = pending OR expired)
-  AND is_temp_password = true
-
-Steps:
-  1. Generate new temp password
-  2. Update Supabase auth: supabase.auth.admin.updateUserById(
-       auth_id, { password: newTempPassword }
-     )
-  3. Send invite email
-  4. Update activation_email_sent_at = now()
-  5. Increment activation_email_resent
-```
-
----
-
-### 15m. Flow 11 — Remove Access (Deactivate)
-
-```
-Show in ellipsis when:
-  User has at least one active user_role
-  is_qr_only = false
-  Hide if no active roles
-
-Validations:
-  Cannot remove own access
-  Cannot remove Director Adviser access
-
-Steps:
-  1. Update all active user_roles:
-       is_active = false
-       access_revoked = true
-  2. Update users:
-       deactivated_at = now()
-       deactivated_by = currentUser.id
-
-Result:
-  User can still log in
-  No active roles → lands on / only
-  Can see public pages + My QR + My Profile
-  No dashboard access
-```
-
----
-
-### 15n. Flow 12 — Restore Access
-
-```
-Show in ellipsis when:
-  users.deactivated_at is not null
-
-Steps:
-  1. Find user_roles WHERE:
-       user_id = this user
-       is_active = false
-       access_revoked = true  ← same batch flag
-  2. Set those roles:
-       is_active = true
-       access_revoked = false
-  3. Update users:
-       deactivated_at = null
-       deactivated_by = null
-
-Toast: "Access restored. Visit Manage Roles if needed."
-Old individually-removed roles NOT restored.
-```
-
----
-
-### 15o. Ellipsis Actions Summary
-
-```
-Normal member, verified, has active roles:
-  View | Edit | Manage Roles | ── | Remove Access
-
-Normal member, deactivated (deactivated_at set):
-  View | Edit | Manage Roles | ── | Restore Access
-
-Normal member, pending (< 7 days):
-  View | Edit | Manage Roles | ── | Resend Credentials
-
-Normal member, expired (pending > 7 days):
-  View | Edit | Manage Roles | ── | Resend Credentials | Delete Account
-
-Normal member, verified, no roles (basic member):
-  View | Edit | Manage Roles
-
-QR-only member:
-  View | Edit | (no Remove Access, no Delete unless admin decides)
-```
-
----
-
-### 15p. Middleware Rules
-
-```
-Every protected route:
-  1. No session → /login
-  2. is_temp_password = true → /first-login
-     (skip for is_qr_only = true — they never have sessions)
-  3. /dashboard/* + no active user_roles → redirect to /
-  4. /dashboard/admin/* → requireRole(['director_adviser', 'elder'])
-```
-
----
-
-### 15q. Codebase Cleanup
-
-- Remove all `registered` status references
-- Remove `has_qr` — use `member_qr !== null` everywhere
-- Add `is_qr_only`
-- Update status badges:
-  pending = warning
-  expired = error
-  verified = success
-- Update middleware with new checks
+### 16h. Access Rules
+
+| Role             | Can create | Scope allowed        | Can edit/delete  |
+| ---------------- | ---------- | -------------------- | ---------------- |
+| Director Adviser | ✅         | Global + any chapter | All events       |
+| Elder            | ✅         | Global + any chapter | All events       |
+| Head Servant     | ✅         | Own chapter only     | Own chapter only |
+| Others           | ❌         | —                    | —                |
 
 ---
 
 ## Decisions Recorded
 
-- Two user types: normal (web) and QR-only (attendance only)
-- is_qr_only = true → no email, no auth, QR generated on create
-- QR-only → account_status irrelevant, pending
-- Normal member: pending → verified on first login
-- expired = pending > 7 days (auto-set)
-- QR auto-generated on first login for normal members
-- Existing QR preserved when QR-only converts to normal
-- Temp password shown once on create + resend (never stored)
-- access_revoked flag for clean batch restore
-- member_qr != null replaces has_qr boolean
-- 7-day cooldown for basic members, no cooldown for elevated roles
-- No soft delete on users — hard delete for expired only
-- Director Adviser: one globally, cannot remove own role
+- One form for all event types — meeting type unlocks invitees
+- scope: global (no chapter_id) or chapter (chapter_id set)
+- QR toggle: on = attendance via scan, off = no QR
+- Head Servant locked to own chapter, cannot create global
+- Meeting invitees: Everyone, By Role, By Chapter, Specific User
+- Everyone tag replaces all other invitee tags
+- Fellowship date pre-filled from chapter's fellowship_day
+- Soft delete on events (deleted_at)
+- Upcoming events: global + own chapter + invited meetings

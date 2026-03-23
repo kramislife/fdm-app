@@ -3,12 +3,7 @@
 import type { Column } from "@/components/admin/data-table";
 import type { Pagination } from "@/lib/table";
 import type { AddressValue } from "@/lib/types";
-import {
-  StatusBadge,
-  TextCell,
-  LinkCell,
-  DateCell,
-} from "@/components/shared/cells";
+import { StatusBadge, TextCell, LinkCell } from "@/components/shared/cells";
 import {
   FormInput,
   FormSelect,
@@ -22,17 +17,9 @@ import {
 import { ReferenceTypeClient } from "@/components/admin/reference-type-client";
 import { ChapterAddressForm } from "@/components/admin/chapter-address-form";
 import { createChapter, updateChapter, deleteChapter } from "./actions";
+import { DAYS_OF_WEEK } from "@/lib/format";
 
 // ------------------------------- Constants --------------------------------------
-
-const DAYS_OF_WEEK = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
 
 const FIELD_LABELS = {
   name: "Chapter",

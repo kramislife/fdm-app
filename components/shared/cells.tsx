@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   formatDateTime,
   formatDate,
+  formatTime,
   capitalizeWords,
   formatName,
 } from "@/lib/format";
@@ -36,7 +37,8 @@ interface UserStatusBadgeProps {
 }
 
 export function UserStatusBadge({ status }: UserStatusBadgeProps) {
-  let variant: "secondary" | "warning" | "error" | "info" | "success" = "secondary";
+  let variant: "secondary" | "warning" | "error" | "info" | "success" =
+    "secondary";
 
   if (status === ACCOUNT_STATUS.PENDING) variant = "warning";
   else if (status === ACCOUNT_STATUS.EXPIRED) variant = "error";
@@ -56,7 +58,7 @@ interface UserCellProps {
 
 export function UserCell({ user, fallback = "—" }: UserCellProps) {
   if (!user) {
-    return <span className="text-muted-foreground">{fallback}</span>;
+    return fallback;
   }
   const fullName = formatName(user, "full", fallback);
   return <span title={fullName}>{fullName}</span>;
@@ -78,7 +80,7 @@ export function TextCell({
     value === null || value === undefined || String(value).trim() === "";
 
   if (isEmpty) {
-    return <span className="text-muted-foreground">{fallback}</span>;
+    return fallback;
   }
 
   let displayValue = String(value);
@@ -97,6 +99,7 @@ export function TextCell({
 interface DateCellProps {
   date: Date | string | null | undefined;
   dateOnly?: boolean;
+  timeOnly?: boolean;
   format?: "short" | "long";
   fallback?: string;
 }
@@ -104,15 +107,23 @@ interface DateCellProps {
 export function DateCell({
   date,
   dateOnly = false,
+  timeOnly = false,
   format = "short",
   fallback = "—",
 }: DateCellProps) {
   if (!date) {
-    return <span className="text-muted-foreground">{fallback}</span>;
+    return fallback;
   }
-  const formatted = dateOnly
-    ? formatDate(date, format)
-    : formatDateTime(date, format);
+
+  let formatted = "";
+  if (timeOnly) {
+    formatted = formatTime(date);
+  } else if (dateOnly) {
+    formatted = formatDate(date, format);
+  } else {
+    formatted = formatDateTime(date, format);
+  }
+
   return <span title={formatted}>{formatted}</span>;
 }
 
@@ -125,7 +136,7 @@ interface LinkCellProps {
 
 export function LinkCell({ href, label, fallback = "—" }: LinkCellProps) {
   if (!href) {
-    return <span className="text-muted-foreground">{fallback}</span>;
+    return fallback;
   }
 
   const displayText = label || href;

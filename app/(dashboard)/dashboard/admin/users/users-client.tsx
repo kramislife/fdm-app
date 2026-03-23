@@ -25,6 +25,7 @@ import {
   isValidPhoneNumber,
   isValidEmailFormat,
   normalizePhoneNumber,
+  formatToISODate,
 } from "@/lib/format";
 import {
   createUser,
@@ -263,7 +264,7 @@ export function UsersClient({
             <Button
               variant="secondary"
               size="sm"
-              className="h-auto p-0 bg-transparent hover:bg-transparent"
+              className="h-auto p-0 bg-transparent hover:bg-transparent cursor-default"
             >
               Not Activated
             </Button>
@@ -352,7 +353,7 @@ export function UsersClient({
           last_name: row.last_name,
           contact_number: row.contact_number ?? "",
           email: row.email ?? "",
-          birthday: row.birthday ? row.birthday.split("T")[0] : "",
+          birthday: formatToISODate(row.birthday),
           account_status: row.account_status,
           address: row.address ?? "",
           chapter_id: row.user_chapters?.[0]?.chapter?.id,

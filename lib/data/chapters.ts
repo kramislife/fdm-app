@@ -61,7 +61,7 @@ export async function getChapters(params: TableParams = {}) {
 export async function getChaptersForSelect() {
   return prisma.chapter.findMany({
     where: { is_active: true, deleted_at: null },
-    select: { id: true, name: true },
+    select: { id: true, name: true, fellowship_day: true, street: true },
     orderBy: { name: "asc" },
   });
 }
