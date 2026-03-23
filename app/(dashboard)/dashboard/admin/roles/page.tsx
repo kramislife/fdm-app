@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth";
 import { getRoles } from "@/lib/data/roles";
 import { PERMISSION_ROLES } from "@/lib/app-roles";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
 import { RolesClient, type RoleRow } from "./roles-client";
+
+export const metadata: Metadata = {
+  title: "User Roles | Dashboard",
+  description: "View and manage system-wide community roles and permissions.",
+};
 
 export default async function RolesPage({ searchParams }: PageProps) {
   await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);

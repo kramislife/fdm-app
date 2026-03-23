@@ -10,7 +10,21 @@ import {
 
 export default async function MinistryHeadsPage({ searchParams }: PageProps) {
   const authUser = await requireAuth();
-  const userData = await getUserWithRole(authUser.id);
+
+  const { search, page, perPage, sort, order } = parseTableParams(
+    await searchParams,
+  );
+
+  const [userData, result] = await Promise.all([
+    getUserWithRole(authUser.id),
+    getMinistryHeads({
+      search: search || undefined,
+      page,
+      perPage,
+      sort,
+      order,
+    }),
+  ]);
 
   if (!userData) return null;
 
@@ -18,18 +32,6 @@ export default async function MinistryHeadsPage({ searchParams }: PageProps) {
   const isSuperAdmin = roles.some((r) =>
     PERMISSION_ROLES.SUPER_ADMIN.some((allowedRole) => allowedRole === r),
   );
-
-  const { search, page, perPage, sort, order } = parseTableParams(
-    await searchParams,
-  );
-
-  const result = await getMinistryHeads({
-    search: search || undefined,
-    page,
-    perPage,
-    sort,
-    order,
-  });
 
   const ministryHeads: MinistryHeadRow[] = (result.data as any[]).map((m) => {
     const activeHead = m.user_roles?.[0];

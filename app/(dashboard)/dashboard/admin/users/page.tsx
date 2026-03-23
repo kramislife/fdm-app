@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth";
 import { getUsers } from "@/lib/data/users";
 import { getChaptersForSelect } from "@/lib/data/chapters";
@@ -6,6 +7,12 @@ import { PERMISSION_ROLES } from "@/lib/app-roles";
 import { formatName, getNameInitials } from "@/lib/format";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
 import { UsersClient, type UserRow } from "./users-client";
+
+export const metadata: Metadata = {
+  title: "User Management | Dashboard",
+  description:
+    "View and manage community members, their account status, and system levels.",
+};
 
 export default async function UsersPage({ searchParams }: PageProps) {
   const actor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);

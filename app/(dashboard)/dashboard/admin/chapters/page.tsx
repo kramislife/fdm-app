@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth";
 import { getChapters } from "@/lib/data/chapters";
 import { PERMISSION_ROLES } from "@/lib/app-roles";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
 import { ChaptersClient, type ChapterRow } from "./chapters-client";
+
+export const metadata: Metadata = {
+  title: "Chapters | Dashboard",
+  description:
+    "View and manage community chapters, regions, and member counts.",
+};
 
 export default async function ChaptersPage({ searchParams }: PageProps) {
   await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);

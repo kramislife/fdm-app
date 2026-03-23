@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth";
 import { getEventTypes } from "@/lib/data/event-types";
 import { PERMISSION_ROLES } from "@/lib/app-roles";
 import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
 import { EventTypesClient, type EventTypeRow } from "./event-types-client";
+
+export const metadata: Metadata = {
+  title: "Event Types | Dashboard",
+  description: "Manage and configure different types of community events.",
+};
 
 export default async function EventTypesPage({ searchParams }: PageProps) {
   await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);

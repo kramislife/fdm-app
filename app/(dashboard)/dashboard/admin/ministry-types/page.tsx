@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth";
 import { getMinistryTypes } from "@/lib/data/ministry-types";
 import { PERMISSION_ROLES } from "@/lib/app-roles";
@@ -6,6 +7,12 @@ import {
   MinistryTypesClient,
   type MinistryTypeRow,
 } from "./ministry-types-client";
+
+export const metadata: Metadata = {
+  title: "Ministry Types | Dashboard",
+  description:
+    "Manage classifications for various ministry initiatives and groups.",
+};
 
 export default async function MinistryTypesPage({ searchParams }: PageProps) {
   await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
