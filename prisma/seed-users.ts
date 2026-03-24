@@ -2,7 +2,7 @@ import { PrismaClient } from "../lib/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { config } from "dotenv";
-import { ACCOUNT_STATUS } from "../lib/status";
+import { ACCOUNT_STATUS } from "../lib/constants/status";
 import crypto from "node:crypto";
 
 config({ path: ".env.local" });
