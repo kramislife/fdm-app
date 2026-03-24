@@ -483,10 +483,18 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
         onCreate={handleCreate}
         onUpdate={updateUser}
         onDelete={deleteUser}
-        canDelete={(row) =>
-          row.account_status === ACCOUNT_STATUS.PENDING ||
-          row.account_status === ACCOUNT_STATUS.EXPIRED
-        }
+        canDelete={(row) => {
+          const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+          const isOldEnough =
+            new Date().getTime() - new Date(row.created_at).getTime() >
+            sevenDaysInMs;
+
+          return (
+            row.account_status === ACCOUNT_STATUS.EXPIRED ||
+            (row.account_status === ACCOUNT_STATUS.PENDING &&
+              (row.is_qr_only || isOldEnough))
+          );
+        }}
         extraRowActions={(row) => [
           {
             label: "Manage Roles",

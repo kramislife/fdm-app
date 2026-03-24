@@ -542,19 +542,42 @@ export async function deleteUser(id: number): Promise<ActionResult> {
   try {
     const user = await prisma.user.findUnique({
       where: { id },
-      select: { auth_id: true, account_status: true },
+      select: {
+        auth_id: true,
+        account_status: true,
+        created_at: true,
+        is_qr_only: true,
+      },
     });
 
     if (!user) return { success: false, description: "User not found." };
 
+    const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+    const isOldEnough =
+      new Date().getTime() - new Date(user.created_at).getTime() >
+      sevenDaysInMs;
+
+    // A user is deletable if:
+    // 1. Status is EXPIRED (always deletable because it's by definition > 7 days pending)
+    // 2. Status is PENDING AND (is QR-only OR has been pending for more than 7 days)
     const isDeletable =
-      user.account_status === ACCOUNT_STATUS.PENDING ||
-      user.account_status === ACCOUNT_STATUS.EXPIRED;
+      user.account_status === ACCOUNT_STATUS.EXPIRED ||
+      (user.account_status === ACCOUNT_STATUS.PENDING &&
+        (user.is_qr_only || isOldEnough));
 
     if (!isDeletable) {
+      const remainingDays = Math.ceil(
+        (sevenDaysInMs -
+          (new Date().getTime() - new Date(user.created_at).getTime())) /
+          (24 * 60 * 60 * 1000),
+      );
       return {
         success: false,
-        description: "Only pending or expired accounts can be deleted.",
+        title: "Action Restricted",
+        description:
+          user.account_status === ACCOUNT_STATUS.PENDING && !user.is_qr_only
+            ? `New accounts cannot be deleted within 7 days of creation. Please wait ${remainingDays} more days or wait for the account to expire.`
+            : "This account cannot be deleted in its current state.",
       };
     }
 
