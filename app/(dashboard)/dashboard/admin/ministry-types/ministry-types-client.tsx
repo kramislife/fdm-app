@@ -38,10 +38,15 @@ export type MinistryTypeRow = {
   updated_by: { first_name: string; last_name: string } | null;
 };
 
-type MinistryTypeForm = {
+export type MinistryTypeForm = {
   name: string;
   description: string;
   is_active: boolean;
+};
+
+type Props = {
+  ministryTypes: MinistryTypeRow[];
+  pagination: Pagination;
 };
 
 // ------------------------------- Constants --------------------------------------
@@ -67,20 +72,25 @@ const columns: Column[] = [
   { key: "actions", label: "Actions", align: "center" },
 ];
 
+// ------------------------------- Helpers/Logic --------------------------------------
+
+function validate(form: MinistryTypeForm) {
+  const errors: Record<string, string | undefined> = {};
+  if (!form.name.trim()) errors.name = `${FIELD_LABELS.name} is required`;
+  return errors;
+}
+
+function getFormFromRow(row: MinistryTypeRow): MinistryTypeForm {
+  return {
+    name: row.name,
+    description: row.description ?? "",
+    is_active: row.is_active,
+  };
+}
+
 // ------------------------------- Component --------------------------------------
 
-type Props = {
-  ministryTypes: MinistryTypeRow[];
-  pagination: Pagination;
-};
-
 export function MinistryTypesClient({ ministryTypes, pagination }: Props) {
-  function validate(form: MinistryTypeForm) {
-    const errors: Record<string, string | undefined> = {};
-    if (!form.name.trim()) errors.name = "Ministry Type is required";
-    return errors;
-  }
-
   return (
     <ReferenceTypeClient<MinistryTypeRow, MinistryTypeForm>
       entityLabel="Ministry Type"
@@ -122,13 +132,9 @@ export function MinistryTypesClient({ ministryTypes, pagination }: Props) {
       )}
       // ----------------------------- Form Handling -----------------------------
       initialForm={EMPTY_FORM}
-      getFormFromRow={(row) => ({
-        name: row.name,
-        description: row.description ?? "",
-        is_active: row.is_active,
-      })}
+      getFormFromRow={getFormFromRow}
       validate={validate}
-      renderForm={(form, setForm, _isEditing, errors, _initialValues) => (
+      renderForm={(form, setForm, _isEditing, errors) => (
         <div className="space-y-5">
           <FormInput
             label={FIELD_LABELS.name}

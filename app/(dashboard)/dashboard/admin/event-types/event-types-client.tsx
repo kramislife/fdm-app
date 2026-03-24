@@ -34,10 +34,15 @@ export type EventTypeRow = {
   updated_by: { first_name: string; last_name: string } | null;
 };
 
-type EventTypeForm = {
+export type EventTypeForm = {
   name: string;
   description: string;
   is_active: boolean;
+};
+
+type Props = {
+  eventTypes: EventTypeRow[];
+  pagination: Pagination;
 };
 
 // ------------------------------- Constants --------------------------------------
@@ -63,20 +68,25 @@ const columns: Column[] = [
   { key: "actions", label: "Actions", align: "center" },
 ];
 
+// ------------------------------- Helpers/Logic --------------------------------------
+
+function validate(form: EventTypeForm) {
+  const errors: Record<string, string | undefined> = {};
+  if (!form.name.trim()) errors.name = `${FIELD_LABELS.name} is required`;
+  return errors;
+}
+
+function getFormFromRow(row: EventTypeRow): EventTypeForm {
+  return {
+    name: row.name,
+    description: row.description ?? "",
+    is_active: row.is_active,
+  };
+}
+
 // ------------------------------- Component --------------------------------------
 
-type Props = {
-  eventTypes: EventTypeRow[];
-  pagination: Pagination;
-};
-
 export function EventTypesClient({ eventTypes, pagination }: Props) {
-  function validate(form: EventTypeForm) {
-    const errors: Record<string, string | undefined> = {};
-    if (!form.name.trim()) errors.name = "Event Type is required";
-    return errors;
-  }
-
   return (
     <ReferenceTypeClient<EventTypeRow, EventTypeForm>
       entityLabel="Event Type"
@@ -90,8 +100,8 @@ export function EventTypesClient({ eventTypes, pagination }: Props) {
         name: <TextCell value={row.name} />,
         description: <TextCell value={row.description} />,
         status: <StatusBadge isActive={row.is_active} />,
-        created_at: <DateCell date={row.created_at} />,
         created_by: <UserCell user={row.creator} />,
+        created_at: <DateCell date={row.created_at} />,
       })}
       // ----------------------------- Detail View -------------------------------
       renderDetail={(row) => (
@@ -118,13 +128,9 @@ export function EventTypesClient({ eventTypes, pagination }: Props) {
       )}
       // ----------------------------- Form Handling -----------------------------
       initialForm={EMPTY_FORM}
-      getFormFromRow={(row) => ({
-        name: row.name,
-        description: row.description ?? "",
-        is_active: row.is_active,
-      })}
+      getFormFromRow={getFormFromRow}
       validate={validate}
-      renderForm={(form, setForm, _isEditing, errors, _initialValues) => (
+      renderForm={(form, setForm, _isEditing, errors) => (
         <div className="space-y-5">
           <FormInput
             label={FIELD_LABELS.name}

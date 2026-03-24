@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   formatDateTime,
   formatDate,
@@ -130,7 +131,7 @@ export function DateCell({
 // ------------------------------- Link Cell -----------------------------------------
 interface LinkCellProps {
   href: string | null | undefined;
-  label?: string;
+  label?: string | null;
   fallback?: string;
 }
 
@@ -151,5 +152,66 @@ export function LinkCell({ href, label, fallback = "—" }: LinkCellProps) {
     >
       {displayText}
     </a>
+  );
+}
+// ------------------------------- QR Action Cell -----------------------------------------
+interface QRActionCellProps {
+  qrValue: string | null | undefined;
+  onView: () => void;
+  onGenerate: () => void;
+  isGenerating?: boolean;
+  enabled?: boolean;
+  disabledLabel?: string;
+}
+
+export function QRActionCell({
+  qrValue,
+  onView,
+  onGenerate,
+  isGenerating = false,
+  enabled = true,
+  disabledLabel = "Disabled",
+}: QRActionCellProps) {
+  if (!enabled) {
+    return (
+      <Button
+        variant="secondary"
+        size="sm"
+        className="h-auto p-0 bg-transparent hover:bg-transparent cursor-default"
+      >
+        {disabledLabel}
+      </Button>
+    );
+  }
+
+  if (qrValue) {
+    return (
+      <Button
+        variant="link"
+        size="sm"
+        className="h-auto p-0 text-blue-600 hover:text-blue-700"
+        onClick={(e) => {
+          e.stopPropagation();
+          onView();
+        }}
+      >
+        View QR
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      variant="link"
+      size="sm"
+      className="h-auto p-0 text-primary hover:text-primary/80"
+      disabled={isGenerating}
+      onClick={(e) => {
+        e.stopPropagation();
+        onGenerate();
+      }}
+    >
+      {isGenerating ? "Generating..." : "Generate"}
+    </Button>
   );
 }

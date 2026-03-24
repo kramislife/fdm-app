@@ -1,18 +1,20 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import type { Column } from "@/components/admin/data-table";
 import type { Pagination } from "@/lib/table";
-import { DateCell, TextCell, LinkCell } from "@/components/shared/cells";
+import {
+  DateCell,
+  TextCell,
+  LinkCell,
+  QRActionCell,
+} from "@/components/shared/cells";
 import { UserQRDialog } from "@/components/shared/qr-code";
 import { formatToISODate, formatToISOTime } from "@/lib/format";
 import {
   FormInput,
   FormSelect,
   FormSwitch,
-  FormTextarea,
 } from "@/components/shared/form-fields";
 import {
   DetailField,
@@ -21,7 +23,6 @@ import {
 } from "@/components/shared/detail-field";
 import { ReferenceTypeClient } from "@/components/admin/reference-type-client";
 import { cn } from "@/lib/utils";
-import { FaExternalLinkAlt } from "react-icons/fa";
 import {
   createEvent,
   deleteEvent,
@@ -189,58 +190,21 @@ export function EventsClient({
           event_type: (
             <TextCell value={row.event_type?.name} fallback="Other" />
           ),
-          scope:
-            row.scope === "global" ? (
-              <TextCell value="Global" />
-            ) : (
-              <TextCell value={row.chapter?.name} fallback="Chapter" />
-            ),
-          event_date: <DateCell date={row.event_date} format="long" />,
-          location: row.location_url ? (
-            <div onClick={(e) => e.stopPropagation()}>
-              <LinkCell
-                href={row.location_url}
-                label={row.location || "View Map"}
-              />
-            </div>
-          ) : (
-            <TextCell value={row.location} />
+          scope: (
+            <TextCell
+              value={row.scope === "global" ? "Global" : row.chapter?.name}
+            />
           ),
-          qr: row.qr_enabled ? (
-            row.qr_token ? (
-              <Button
-                variant="link"
-                size="sm"
-                className="h-auto p-0 text-blue-600 hover:text-blue-700"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setQrTarget(row);
-                }}
-              >
-                View QR
-              </Button>
-            ) : (
-              <Button
-                variant="link"
-                size="sm"
-                className="h-auto p-0 text-primary hover:text-primary/80"
-                disabled={isPendingQR}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleGenerateEventQR(row.id);
-                }}
-              >
-                {isPendingQR ? "Generating..." : "Generate"}
-              </Button>
-            )
-          ) : (
-            <Button
-              variant="secondary"
-              size="sm"
-              className="h-auto p-0 bg-transparent hover:bg-transparent cursor-default"
-            >
-              Disabled
-            </Button>
+          event_date: <DateCell date={row.event_date} format="long" />,
+          location: <LinkCell href={row.location_url} label={row.location} />,
+          qr: (
+            <QRActionCell
+              qrValue={row.qr_token}
+              onView={() => setQrTarget(row)}
+              onGenerate={() => handleGenerateEventQR(row.id)}
+              isGenerating={isPendingQR}
+              enabled={row.qr_enabled}
+            />
           ),
           attendees: <TextCell value={row.attendance_count} />,
         })}
@@ -255,57 +219,28 @@ export function EventsClient({
                 <TextCell value={row.event_type?.name} fallback="Other" />
               </DetailField>
               <DetailField label={FIELD_LABELS.scope}>
-                {row.scope === "global" ? (
-                  <TextCell value="Global" />
-                ) : (
-                  <TextCell value={row.chapter?.name} fallback="Chapter" />
-                )}
+                <TextCell
+                  value={row.scope === "global" ? "Global" : row.chapter?.name}
+                />
               </DetailField>
               <DetailField label={FIELD_LABELS.event_date}>
                 <DateCell date={row.event_date} format="long" />
               </DetailField>
               <DetailField label={FIELD_LABELS.qr}>
-                {row.qr_enabled ? (
-                  row.qr_token ? (
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="h-auto p-0 text-blue-600 hover:text-blue-700"
-                      onClick={() => setQrTarget(row)}
-                    >
-                      View QR
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="h-auto p-0 text-primary hover:text-primary/80"
-                      disabled={isPendingQR}
-                      onClick={() => handleGenerateEventQR(row.id)}
-                    >
-                      {isPendingQR ? "Generating..." : "Generate"}
-                    </Button>
-                  )
-                ) : (
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="h-auto p-0 bg-transparent hover:bg-transparent cursor-default"
-                  >
-                    Disabled
-                  </Button>
-                )}
+                <QRActionCell
+                  qrValue={row.qr_token}
+                  onView={() => setQrTarget(row)}
+                  onGenerate={() => handleGenerateEventQR(row.id)}
+                  isGenerating={isPendingQR}
+                  enabled={row.qr_enabled}
+                />
               </DetailField>
               <DetailField label={FIELD_LABELS.attendees}>
                 <TextCell value={row.attendance_count} />
               </DetailField>
               {row.location && (
                 <DetailField label={FIELD_LABELS.location} fullWidth>
-                  {row.location_url ? (
-                    <LinkCell href={row.location_url} label={row.location} />
-                  ) : (
-                    <TextCell value={row.location} />
-                  )}
+                  <LinkCell href={row.location_url} label={row.location} />
                 </DetailField>
               )}
             </DetailSection>

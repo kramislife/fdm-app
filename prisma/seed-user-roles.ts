@@ -10,43 +10,72 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log("🌱 Seeding dummy user_roles...");
+  console.log(
+    "🌱 Updating user_roles with assigned_by: 1 and seeding new ones...",
+  );
 
-  // Fetch existing users, roles, chapters, ministry_types
-  const users = await prisma.user.findMany({});
-  const roles = await prisma.role.findMany({ where: { id: { not: 1 } } }); // skip super admin
+  const MEMBER_ROLE_ID = 11;
+  const ADMIN_ID = 1;
+
+  // 1. Update existing dummy roles to have assigned_by = 1
+  const updateResult = await prisma.userRole.updateMany({
+    where: {
+      user: { email: { endsWith: "@fdm.org" } },
+    },
+    data: {
+      assigned_by: ADMIN_ID,
+    },
+  });
+  console.log(`✅ Updated ${updateResult.count} existing user_roles.`);
+
+  // 2. Fetch chapters
   const chapters = await prisma.chapter.findMany({});
-  const ministryTypes = await prisma.ministryType.findMany({});
-
-  // Fetch existing user_roles
-  const existingUserRoles = await prisma.userRole.findMany({});
-
-  // Create 50 dummy user_roles
-  let count = 0;
-  for (const user of users) {
-    if (count >= 50) break;
-    // Skip if user already has a userRole
-    const hasRole = existingUserRoles.some(ur => ur.user_id === user.id);
-    if (hasRole) continue;
-    // Random role, chapter, ministry_type
-    const role = roles[Math.floor(Math.random() * roles.length)];
-    const chapter = chapters[Math.floor(Math.random() * chapters.length)];
-    const ministryType = ministryTypes[Math.floor(Math.random() * ministryTypes.length)];
-    await prisma.userRole.create({
-      data: {
-        user_id: user.id,
-        role_id: role.id,
-        chapter_id: chapter.id,
-        ministry_head_id: undefined,
-        cluster_id: undefined,
-        assigned_by: user.id,
-        is_active: true,
-      },
-    });
-    count++;
+  if (chapters.length === 0) {
+    console.error("❌ No chapters found. Please seed chapters first.");
+    return;
   }
 
-  console.log("✅ Dummy user_roles seeded!");
+  // 3. Fetch users who don't have roles yet (up to 50 total)
+  const usersWithoutRoles = await prisma.user.findMany({
+    where: {
+      user_roles: {
+        none: {},
+      },
+      email: { endsWith: "@fdm.org" },
+    },
+    take: 50,
+  });
+
+  let newCount = 0;
+  for (const user of usersWithoutRoles) {
+    const chapter = chapters[Math.floor(Math.random() * chapters.length)];
+
+    try {
+      await prisma.$transaction([
+        prisma.userRole.create({
+          data: {
+            user_id: user.id,
+            role_id: MEMBER_ROLE_ID,
+            chapter_id: chapter.id,
+            assigned_by: ADMIN_ID,
+            is_active: true,
+          },
+        }),
+        prisma.userChapter.create({
+          data: {
+            user_id: user.id,
+            chapter_id: chapter.id,
+            is_primary: true,
+          },
+        }),
+      ]);
+      newCount++;
+    } catch (error) {
+      console.error(`❌ Failed to seed role for user ${user.id}:`, error);
+    }
+  }
+
+  console.log(`✅ ${newCount} new dummy user_roles and user_chapters seeded!`);
 }
 
 main()

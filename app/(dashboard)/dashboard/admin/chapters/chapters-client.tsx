@@ -3,6 +3,7 @@
 import type { Column } from "@/components/admin/data-table";
 import type { Pagination } from "@/lib/table";
 import type { AddressValue } from "@/lib/types";
+import { DAYS_OF_WEEK } from "@/lib/format";
 import { StatusBadge, TextCell, LinkCell } from "@/components/shared/cells";
 import {
   FormInput,
@@ -17,23 +18,6 @@ import {
 import { ReferenceTypeClient } from "@/components/admin/reference-type-client";
 import { ChapterAddressForm } from "@/components/admin/chapter-address-form";
 import { createChapter, updateChapter, deleteChapter } from "./actions";
-import { DAYS_OF_WEEK } from "@/lib/format";
-
-// ------------------------------- Constants --------------------------------------
-
-const FIELD_LABELS = {
-  name: "Chapter",
-  region: "Region",
-  province: "Province",
-  city: "City",
-  barangay: "Barangay",
-  street: "Street Address",
-  gmaps: "Address Link",
-  landmark: "Landmark",
-  fellowship_day: "Schedule",
-  status: "Status",
-  members: "Members",
-};
 
 // ------------------------------- Types -----------------------------------------
 
@@ -65,6 +49,22 @@ type ChapterForm = {
   fellowship_day: string;
   is_active: boolean;
 } & AddressValue;
+
+// ------------------------------- Constants --------------------------------------
+
+const FIELD_LABELS = {
+  name: "Chapter",
+  region: "Region",
+  province: "Province",
+  city: "City",
+  barangay: "Barangay",
+  street: "Street Address",
+  gmaps: "Address Link",
+  landmark: "Landmark",
+  fellowship_day: "Schedule",
+  status: "Status",
+  members: "Members",
+};
 
 const EMPTY_FORM: ChapterForm = {
   name: "",
@@ -106,6 +106,39 @@ const columns: Column[] = [
   { key: "actions", label: "Actions", align: "center" },
 ];
 
+// ------------------------------- Helpers/Logic --------------------------------------
+
+function validate(form: ChapterForm) {
+  const errors: Record<string, string | undefined> = {};
+  if (!form.name.trim()) errors.name = `${FIELD_LABELS.name} name is required`;
+  if (!form.fellowship_day)
+    errors.fellowship_day = `${FIELD_LABELS.fellowship_day} is required`;
+  if (!form.region) errors.region = `${FIELD_LABELS.region} is required`;
+  if (!form.province) errors.province = `${FIELD_LABELS.province} is required`;
+  if (!form.city) errors.city = `${FIELD_LABELS.city} is required`;
+  if (!form.barangay) errors.barangay = `${FIELD_LABELS.barangay} is required`;
+  return errors;
+}
+
+function getFormFromRow(row: ChapterRow): ChapterForm {
+  return {
+    name: row.name,
+    region: row.region,
+    region_code: row.region_code ?? "",
+    province: row.province,
+    province_code: row.province_code ?? "",
+    city: row.city,
+    city_code: row.city_code ?? "",
+    barangay: row.barangay,
+    barangay_code: row.barangay_code ?? "",
+    street: row.street ?? "",
+    google_maps_url: row.google_maps_url ?? "",
+    landmark: row.landmark ?? "",
+    fellowship_day: row.fellowship_day ?? "",
+    is_active: row.is_active,
+  };
+}
+
 // ------------------------------- Component --------------------------------------
 
 type Props = {
@@ -114,17 +147,6 @@ type Props = {
 };
 
 export function ChaptersClient({ chapters, pagination }: Props) {
-  function validate(form: ChapterForm) {
-    const errors: Record<string, string | undefined> = {};
-    if (!form.name.trim()) errors.name = "Chapter name is required";
-    if (!form.fellowship_day) errors.fellowship_day = "Schedule is required";
-    if (!form.region) errors.region = "Region is required";
-    if (!form.province) errors.province = "Province is required";
-    if (!form.city) errors.city = "City is required";
-    if (!form.barangay) errors.barangay = "Barangay is required";
-    return errors;
-  }
-
   return (
     <ReferenceTypeClient<ChapterRow, ChapterForm>
       entityLabel="Chapter"
@@ -197,22 +219,7 @@ export function ChaptersClient({ chapters, pagination }: Props) {
       )}
       // ----------------------------- Form Handling -----------------------------
       initialForm={EMPTY_FORM}
-      getFormFromRow={(row) => ({
-        name: row.name,
-        region: row.region,
-        region_code: row.region_code ?? "",
-        province: row.province,
-        province_code: row.province_code ?? "",
-        city: row.city,
-        city_code: row.city_code ?? "",
-        barangay: row.barangay,
-        barangay_code: row.barangay_code ?? "",
-        street: row.street ?? "",
-        google_maps_url: row.google_maps_url ?? "",
-        landmark: row.landmark ?? "",
-        fellowship_day: row.fellowship_day ?? "",
-        is_active: row.is_active,
-      })}
+      getFormFromRow={getFormFromRow}
       validate={validate}
       renderForm={(form, setForm, _isEditing, errors, _initialValues) => (
         <div className="space-y-5">

@@ -9,6 +9,7 @@ import {
   UserCell,
   DateCell,
   UserStatusBadge,
+  QRActionCell,
 } from "@/components/shared/cells";
 import {
   DetailField,
@@ -38,7 +39,6 @@ import {
   type UserFormData,
 } from "./actions";
 import { FaPowerOff, FaSyncAlt, FaUserCog, FaEnvelope } from "react-icons/fa";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -47,49 +47,7 @@ import { ConfirmActionDialog } from "@/components/admin/confirm-dialog";
 import { toast } from "sonner";
 import { ManageRolesSheet, getDisplayRoles } from "./manage-roles-sheet";
 
-// ------------------------------- UI ONLY SHELL --------------------------------------
-
-const EMPTY_FORM: UserFormData = {
-  first_name: "",
-  last_name: "",
-  contact_number: "",
-  email: "",
-  birthday: "",
-  account_status: ACCOUNT_STATUS.PENDING,
-  address: "",
-  is_qr_only: false,
-};
-
-const FIELD_LABELS = {
-  name: "Full Name",
-  first_name: "First Name",
-  last_name: "Last Name",
-  email: "Email Address",
-  contact_number: "Contact Number",
-  birthday: "Birthday",
-  chapter: "Chapter",
-  roles: "Roles",
-  status: "Status",
-  address: "Address",
-  is_qr_only: "Account Type",
-  created_at: "Created At",
-  qr_code: "QR Code",
-};
-
-const columns: Column[] = [
-  { key: "name", label: FIELD_LABELS.name, sortable: true },
-  { key: "email", label: FIELD_LABELS.email, sortable: true },
-  {
-    key: "contact_number",
-    label: FIELD_LABELS.contact_number,
-    align: "center",
-  },
-  { key: "birthday", label: FIELD_LABELS.birthday },
-  { key: "account_status", label: FIELD_LABELS.status, align: "center" },
-  { key: "qr_code", label: FIELD_LABELS.qr_code, align: "center" },
-  { key: "created_at", label: FIELD_LABELS.created_at, sortable: true },
-  { key: "actions", label: "Actions", align: "center" },
-];
+// ------------------------------- Types --------------------------------------
 
 export type UserRow = {
   id: number;
@@ -125,66 +83,104 @@ type Props = {
   currentUserId: number;
 };
 
-// --------------------------------- Main Component --------------------------------
+// ---------------------------------- Constants ----------------------------------
 
-export function UsersClient({
-  users,
-  pagination,
-  chapters,
-  roles,
-  currentUserId,
-}: Props) {
+const FIELD_LABELS = {
+  name: "Full Name",
+  first_name: "First Name",
+  last_name: "Last Name",
+  email: "Email Address",
+  contact_number: "Contact Number",
+  birthday: "Birthday",
+  chapter: "Chapter",
+  roles: "Roles",
+  status: "Status",
+  address: "Address",
+  is_qr_only: "Account Type",
+  created_at: "Created At",
+  qr_code: "QR Code",
+};
+
+const EMPTY_FORM: UserFormData = {
+  first_name: "",
+  last_name: "",
+  contact_number: "",
+  email: "",
+  birthday: "",
+  account_status: ACCOUNT_STATUS.PENDING,
+  address: "",
+  is_qr_only: false,
+};
+
+const columns: Column[] = [
+  { key: "name", label: FIELD_LABELS.name, sortable: true },
+  { key: "email", label: FIELD_LABELS.email, sortable: true },
+  {
+    key: "contact_number",
+    label: FIELD_LABELS.contact_number,
+    align: "center",
+  },
+  { key: "birthday", label: FIELD_LABELS.birthday },
+  { key: "account_status", label: FIELD_LABELS.status, align: "center" },
+  { key: "qr_code", label: FIELD_LABELS.qr_code, align: "center" },
+  { key: "created_at", label: FIELD_LABELS.created_at, sortable: true },
+  { key: "actions", label: "Actions", align: "center" },
+];
+
+// --------------------------- Helpers/Logic---------------------------------
+
+function validate(form: UserFormData) {
+  const errors: Record<string, string | undefined> = {};
+  if (!form.first_name.trim()) errors.first_name = "First name is required";
+  if (!form.last_name.trim()) errors.last_name = "Last name is required";
+
+  if (!form.is_qr_only) {
+    if (!form.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!isValidEmailFormat(form.email)) {
+      errors.email = "Invalid email format";
+    }
+  }
+
+  if (form.contact_number.trim() && !isValidPhoneNumber(form.contact_number)) {
+    errors.contact_number =
+      "Must be a valid PH mobile number (e.g. 09123456789)";
+  }
+
+  return errors;
+}
+
+// --------------------------------- Component --------------------------------
+
+export function UsersClient({ users, pagination, chapters, roles }: Props) {
   const [isPendingQR, startQRTransition] = useTransition();
-  const [qrTarget, setQrTarget] = useState<UserRow | null>(null);
+  const [qrGenerateTarget, setQrGenerateTarget] = useState<UserRow | null>(
+    null,
+  );
 
-  // QR dialog shown after QR-only user creation
-  const [newQrData, setNewQrData] = useState<{
-    qr: string;
-    name: string;
-  } | null>(null);
+  // QR dialog data (for viewing or post-creation)
+  const [qrTarget, setQrTarget] = useState<
+    UserRow | { name: string; member_qr: string; id?: number } | null
+  >(null);
 
   // Manage roles dialog state
   const [managingRoles, setManagingRoles] = useState<UserRow | null>(null);
-
-  function openManageRoles(row: UserRow) {
-    setManagingRoles(row);
-  }
-
-  function validate(form: UserFormData) {
-    const errors: Record<string, string | undefined> = {};
-    if (!form.first_name.trim()) errors.first_name = "First name is required";
-    if (!form.last_name.trim()) errors.last_name = "Last name is required";
-
-    if (!form.is_qr_only) {
-      if (!form.email.trim()) {
-        errors.email = "Email is required";
-      } else if (!isValidEmailFormat(form.email)) {
-        errors.email = "Invalid email format";
-      }
-    }
-
-    if (
-      form.contact_number.trim() &&
-      !isValidPhoneNumber(form.contact_number)
-    ) {
-      errors.contact_number =
-        "Must be a valid PH mobile number (e.g. 09123456789)";
-    }
-
-    return errors;
-  }
 
   const chapterOptions = chapters.map((c) => ({
     value: String(c.id),
     label: c.name,
   }));
 
+  function openManageRoles(row: UserRow) {
+    setManagingRoles(row);
+  }
+
   // Wrap createUser to intercept member_qr for QR-only creation
   async function handleCreate(data: UserFormData) {
     const result = await createUser(data);
     if (result.success && result.member_qr) {
-      setNewQrData({
-        qr: result.member_qr,
+      setQrTarget({
+        member_qr: result.member_qr,
         name: `${data.first_name} ${data.last_name}`,
       });
     }
@@ -198,7 +194,7 @@ export function UsersClient({
         toast.success(result.title ?? "Success", {
           description: result.description,
         });
-        setQrTarget(null);
+        setQrGenerateTarget(null);
       } else {
         toast.error(result.title ?? "Error", {
           description: result.description,
@@ -222,52 +218,17 @@ export function UsersClient({
           contact_number: <TextCell value={row.contact_number} />,
           birthday: <DateCell date={row.birthday} dateOnly format="long" />,
           account_status: <UserStatusBadge status={row.account_status} />,
-          qr_code: row.member_qr ? (
-            <div onClick={(e) => e.stopPropagation()}>
-              <UserQRDialog
-                memberQr={row.member_qr}
-                userName={row.name}
-                regenerateAction={() => generateUserQR(row.id)}
-                triggerClassName="h-auto p-0 text-blue-600 hover:text-blue-700"
-              />
-            </div>
-          ) : row.is_qr_only ? (
-            // QR-only user with no QR yet (shouldn't normally happen)
-            <Button
-              variant="link"
-              size="sm"
-              className="h-auto p-0 text-primary hover:text-primary/80"
-              disabled={isPendingQR}
-              onClick={(e) => {
-                e.stopPropagation();
-                setQrTarget(row);
-              }}
-            >
-              Generate
-            </Button>
-          ) : row.account_status === ACCOUNT_STATUS.VERIFIED ? (
-            // Verified normal member — QR should have been generated on first login
-            <Button
-              variant="link"
-              size="sm"
-              className="h-auto p-0 text-primary hover:text-primary/80"
-              disabled={isPendingQR}
-              onClick={(e) => {
-                e.stopPropagation();
-                setQrTarget(row);
-              }}
-            >
-              Generate
-            </Button>
-          ) : (
-            // Pending/expired normal member — QR auto-generated on first login
-            <Button
-              variant="secondary"
-              size="sm"
-              className="h-auto p-0 bg-transparent hover:bg-transparent cursor-default"
-            >
-              Not Activated
-            </Button>
+          qr_code: (
+            <QRActionCell
+              qrValue={row.member_qr}
+              onView={() => setQrTarget(row)}
+              onGenerate={() => setQrGenerateTarget(row)}
+              isGenerating={isPendingQR}
+              enabled={
+                row.is_qr_only || row.account_status === ACCOUNT_STATUS.VERIFIED
+              }
+              disabledLabel="Not Activated"
+            />
           ),
           created_at: <DateCell date={row.created_at} />,
         })}
@@ -318,6 +279,19 @@ export function UsersClient({
               </DetailField>
               <DetailField label={FIELD_LABELS.status}>
                 <UserStatusBadge status={row.account_status} />
+              </DetailField>
+              <DetailField label={FIELD_LABELS.qr_code}>
+                <QRActionCell
+                  qrValue={row.member_qr}
+                  onView={() => setQrTarget(row)}
+                  onGenerate={() => setQrGenerateTarget(row)}
+                  isGenerating={isPendingQR}
+                  enabled={
+                    row.is_qr_only ||
+                    row.account_status === ACCOUNT_STATUS.VERIFIED
+                  }
+                  disabledLabel="Not Activated"
+                />
               </DetailField>
               <DetailMeta
                 id={row.id}
@@ -571,25 +545,27 @@ export function UsersClient({
 
       {/* Confirm dialog for generating QR from table */}
       <ConfirmActionDialog
-        open={!!qrTarget}
-        onClose={() => setQrTarget(null)}
-        onConfirm={() => qrTarget && handleGenerateQR(qrTarget.id)}
+        open={!!qrGenerateTarget}
+        onClose={() => setQrGenerateTarget(null)}
+        onConfirm={() =>
+          qrGenerateTarget && handleGenerateQR(qrGenerateTarget.id)
+        }
         isPending={isPendingQR}
         title="Generate QR Code?"
         description="This will create a secure QR code for attendance tracking linked to the selected account."
         confirmingText="Generating..."
       />
 
-      {/* Show QR dialog immediately after QR-only user creation */}
-      {newQrData && (
-        <UserQRDialog
-          memberQr={newQrData.qr}
-          userName={newQrData.name}
-          defaultOpen
-          showRegenerate={false}
-          onClose={() => setNewQrData(null)}
-        />
-      )}
+      <UserQRDialog
+        open={!!qrTarget}
+        onOpenChange={(open) => !open && setQrTarget(null)}
+        memberQr={qrTarget?.member_qr ?? ""}
+        userName={qrTarget?.name ?? ""}
+        showRegenerate={!!qrTarget?.id}
+        regenerateAction={
+          qrTarget?.id ? () => generateUserQR(qrTarget.id!) : undefined
+        }
+      />
     </>
   );
 }

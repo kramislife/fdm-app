@@ -7,6 +7,7 @@ import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/app-roles";
 import { ACCOUNT_STATUS } from "@/lib/status";
 import { revalidatePath } from "next/cache";
 import crypto from "node:crypto";
+import { isValidEmailFormat, isValidPhoneNumber } from "@/lib/format";
 
 export type UserFormData = {
   first_name: string;
@@ -33,11 +34,47 @@ function generateTempPassword() {
   return crypto.randomBytes(6).toString("hex").toUpperCase();
 }
 
+function validateUser(data: UserFormData): ActionResult | null {
+  const errors: Record<string, string> = {};
+  if (!data.first_name?.trim()) errors.first_name = "First name is required.";
+  if (!data.last_name?.trim()) errors.last_name = "Last name is required.";
+
+  if (!data.is_qr_only) {
+    if (!data.email?.trim()) {
+      errors.email = "Email is required.";
+    } else if (!isValidEmailFormat(data.email)) {
+      errors.email = "Invalid email format.";
+    }
+  }
+
+  if (
+    data.contact_number &&
+    data.contact_number.trim() &&
+    !isValidPhoneNumber(data.contact_number)
+  ) {
+    errors.contact_number =
+      "Must be a valid PH mobile number (e.g. 09123456789).";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return {
+      success: false,
+      title: "Form Incomplete",
+      description: "Please check the highlighted fields and try again.",
+      errors,
+    };
+  }
+  return null;
+}
+
 // ─── Create User ───────────────────────────────────────────────────────────────
 
 export async function createUser(data: UserFormData): Promise<ActionResult> {
   const actor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
   const actorId = actor.user.id;
+
+  const validationError = validateUser(data);
+  if (validationError) return validationError;
 
   try {
     // ── TYPE 2: QR-Only Member ─────────────────────────────────────────────
@@ -185,6 +222,9 @@ export async function updateUser(
 ): Promise<ActionResult> {
   const actor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
   const actorId = actor.user.id;
+
+  const validationError = validateUser(data);
+  if (validationError) return validationError;
 
   try {
     const existing = await prisma.user.findUnique({

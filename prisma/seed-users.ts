@@ -3,6 +3,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { config } from "dotenv";
 import { ACCOUNT_STATUS } from "../lib/status";
+import crypto from "node:crypto";
 
 config({ path: ".env.local" });
 
@@ -11,52 +12,100 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log("🌱 Seeding dummy users...");
+  console.log("🌱 Refining dummy users to match validation logic...");
 
-  // Fetch existing users
-  const existingUsers = await prisma.user.findMany({});
-  const existingEmails = new Set(existingUsers.map(u => u.email));
+  const dummyAddresses = [
+    "123 Maria Clara St., Sampaloc, Manila",
+    "456 Rizal Boulevard, Quezon City",
+    "789 Bonifacio Street, Davao City",
+    "101 Mabini Ave, Pasig City",
+    "202 Roxas Blvd, Malate, Manila",
+    "303 Session Road, Baguio City",
+    "404 Osmeña Street, Cebu City",
+    "505 Burgos St., Iloilo City",
+    "606 Gen. Luna Ave, Makati",
+    "707 Shaw Blvd, Mandaluyong",
+    "808 Taft Avenue, Pasay City",
+    "909 Aurora Blvd, Cubao, Quezon City",
+    "111 Escolta St, Binondo, Manila",
+    "222 Katipunan Ave, Loyola Heights",
+    "333 Commonwealth Ave, Diliman",
+    "444 Ortigas Center, Pasig",
+    "555 BGC High Street, Taguig",
+    "666 Makati Ave, Bel-Air",
+    "777 Jose Abad Santos, Tondo",
+    "888 Quezon Ave, Welcome Rotonda",
+  ];
 
-  // Generate 20 realistic random users
-  const firstNames = [
-    "James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Thomas", "Charles",
-    "Mary", "Patricia", "Jennifer", "Linda", "Elizabeth", "Barbara", "Susan", "Jessica", "Sarah", "Karen"
+  const statuses = [
+    ACCOUNT_STATUS.PENDING,
+    ACCOUNT_STATUS.EXPIRED,
+    ACCOUNT_STATUS.VERIFIED,
   ];
-  const lastNames = [
-    "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
-    "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin"
-  ];
-  const dummyUsers = Array.from({ length: 50 }, (_, i) => {
-    const first_name = firstNames[Math.floor(Math.random() * firstNames.length)];
-    const last_name = lastNames[Math.floor(Math.random() * lastNames.length)];
-    const email = `${first_name.toLowerCase()}.${last_name.toLowerCase()}${i+1}@fdm.org`;
-    const contact_number = `0917${String(1000000 + i).padStart(7, '0')}`;
-    // Random birthday between 18 and 80 years old
-    const age = Math.floor(Math.random() * (80 - 18 + 1)) + 18;
-    const today = new Date();
-    const birthday = new Date(today.getFullYear() - age, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1);
-    return {
-      first_name,
-      last_name,
-      email,
-      contact_number,
-      birthday,
-      account_status: ACCOUNT_STATUS.VERIFIED,
-    };
+
+  // Fetch only the dummy users we seeded
+  const allDummyUsers = await prisma.user.findMany({
+    where: {
+      OR: [
+        { email: { endsWith: "@fdm.org" } },
+        { email: null, is_qr_only: true },
+      ],
+    },
+    take: 50,
   });
 
-  // Insert only if not already present
-  for (const user of dummyUsers) {
-    if (!existingEmails.has(user.email)) {
-      await prisma.user.upsert({
-        where: { email: user.email },
-        update: { birthday: user.birthday },
-        create: user,
-      });
-    }
+  let updatedCount = 0;
+  for (const dbUser of allDummyUsers) {
+    const isQrOnly = Math.random() < 0.25; // 25% chance of being a QR-only member
+    const status = statuses[Math.floor(Math.random() * statuses.length)];
+
+    // Validation rules:
+    // 1. QR-Only: email=null, contact_number=null, is_qr_only=true, has member_qr
+    // 2. Normal: email=required, is_qr_only=false
+    // 3. Verified: has member_qr (regardless of type)
+
+    const email = isQrOnly
+      ? null
+      : dbUser.email ||
+        `${dbUser.first_name.toLowerCase()}.${dbUser.last_name.toLowerCase()}.${crypto.randomInt(1000, 9999)}@fdm.org`;
+
+    // For normal members, contact is optional but let's make it 80% present
+    const contact_number = isQrOnly
+      ? null
+      : Math.random() < 0.8
+        ? dbUser.contact_number ||
+          `09${Math.floor(Math.random() * 999999999)
+            .toString()
+            .padStart(9, "0")}`
+        : null;
+
+    // Verified users or QR-only users should have a QR code
+    const member_qr =
+      status === ACCOUNT_STATUS.VERIFIED || isQrOnly
+        ? dbUser.member_qr || crypto.randomUUID()
+        : null;
+
+    await prisma.user.update({
+      where: { id: dbUser.id },
+      data: {
+        account_status: status,
+        address:
+          dummyAddresses[Math.floor(Math.random() * dummyAddresses.length)],
+        email,
+        contact_number,
+        is_qr_only: isQrOnly,
+        member_qr,
+        qr_generated_at: member_qr
+          ? dbUser.qr_generated_at || new Date()
+          : null,
+      },
+    });
+    updatedCount++;
   }
 
-  console.log("✅ Dummy users seeded!");
+  console.log(
+    `✅ ${updatedCount} users refined. Data matches app validation logic (Normal vs QR-only).`,
+  );
 }
 
 main()
