@@ -32,7 +32,7 @@ import type {
   SectionWithImage,
   PillarItem,
   NavLink,
-} from "@/lib/types";
+} from "@/lib/types/types";
 
 // ---------------------------- Specific Section Interfaces ----------------------------
 

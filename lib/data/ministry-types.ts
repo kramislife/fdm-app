@@ -1,10 +1,10 @@
 import "server-only";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/db/prisma";
 import {
   buildOrderBy,
   buildPaginationMeta,
   type TableParams,
-} from "@/lib/table";
+} from "@/lib/utils/table";
 
 const ORDER_FIELDS: Record<string, string> = {
   name: "name",

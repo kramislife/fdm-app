@@ -9,7 +9,7 @@ import type {
   SocialLink,
   SectionWithDescription,
   BaseSection,
-} from "@/lib/types";
+} from "@/lib/types/types";
 
 export interface ContactSection {
   title: string;

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ctaContent } from "@/config/about";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/shared/animations/reveal";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 export function AboutCTA() {
   return (

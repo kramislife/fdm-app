@@ -14,7 +14,7 @@ import { AdminSheet } from "./admin-sheet";
 import { DetailSheet } from "./detail-sheet";
 import { ConfirmActionDialog } from "./confirm-dialog";
 import type { Column } from "./data-table";
-import type { Pagination } from "@/lib/table";
+import type { Pagination } from "@/lib/utils/table";
 
 // ------------------------------- Types -----------------------------------------
 

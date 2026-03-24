@@ -2,8 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { prisma } from "@/lib/prisma";
-import { ACCOUNT_STATUS } from "@/lib/status";
+import { prisma } from "@/lib/db/prisma";
+import { ACCOUNT_STATUS } from "@/lib/constants/status";
 import crypto from "node:crypto";
 
 export type SetPasswordState = {

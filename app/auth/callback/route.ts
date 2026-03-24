@@ -1,14 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
 import crypto from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
-import { prisma } from "@/lib/prisma";
-import { backfillAttendance } from "@/lib/auth";
-import { uploadToCloudinary } from "@/lib/cloudinary";
-import { normalizeEmail, isValidEmailFormat } from "@/lib/format";
-import { splitName } from "@/lib/format";
-import { AUTH_ERROR_CODES, buildLoginErrorPath } from "@/lib/auth-errors";
-import { ROLE_KEYS } from "@/lib/app-roles";
-import { ACCOUNT_STATUS } from "@/lib/status";
+import { prisma } from "@/lib/db/prisma";
+import { backfillAttendance } from "@/lib/auth/config";
+import { uploadToCloudinary } from "@/lib/services/cloudinary";
+import { normalizeEmail, isValidEmailFormat } from "@/lib/utils/format";
+import { splitName } from "@/lib/utils/format";
+import { AUTH_ERROR_CODES, buildLoginErrorPath } from "@/lib/auth/errors";
+import { ROLE_KEYS } from "@/lib/constants/app-roles";
+import { ACCOUNT_STATUS } from "@/lib/constants/status";
 
 // Upload user avatar to Cloudinary
 async function uploadAvatar(imageUrl: string, userId: number) {

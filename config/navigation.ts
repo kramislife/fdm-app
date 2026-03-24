@@ -9,7 +9,7 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import type { NavLink } from "@/lib/types";
+import type { NavLink } from "@/lib/types/types";
 
 export interface UserNavItem {
   label: string;

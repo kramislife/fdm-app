@@ -1,13 +1,13 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/db/prisma";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { requireRole } from "@/lib/auth";
-import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/app-roles";
-import { ACCOUNT_STATUS } from "@/lib/status";
+import { requireRole } from "@/lib/auth/config";
+import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/constants/app-roles";
+import { ACCOUNT_STATUS } from "@/lib/constants/status";
 import { revalidatePath } from "next/cache";
 import crypto from "node:crypto";
-import { isValidEmailFormat, isValidPhoneNumber } from "@/lib/format";
+import { isValidEmailFormat, isValidPhoneNumber } from "@/lib/utils/format";
 
 export type UserFormData = {
   first_name: string;

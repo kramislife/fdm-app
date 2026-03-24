@@ -12,30 +12,30 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 import webIcon from "@/app/assets/media/web-icon.png";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { useUser } from "@/lib/context/user-context";
 
-import type { DashboardSessionUser } from "@/lib/types";
+import type { DashboardSessionUser } from "@/lib/types/types";
 import { SIDEBAR_NAV } from "@/config/sidebar-navigation";
-import { ROLE_LABELS } from "@/lib/app-roles";
+import { ROLE_LABELS } from "@/lib/constants/app-roles";
 import {
   TbLayoutSidebarLeftCollapseFilled,
   TbLayoutSidebarRightCollapseFilled,
 } from "react-icons/tb";
 
 interface SidebarProps {
-  sessionUser: DashboardSessionUser;
   onMobileClose?: () => void;
   isMobile?: boolean;
 }
 
 export function Sidebar({
-  sessionUser,
   onMobileClose,
   isMobile = false,
 }: SidebarProps) {
+  const sessionUser = useUser();
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
 

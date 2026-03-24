@@ -1,7 +1,7 @@
 "use client";
 
 import type { Column } from "@/components/admin/data-table";
-import type { Pagination } from "@/lib/table";
+import type { Pagination } from "@/lib/utils/table";
 import {
   StatusBadge,
   UserCell,

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { requireRole } from "@/lib/auth";
+import { requireRole } from "@/lib/auth/config";
 import { getEvents } from "@/lib/data/events";
 import { getEventTypesForSelect } from "@/lib/data/event-types";
 import { getChaptersForSelect } from "@/lib/data/chapters";
-import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/app-roles";
-import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
+import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/constants/app-roles";
+import { parseTableParams, toPagination, type PageProps } from "@/lib/utils/table";
 import { EventsClient, type EventRow } from "./events-client";
 
 export const metadata: Metadata = {

@@ -1,12 +1,12 @@
 import "server-only";
-import { ROLE_KEYS } from "@/lib/app-roles";
-import { prisma } from "@/lib/prisma";
-import { ACCOUNT_STATUS } from "@/lib/status";
+import { ROLE_KEYS } from "@/lib/constants/app-roles";
+import { prisma } from "@/lib/db/prisma";
+import { ACCOUNT_STATUS } from "@/lib/constants/status";
 import {
   buildOrderBy,
   buildPaginationMeta,
   type TableParams,
-} from "@/lib/table";
+} from "@/lib/utils/table";
 
 const ORDER_FIELDS: Record<string, string> = {
   name: "ministry_type.name",

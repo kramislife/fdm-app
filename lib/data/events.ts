@@ -1,11 +1,11 @@
 import "server-only";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/db/prisma";
 import {
   buildOrderBy,
   buildPaginationMeta,
   type TableParams,
-} from "@/lib/table";
-import type { RoleKey } from "@/lib/app-roles";
+} from "@/lib/utils/table";
+import type { RoleKey } from "@/lib/constants/app-roles";
 
 const ORDER_FIELDS: Record<string, string> = {
   name: "name",

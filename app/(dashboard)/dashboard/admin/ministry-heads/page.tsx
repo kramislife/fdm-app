@@ -1,8 +1,8 @@
-import { requireAuth } from "@/lib/auth";
-import { getUserWithRole } from "@/lib/roles";
+import { requireAuth } from "@/lib/auth/config";
+import { getUserWithRole } from "@/lib/auth/roles";
 import { getMinistryHeads } from "@/lib/data/ministry-heads";
-import { PERMISSION_ROLES } from "@/lib/app-roles";
-import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
+import { PERMISSION_ROLES } from "@/lib/constants/app-roles";
+import { parseTableParams, toPagination, type PageProps } from "@/lib/utils/table";
 import {
   MinistryHeadsClient,
   type MinistryHeadRow,

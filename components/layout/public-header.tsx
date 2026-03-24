@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTransition } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { Button } from "@/components/ui/button";
 
 import { Logo } from "@/components/ui/logo";
@@ -11,11 +11,11 @@ import { UserDropdown } from "@/components/shared/user-dropdown";
 import { MobileNav } from "@/components/layout/mobile-nav";
 
 import { navLinks } from "@/config/navigation";
-import { ROLE_LABELS, type RoleKey } from "@/lib/app-roles";
+import { ROLE_LABELS, type RoleKey } from "@/lib/constants/app-roles";
 import { useSignOut } from "@/hooks/use-sign-out";
 import { useMobileSheet } from "@/hooks/use-mobile-sheet";
 
-import type { BaseUser } from "@/lib/types";
+import type { BaseUser } from "@/lib/types/types";
 
 interface SessionUser extends BaseUser {
   isMember: boolean;

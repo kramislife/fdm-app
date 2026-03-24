@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronUp } from "lucide-react";
-import { ROLE_KEYS, ROLE_LABELS, type RoleKey } from "@/lib/app-roles";
+import { ROLE_KEYS, ROLE_LABELS, type RoleKey } from "@/lib/constants/app-roles";
 import {
   DropdownMenu,
   DropdownMenuContent,

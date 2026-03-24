@@ -3,9 +3,9 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { getUserRole } from "@/lib/roles";
-import { ROLE_KEYS } from "@/lib/app-roles";
-import { AUTH_ERROR_CODES, buildLoginErrorPath } from "@/lib/auth-errors";
+import { getUserRole } from "@/lib/auth/roles";
+import { ROLE_KEYS } from "@/lib/constants/app-roles";
+import { AUTH_ERROR_CODES, buildLoginErrorPath } from "@/lib/auth/errors";
 
 // Initiates the Google OAuth flow on the server.
 export async function signInWithGoogle() {
@@ -71,7 +71,7 @@ export async function loginAction(
   }
 
   // Check for temp password before role lookup
-  const { prisma } = await import("@/lib/prisma");
+  const { prisma } = await import("@/lib/db/prisma");
   let dbUser;
   try {
     dbUser = await prisma.user.findUnique({

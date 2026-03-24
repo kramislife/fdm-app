@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import type { DashboardSessionUser } from "@/lib/types";
+import type { DashboardSessionUser } from "@/lib/types/types";
 
 const UserContext = createContext<DashboardSessionUser | null>(null);
 

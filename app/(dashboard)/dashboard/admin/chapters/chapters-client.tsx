@@ -1,9 +1,9 @@
 "use client";
 
 import type { Column } from "@/components/admin/data-table";
-import type { Pagination } from "@/lib/table";
-import type { AddressValue } from "@/lib/types";
-import { DAYS_OF_WEEK } from "@/lib/format";
+import type { Pagination } from "@/lib/utils/table";
+import type { AddressValue } from "@/lib/types/types";
+import { DAYS_OF_WEEK } from "@/lib/utils/format";
 import { StatusBadge, TextCell, LinkCell } from "@/components/shared/cells";
 import {
   FormInput,

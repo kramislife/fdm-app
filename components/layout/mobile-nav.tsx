@@ -14,7 +14,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { Logo } from "@/components/ui/logo";

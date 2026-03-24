@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { requireRole } from "@/lib/auth";
+import { requireRole } from "@/lib/auth/config";
 import { getUsers } from "@/lib/data/users";
 import { getChaptersForSelect } from "@/lib/data/chapters";
 import { getRolesForSelect } from "@/lib/data/roles";
-import { PERMISSION_ROLES } from "@/lib/app-roles";
-import { formatName, getNameInitials } from "@/lib/format";
-import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
+import { PERMISSION_ROLES } from "@/lib/constants/app-roles";
+import { formatName, getNameInitials } from "@/lib/utils/format";
+import { parseTableParams, toPagination, type PageProps } from "@/lib/utils/table";
 import { UsersClient, type UserRow } from "./users-client";
 
 export const metadata: Metadata = {

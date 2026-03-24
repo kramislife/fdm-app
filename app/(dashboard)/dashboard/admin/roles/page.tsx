@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { requireRole } from "@/lib/auth";
+import { requireRole } from "@/lib/auth/config";
 import { getRoles } from "@/lib/data/roles";
-import { PERMISSION_ROLES } from "@/lib/app-roles";
-import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
+import { PERMISSION_ROLES } from "@/lib/constants/app-roles";
+import { parseTableParams, toPagination, type PageProps } from "@/lib/utils/table";
 import { RolesClient, type RoleRow } from "./roles-client";
 
 export const metadata: Metadata = {

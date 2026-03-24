@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getUserWithRoles, buildSessionUser } from "@/lib/auth/session";
+import { getUserWithRoles, buildSessionUser } from "@/lib/auth/session-utils";
 import { PublicHeader } from "@/components/layout/public-header";
 import { PublicFooter } from "@/components/layout/public-footer";
 

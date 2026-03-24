@@ -1,9 +1,9 @@
 "use client";
 
 import type { Column } from "@/components/admin/data-table";
-import type { Pagination } from "@/lib/table";
+import type { Pagination } from "@/lib/utils/table";
 
-import { formatName } from "@/lib/format";
+import { formatName } from "@/lib/utils/format";
 import { useEffect, useState } from "react";
 import { ReferenceTypeClient } from "@/components/admin/reference-type-client";
 import { TextCell, UserCell, DateCell } from "@/components/shared/cells";

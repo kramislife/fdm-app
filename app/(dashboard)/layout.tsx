@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-import { requireAuth } from "@/lib/auth";
-import { getUserWithRole } from "@/lib/roles";
-import { ROLE_KEYS } from "@/lib/app-roles";
-import { formatName, getNameInitials } from "@/lib/format";
+import { requireAuth } from "@/lib/auth/config";
+import { getUserWithRole } from "@/lib/auth/roles";
+import { ROLE_KEYS } from "@/lib/constants/app-roles";
+import { formatName, getNameInitials } from "@/lib/utils/format";
 import { DashboardLayoutClient } from "@/components/layout/dashboard-layout-client";
 
 export default async function DashboardLayout({

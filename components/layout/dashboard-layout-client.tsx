@@ -10,8 +10,8 @@ import { UserProvider } from "@/lib/context/user-context";
 
 import { useMobileSheet } from "@/hooks/use-mobile-sheet";
 
-import type { RoleKey } from "@/lib/app-roles";
-import type { DashboardSessionUser } from "@/lib/types";
+import type { RoleKey } from "@/lib/constants/app-roles";
+import type { DashboardSessionUser } from "@/lib/types/types";
 
 interface DashboardLayoutClientProps {
   children: React.ReactNode;
@@ -34,7 +34,7 @@ export function DashboardLayoutClient({
       <div className="flex h-screen max-w-480 mx-auto overflow-hidden border-x">
         {/* Admin Sidebar for Desktop */}
         <div className="hidden lg:flex shrink-0">
-          <Sidebar sessionUser={effectiveUser} />
+          <Sidebar />
         </div>
 
         {/* Mobile Sidebar */}
@@ -46,7 +46,6 @@ export function DashboardLayoutClient({
           >
             <SheetTitle className="sr-only">Navigation</SheetTitle>
             <Sidebar
-              sessionUser={effectiveUser}
               isMobile
               onMobileClose={() => setOpen(false)}
             />
@@ -56,7 +55,6 @@ export function DashboardLayoutClient({
         {/* Main content */}
         <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
           <DashboardHeader
-            sessionUser={sessionUser}
             onMenuClick={() => setOpen(true)}
           />
           <main className="flex-1 overflow-y-auto p-5">{children}</main>

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { requireRole } from "@/lib/auth";
+import { requireRole } from "@/lib/auth/config";
 import { getChapters } from "@/lib/data/chapters";
-import { PERMISSION_ROLES } from "@/lib/app-roles";
-import { parseTableParams, toPagination, type PageProps } from "@/lib/table";
+import { PERMISSION_ROLES } from "@/lib/constants/app-roles";
+import { parseTableParams, toPagination, type PageProps } from "@/lib/utils/table";
 import { ChaptersClient, type ChapterRow } from "./chapters-client";
 
 export const metadata: Metadata = {

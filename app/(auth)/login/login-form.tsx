@@ -5,8 +5,8 @@ import { toast } from "sonner";
 import { AuthFormCard } from "@/components/auth/auth-form-card";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { FormInput } from "@/components/shared/form-fields";
-import { formatDate } from "@/lib/format";
-import { AUTH_ERROR_CODES, type AuthErrorCode } from "@/lib/auth-errors";
+import { formatDate } from "@/lib/utils/format";
+import { AUTH_ERROR_CODES, type AuthErrorCode } from "@/lib/auth/errors";
 import { loginAction, type LoginState } from "./actions";
 
 const initialState: LoginState = { error: null };

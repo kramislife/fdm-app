@@ -1,4 +1,4 @@
-import type { NavLink, BaseImage, SocialLink } from "@/lib/types";
+import type { NavLink, BaseImage, SocialLink } from "@/lib/types/types";
 
 import divineMercy from "@/app/assets/media/divine-mercy-footer.png";
 

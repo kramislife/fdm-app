@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
-import { requireRole } from "@/lib/auth";
-import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/app-roles";
+import { prisma } from "@/lib/db/prisma";
+import { requireRole } from "@/lib/auth/config";
+import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/constants/app-roles";
 import { toKey } from "@/lib/utils/slugify";
 
 const REVALIDATE_PATH = "/dashboard/admin/ministry-types";

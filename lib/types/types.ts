@@ -1,7 +1,7 @@
 import type { StaticImageData } from "next/image";
 import type { LucideIcon } from "lucide-react";
 import type { IconType } from "react-icons";
-import type { RoleKey } from "@/lib/app-roles";
+import type { RoleKey } from "@/lib/constants/app-roles";
 
 // ---------------------------- Base Config Types ----------------------------
 

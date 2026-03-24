@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ChapterCard } from "@/components/chapters/chapter-card";
 import { chaptersContent } from "@/config/about";
 import { Reveal } from "@/components/shared/animations/reveal";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 const ALL_AREAS = "All Chapters";
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { LogOut, Loader2 } from "lucide-react";
-import type { BaseUser } from "@/lib/types";
+import type { BaseUser } from "@/lib/types/types";
 import { USER_NAV_ITEMS, DASHBOARD_NAV_ITEM } from "@/config/navigation";
 import { Button } from "@/components/ui/button";
 import {

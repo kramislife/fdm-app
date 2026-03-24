@@ -1,46 +1,24 @@
-import { prisma } from "@/lib/prisma";
-import { ROLE_KEYS } from "@/lib/app-roles";
-import type { RoleKey } from "@/lib/app-roles";
-import { formatName, getNameInitials } from "@/lib/format";
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/lib/db/prisma";
 
-/** Prisma include shape for a user with their active roles */
-const userWithRoles = {
-  user_roles: {
-    where: { is_active: true },
-    include: { role: true },
-  },
-} as const;
+export async function getCurrentUser() {
+  const supabase = await createClient();
 
-/** Fetch a user with their active roles by Supabase auth ID */
-export async function getUserWithRoles(authId: string) {
-  return prisma.user.findUnique({
-    where: { auth_id: authId },
-    include: userWithRoles,
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const dbUser = await prisma.user.findUnique({
+    where: { auth_id: user.id },
+    include: {
+      user_roles: {
+        where: { is_active: true },
+        include: { role: true },
+      },
+    },
   });
-}
 
-type UserWithRoles = NonNullable<Awaited<ReturnType<typeof getUserWithRoles>>>;
-
-/** Extract the role keys from a fetched user */
-export function getRoleKeys(dbUser: UserWithRoles): RoleKey[] {
-  return dbUser.user_roles.map((ur) => ur.role.key as RoleKey);
-}
-
-/** True when the user has no roles OR all of them are ROLE_KEYS.MEMBER */
-export function isGuestOrMember(roleKeys: RoleKey[]): boolean {
-  return roleKeys.length === 0 || roleKeys.every((k) => k === ROLE_KEYS.MEMBER);
-}
-
-/** Build the session user object passed to client components */
-export function buildSessionUser(dbUser: UserWithRoles) {
-  const roles = getRoleKeys(dbUser);
-  return {
-    name: formatName(dbUser),
-    initials: getNameInitials(dbUser),
-    email: dbUser.email,
-    photoUrl: dbUser.photo_url,
-    roles,
-    isMember: isGuestOrMember(roles),
-    memberQr: dbUser.member_qr,
-  };
+  return dbUser;
 }

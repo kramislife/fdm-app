@@ -3,9 +3,9 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getUserWithRole } from "@/lib/roles";
-import { prisma } from "@/lib/prisma";
-import type { RoleKey } from "@/lib/app-roles";
+import { getUserWithRole } from "@/lib/auth/roles";
+import { prisma } from "@/lib/db/prisma";
+import type { RoleKey } from "@/lib/constants/app-roles";
 
 /** Returns the current Supabase auth user or null — verified via network call */
 export const getAuthUser = cache(async () => {

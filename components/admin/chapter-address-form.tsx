@@ -1,7 +1,7 @@
 "use client";
 
 import { useChapterAddress } from "@/hooks/use-chapter-address";
-import type { AddressLabels, AddressValue } from "@/lib/types";
+import type { AddressLabels, AddressValue } from "@/lib/types/types";
 import { FormInput, FormSelect } from "@/components/shared/form-fields";
 
 interface ChapterAddressFormProps {

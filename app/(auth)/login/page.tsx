@@ -4,7 +4,7 @@ import {
   AUTH_ERROR_CODES,
   isAuthErrorCode,
   type AuthErrorCode,
-} from "@/lib/auth-errors";
+} from "@/lib/auth/errors";
 
 export const metadata: Metadata = {
   title: "Login | FDM",

@@ -15,7 +15,7 @@ import { BiSolidCalendarCheck } from "react-icons/bi";
 import { IoMdMegaphone } from "react-icons/io";
 import { GiCrownOfThorns } from "react-icons/gi";
 import { MdChurch, MdDashboardCustomize } from "react-icons/md";
-import type { RoleKey } from "@/lib/app-roles";
+import type { RoleKey } from "@/lib/constants/app-roles";
 
 export interface NavItem {
   label: string;

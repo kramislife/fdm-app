@@ -2,7 +2,7 @@
 
 import { toast } from "sonner";
 import type { Column } from "@/components/admin/data-table";
-import type { Pagination } from "@/lib/table";
+import type { Pagination } from "@/lib/utils/table";
 import {
   DateCell,
   TextCell,
@@ -10,7 +10,7 @@ import {
   QRActionCell,
 } from "@/components/shared/cells";
 import { UserQRDialog } from "@/components/shared/qr-code";
-import { formatToISODate, formatToISOTime } from "@/lib/format";
+import { formatToISODate, formatToISOTime } from "@/lib/utils/format";
 import {
   FormInput,
   FormSelect,
@@ -22,7 +22,7 @@ import {
   DetailSection,
 } from "@/components/shared/detail-field";
 import { ReferenceTypeClient } from "@/components/admin/reference-type-client";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import {
   createEvent,
   deleteEvent,

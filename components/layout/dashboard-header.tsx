@@ -4,21 +4,19 @@ import { Bell, Menu } from "lucide-react";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 
-import type { DashboardSessionUser } from "@/lib/types";
+import type { DashboardSessionUser } from "@/lib/types/types";
 
 import { UserDropdown } from "@/components/shared/user-dropdown";
 import { useSignOut } from "@/hooks/use-sign-out";
-import { ROLE_LABELS } from "@/lib/app-roles";
+import { ROLE_LABELS } from "@/lib/constants/app-roles";
+import { useUser } from "@/lib/context/user-context";
 
 interface DashboardHeaderProps {
-  sessionUser: DashboardSessionUser;
   onMenuClick: () => void;
 }
 
-export function DashboardHeader({
-  sessionUser,
-  onMenuClick,
-}: DashboardHeaderProps) {
+export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
+  const sessionUser = useUser();
   const signOut = useSignOut();
   const [isPending, startTransition] = useTransition();
 

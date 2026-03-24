@@ -6,12 +6,12 @@ import {
   formatTime,
   capitalizeWords,
   formatName,
-} from "@/lib/format";
+} from "@/lib/utils/format";
 import {
   ACCOUNT_STATUS,
   ACCOUNT_STATUS_LABELS,
   isAccountStatus,
-} from "@/lib/status";
+} from "@/lib/constants/status";
 
 // ------------------------------- Status Badge -----------------------------------------
 interface StatusBadgeProps {

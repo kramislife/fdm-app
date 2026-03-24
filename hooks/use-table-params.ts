@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import type { ReactNode } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { VALID_PER_PAGE } from "@/lib/table";
+import { VALID_PER_PAGE } from "@/lib/utils/table";
 
 export interface TableParamHandlers {
   search: string;

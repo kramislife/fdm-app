@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
-import { prisma } from "@/lib/prisma";
-import { ROLE_KEYS, type RoleKey } from "@/lib/app-roles";
+import { prisma } from "@/lib/db/prisma";
+import { ROLE_KEYS, type RoleKey } from "@/lib/constants/app-roles";
 
 /** Get the first active role key for a user by Supabase auth ID */
 export const getUserRole = cache(async (authId: string): Promise<RoleKey | null> => {

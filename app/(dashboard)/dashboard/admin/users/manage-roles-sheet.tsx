@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MdLibraryAdd } from "react-icons/md";
 import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { toast } from "sonner";
 import { updateUserRoles, type UserRoleInput } from "./actions";
 

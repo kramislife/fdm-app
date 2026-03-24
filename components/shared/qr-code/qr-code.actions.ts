@@ -1,8 +1,8 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { prisma } from "@/lib/prisma";
-import { ROLE_KEYS } from "@/lib/app-roles";
+import { prisma } from "@/lib/db/prisma";
+import { ROLE_KEYS } from "@/lib/constants/app-roles";
 import crypto from "node:crypto";
 
 export type QRActionResult = {

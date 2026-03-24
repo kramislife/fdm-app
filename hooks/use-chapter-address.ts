@@ -9,7 +9,7 @@ import {
   type City,
   type Barangay,
 } from "select-philippines-address";
-import type { AddressValue } from "@/lib/types";
+import type { AddressValue } from "@/lib/types/types";
 
 export function useChapterAddress(
   value: AddressValue,

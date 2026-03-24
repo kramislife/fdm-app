@@ -2,7 +2,7 @@
 
 import { useTransition, useState } from "react";
 import type { Column } from "@/components/admin/data-table";
-import type { Pagination } from "@/lib/table";
+import type { Pagination } from "@/lib/utils/table";
 import { ReferenceTypeClient } from "@/components/admin/reference-type-client";
 import {
   TextCell,
@@ -21,13 +21,13 @@ import {
   FormSelect,
   FormTextarea,
 } from "@/components/shared/form-fields";
-import { ACCOUNT_STATUS } from "@/lib/status";
+import { ACCOUNT_STATUS } from "@/lib/constants/status";
 import {
   isValidPhoneNumber,
   isValidEmailFormat,
   normalizePhoneNumber,
   formatToISODate,
-} from "@/lib/format";
+} from "@/lib/utils/format";
 import {
   createUser,
   updateUser,
