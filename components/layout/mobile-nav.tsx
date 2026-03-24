@@ -153,21 +153,20 @@ export function MobileNav({
 
                 {USER_NAV_ITEMS.map((item) =>
                   item.href === "/my-qr" ? (
-                    <button
-                      key={item.href}
-                      type="button"
-                      disabled={!memberQr}
-                      onClick={() => {
-                        if (memberQr) {
+                    memberQr ? (
+                      <button
+                        key={item.href}
+                        type="button"
+                        onClick={() => {
                           close();
                           setQrOpen(true);
-                        }
-                      }}
-                      className="flex items-center p-3 rounded-md text-sm font-medium transition-colors mb-1 text-muted-foreground hover:text-primary hover:bg-muted cursor-pointer"
-                    >
-                      <item.icon className="mr-2 h-4 w-4 shrink-0" />
-                      {item.label}
-                    </button>
+                        }}
+                        className="flex items-center p-3 rounded-md text-sm font-medium transition-colors mb-1 text-muted-foreground hover:text-primary hover:bg-muted cursor-pointer"
+                      >
+                        <item.icon className="mr-2 h-4 w-4 shrink-0" />
+                        {item.label}
+                      </button>
+                    ) : null
                   ) : (
                     <NavItem
                       key={item.href}

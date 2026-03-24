@@ -89,7 +89,7 @@ export async function loginAction(
     return err("Your account exists but is not linked to a community profile. Please contact an admin.");
   }
 
-  if (dbUser.is_temp_password) redirect("/first-login");
+  if (dbUser.is_temp_password) redirect("/");
 
   // Resolve role from DB
   const role = await getUserRole(user.id);

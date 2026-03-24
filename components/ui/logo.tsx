@@ -13,6 +13,7 @@ interface LogoProps {
   text?: string;
   title?: string;
   size?: string;
+  disableLink?: boolean;
 }
 
 export function Logo({
@@ -22,32 +23,38 @@ export function Logo({
   text = "FDM",
   title = "Navigate to Home",
   size = "w-10",
+  disableLink = false,
 }: LogoProps) {
   const [hasError, setHasError] = useState(false);
 
+  const content = (
+    <div
+      className={cn("relative flex shrink-0 items-center justify-center", size)}
+    >
+      {!hasError ? (
+        <Image
+          src={src}
+          alt={`${text} Logo`}
+          className={cn("h-auto w-full object-contain", imageClassName)}
+          onError={() => setHasError(true)}
+          priority
+          placeholder="blur"
+        />
+      ) : (
+        <h1 className="font-serif text-xl font-bold tracking-tight text-primary md:text-2xl">
+          {text}
+        </h1>
+      )}
+    </div>
+  );
+
+  if (disableLink) {
+    return <div className={cn("inline-flex", className)}>{content}</div>;
+  }
+
   return (
     <Link href="/" className={cn("inline-flex", className)} title={title}>
-      <div
-        className={cn(
-          "relative flex shrink-0 items-center justify-center",
-          size,
-        )}
-      >
-        {!hasError ? (
-          <Image
-            src={src}
-            alt={`${text} Logo`}
-            className={cn("h-auto w-full object-contain", imageClassName)}
-            onError={() => setHasError(true)}
-            priority
-            placeholder="blur"
-          />
-        ) : (
-          <h1 className="font-serif text-xl font-bold tracking-tight text-primary md:text-2xl">
-            {text}
-          </h1>
-        )}
-      </div>
+      {content}
     </Link>
   );
 }

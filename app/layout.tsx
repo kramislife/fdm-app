@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Abhaya_Libre } from "next/font/google";
 import "@/app/assets/styles/globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { OnboardingEnforcer } from "@/components/auth/onboarding-enforcer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,6 +39,7 @@ export default function RootLayout({
       >
         {children}
         <Toaster />
+        <OnboardingEnforcer />
       </body>
     </html>
   );

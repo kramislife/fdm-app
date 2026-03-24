@@ -17,7 +17,9 @@ export default async function PublicLayout({
 
   if (user) {
     const dbUser = await getUserWithRoles(user.id);
-    if (dbUser) sessionUser = buildSessionUser(dbUser);
+    if (dbUser) {
+      sessionUser = buildSessionUser(dbUser);
+    }
   }
 
   return (

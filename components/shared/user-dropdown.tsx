@@ -73,15 +73,16 @@ export function UserDropdown({
           {/* Account links */}
           {USER_NAV_ITEMS.map((item) =>
             item.href === "/my-qr" ? (
-              <DropdownMenuItem
-                key={item.href}
-                onSelect={() => memberQr && setQrOpen(true)}
-                disabled={!memberQr}
-                className="cursor-pointer"
-              >
-                <item.icon className="mr-2 h-4 w-4" />
-                {item.label}
-              </DropdownMenuItem>
+              memberQr ? (
+                <DropdownMenuItem
+                  key={item.href}
+                  onSelect={() => setQrOpen(true)}
+                  className="cursor-pointer"
+                >
+                  <item.icon className="mr-2 h-4 w-4" />
+                  {item.label}
+                </DropdownMenuItem>
+              ) : null
             ) : (
               <DropdownMenuItem key={item.href} asChild>
                 <Link href={item.href}>
