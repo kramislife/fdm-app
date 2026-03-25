@@ -247,7 +247,7 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
               <DetailField label={FIELD_LABELS.email}>
                 <TextCell value={row.email} />
               </DetailField>
-              <DetailField label={FIELD_LABELS.address}>
+              <DetailField label={FIELD_LABELS.address} fullWidth>
                 <TextCell value={row.address} />
               </DetailField>
               <DetailField label={FIELD_LABELS.chapter}>

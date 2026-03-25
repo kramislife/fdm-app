@@ -54,7 +54,7 @@ model MinistryType {
   creator         User?          @relation("MinistryTypeCreator", fields: [created_by], references: [id])
   updated_by_user User?          @relation("MinistryTypeUpdatedBy", fields: [updated_by], references: [id])
   deleted_by_user User?          @relation("MinistryTypeDeletedBy", fields: [deleted_by], references: [id])
-  ministry_heads  MinistryHead[]
+  chapter_ministries ChapterMinistry[]
 
   @@index([created_at])
   @@map("ministry_types")
@@ -156,8 +156,8 @@ model User {
   clusters_updated       Cluster[]      @relation("ClusterUpdatedBy")
   clusters_deleted       Cluster[]      @relation("ClusterDeletedBy")
 
-  ministry_heads_updated MinistryHead[] @relation("MinistryHeadUpdater")
-  ministry_heads_deleted MinistryHead[] @relation("MinistryHeadDeleter")
+  chapter_ministries_headed  ChapterMinistry[] @relation("ChapterMinistryHead")
+  chapter_ministries_updated ChapterMinistry[] @relation("ChapterMinistryUpdater")
 
   @@index([auth_id])
   @@index([first_name])
@@ -197,8 +197,8 @@ model Chapter {
   creator         User?           @relation("ChapterCreator", fields: [created_by], references: [id])
   updated_by_user User?           @relation("ChapterUpdatedBy", fields: [updated_by], references: [id])
   deleted_by_user User?           @relation("ChapterDeletedBy", fields: [deleted_by], references: [id])
-  ministry_heads  MinistryHead[]
-  clusters        Cluster[]
+  chapter_ministries ChapterMinistry[]
+  clusters           Cluster[]
   user_roles      UserRole[]
   user_chapters   UserChapter[]
   events          Event[]
@@ -213,22 +213,19 @@ model Chapter {
   @@map("chapters")
 }
 
-model MinistryHead {
-  id               Int @id @default(autoincrement())
+model ChapterMinistry {
+  id               Int  @id @default(autoincrement())
   chapter_id       Int
   ministry_type_id Int
+  head_user_id     Int?
 
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
+  updated_at DateTime @updatedAt
   updated_by Int?
-  deleted_at DateTime?
-  deleted_by Int?
 
   chapter       Chapter      @relation(fields: [chapter_id], references: [id])
   ministry_type MinistryType @relation(fields: [ministry_type_id], references: [id])
-
-  updater User? @relation("MinistryHeadUpdater", fields: [updated_by], references: [id])
-  deleter User? @relation("MinistryHeadDeleter", fields: [deleted_by], references: [id])
+  head          User?        @relation("ChapterMinistryHead", fields: [head_user_id], references: [id])
+  updater       User?        @relation("ChapterMinistryUpdater", fields: [updated_by], references: [id])
 
   user_roles       UserRole[]
   ministry_members MinistryMember[]
@@ -236,7 +233,7 @@ model MinistryHead {
   @@unique([chapter_id, ministry_type_id])
   @@index([chapter_id])
   @@index([ministry_type_id])
-  @@map("ministry_heads")
+  @@map("chapter_ministries")
 }
 
 model Cluster {
@@ -314,44 +311,44 @@ model Event {
 // ============================================================
 
 model UserRole {
-  id               Int       @id @default(autoincrement())
-  user_id          Int
-  role_id          Int
-  chapter_id       Int?
-  ministry_head_id Int?
-  cluster_id       Int?
-  assigned_by      Int?
-  assigned_at      DateTime  @default(now())
-  is_active        Boolean   @default(true)
-  deactivated_at   DateTime?
-  access_revoked   Boolean   @default(false)
+  id                  Int       @id @default(autoincrement())
+  user_id             Int
+  role_id             Int
+  chapter_id          Int?
+  chapter_ministry_id Int?
+  cluster_id          Int?
+  assigned_by         Int?
+  assigned_at         DateTime  @default(now())
+  is_active           Boolean   @default(true)
+  deactivated_at      DateTime?
+  access_revoked      Boolean   @default(false)
 
-  user     User          @relation("UserRoles", fields: [user_id], references: [id])
-  role     Role          @relation(fields: [role_id], references: [id])
-  chapter  Chapter?      @relation(fields: [chapter_id], references: [id])
-  ministry MinistryHead? @relation(fields: [ministry_head_id], references: [id])
-  cluster  Cluster?      @relation(fields: [cluster_id], references: [id])
-  assigner User?         @relation("AssignedBy", fields: [assigned_by], references: [id])
+  user             User             @relation("UserRoles", fields: [user_id], references: [id])
+  role             Role             @relation(fields: [role_id], references: [id])
+  chapter          Chapter?         @relation(fields: [chapter_id], references: [id])
+  chapter_ministry ChapterMinistry? @relation(fields: [chapter_ministry_id], references: [id])
+  cluster          Cluster?         @relation(fields: [cluster_id], references: [id])
+  assigner         User?            @relation("AssignedBy", fields: [assigned_by], references: [id])
 
-  @@unique([user_id, role_id, chapter_id, ministry_head_id, cluster_id])
+  @@unique([user_id, role_id, chapter_id, chapter_ministry_id, cluster_id])
   @@index([user_id, is_active])
   @@index([chapter_id])
-  @@index([ministry_head_id])
+  @@index([chapter_ministry_id])
   @@index([cluster_id])
   @@map("user_roles")
 }
 
 model MinistryMember {
-  id               Int      @id @default(autoincrement())
-  user_id          Int
-  ministry_head_id Int
-  joined_at        DateTime @default(now())
+  id                  Int      @id @default(autoincrement())
+  user_id             Int
+  chapter_ministry_id Int
+  joined_at           DateTime @default(now())
 
-  user     User         @relation(fields: [user_id], references: [id])
-  ministry MinistryHead @relation(fields: [ministry_head_id], references: [id])
+  user             User            @relation(fields: [user_id], references: [id])
+  chapter_ministry ChapterMinistry @relation(fields: [chapter_ministry_id], references: [id])
 
-  @@unique([user_id, ministry_head_id])
-  @@index([ministry_head_id])
+  @@unique([user_id, chapter_ministry_id])
+  @@index([chapter_ministry_id])
   @@map("ministry_members")
 }
 

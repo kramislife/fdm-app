@@ -88,7 +88,7 @@ export async function createMinistryType(
       });
 
       if (chapters.length > 0) {
-        await prisma.ministryHead.createMany({
+        await prisma.chapterMinistry.createMany({
           data: chapters.map((c) => ({
             chapter_id: c.id,
             ministry_type_id: newType.id,
@@ -167,10 +167,9 @@ export async function deleteMinistryType(id: number): Promise<ActionResult> {
   const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   try {
-    const activeInUse = await prisma.ministryHead.findFirst({
+    const activeInUse = await prisma.chapterMinistry.findFirst({
       where: {
         ministry_type_id: id,
-        deleted_at: null,
         OR: [
           { ministry_members: { some: {} } },
           {
@@ -194,22 +193,25 @@ export async function deleteMinistryType(id: number): Promise<ActionResult> {
       };
     }
 
-    await prisma.$transaction([
-      prisma.ministryHead.updateMany({
-        where: { ministry_type_id: id, deleted_at: null },
-        data: {
-          deleted_at: new Date(),
-          deleted_by: currentUser.user.id,
-        },
-      }),
-      prisma.ministryType.update({
-        where: { id },
-        data: {
-          deleted_at: new Date(),
-          deleted_by: currentUser.user.id,
-        },
-      }),
-    ]);
+    // Clean up empty chapter ministry rows and their stale roles before deleting
+    const emptyMinistryIds = await prisma.chapterMinistry
+      .findMany({ where: { ministry_type_id: id }, select: { id: true } })
+      .then((rows) => rows.map((r) => r.id));
+
+    if (emptyMinistryIds.length > 0) {
+      await prisma.userRole.deleteMany({
+        where: { chapter_ministry_id: { in: emptyMinistryIds } },
+      });
+      await prisma.chapterMinistry.deleteMany({ where: { ministry_type_id: id } });
+    }
+
+    await prisma.ministryType.update({
+      where: { id },
+      data: {
+        deleted_at: new Date(),
+        deleted_by: currentUser.user.id,
+      },
+    });
 
     revalidatePath(REVALIDATE_PATH);
     return {

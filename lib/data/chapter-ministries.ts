@@ -11,15 +11,15 @@ import {
 const ORDER_FIELDS: Record<string, string> = {
   name: "ministry_type.name",
   chapter: "chapter.name",
-  created_at: "created_at",
+  updated_at: "updated_at",
   members: "_count.ministry_members",
 };
 
 /**
- * Fetches ministry heads with pagination, sorting, and filtering.
- * includes ministry type, chapter, and active ministry head.
+ * Fetches chapter ministries with pagination, sorting, and filtering.
+ * Includes ministry type, chapter, active head (via head relation), and member count.
  */
-export async function getMinistryHeads(
+export async function getChapterMinistries(
   params: TableParams & { chapterId?: number } = {},
 ) {
   const {
@@ -32,7 +32,8 @@ export async function getMinistryHeads(
   } = params;
 
   const where = {
-    deleted_at: null,
+    chapter: { deleted_at: null },
+    ministry_type: { deleted_at: null },
     ...(chapterId ? { chapter_id: chapterId } : {}),
     ...(search
       ? {
@@ -77,62 +78,70 @@ export async function getMinistryHeads(
   };
 
   const [data, total] = await Promise.all([
-    prisma.ministryHead.findMany({
+    prisma.chapterMinistry.findMany({
       where,
-        include: {
+      include: {
         ministry_type: { select: { name: true, key: true } },
         chapter: { select: { id: true, name: true } },
         _count: { select: { ministry_members: true } },
         updater: { select: { first_name: true, last_name: true } },
-        user_roles: {
-          where: {
-            role: { key: ROLE_KEYS.MINISTRY_HEAD },
-            is_active: true,
-          },
-          select: {
-            id: true,
-            user: {
-              select: {
-                id: true,
-                first_name: true,
-                last_name: true,
-              },
-            },
-          },
-          take: 1,
-        },
+        head: { select: { id: true, first_name: true, last_name: true } },
       },
-      orderBy: buildOrderBy(sort, order, ORDER_FIELDS),
+      orderBy: buildOrderBy(sort, order, ORDER_FIELDS, "updated_at"),
       skip: (page - 1) * perPage,
       take: perPage,
     }),
-    prisma.ministryHead.count({ where }),
+    prisma.chapterMinistry.count({ where }),
   ]);
 
   return { data, ...buildPaginationMeta(total, page, perPage) };
 }
 
 /**
- * Returns active users belonging to a specific chapter.
- * Used for Assign Head dropdown.
+ * Returns verified users belonging to a specific chapter.
+ * Also includes which chapter ministry they currently head (if any).
+ * Used for the Assign Head dropdown.
  */
 export async function getChapterActiveUsers(chapterId: number) {
-  return await prisma.user.findMany({
+  const users = await prisma.user.findMany({
     where: {
       account_status: ACCOUNT_STATUS.VERIFIED,
       user_chapters: {
-        some: {
-          chapter_id: chapterId,
-        },
+        some: { chapter_id: chapterId },
       },
     },
     select: {
       id: true,
       first_name: true,
       last_name: true,
+      user_roles: {
+        where: {
+          role: { key: ROLE_KEYS.MINISTRY_HEAD },
+          is_active: true,
+          chapter_id: chapterId,
+        },
+        select: {
+          chapter_ministry_id: true,
+          chapter_ministry: {
+            select: {
+              ministry_type: { select: { name: true } },
+            },
+          },
+        },
+        take: 1,
+      },
     },
     orderBy: [{ last_name: "asc" }, { first_name: "asc" }],
   });
+
+  return users.map((u) => ({
+    id: u.id,
+    first_name: u.first_name,
+    last_name: u.last_name,
+    chapter_ministry_id: u.user_roles[0]?.chapter_ministry_id ?? null,
+    ministry_name:
+      u.user_roles[0]?.chapter_ministry?.ministry_type?.name ?? null,
+  }));
 }
 
 /**

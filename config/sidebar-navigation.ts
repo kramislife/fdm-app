@@ -202,8 +202,8 @@ export const SIDEBAR_NAV: NavGroup[] = [
         roles: ["director_adviser", "elder"],
       },
       {
-        label: "Ministry Heads",
-        href: "/dashboard/admin/ministry-heads",
+        label: "Chapter Ministries",
+        href: "/dashboard/admin/chapter-ministries",
         icon: FaChurch,
         roles: ["director_adviser", "elder", "head_servant"],
       },

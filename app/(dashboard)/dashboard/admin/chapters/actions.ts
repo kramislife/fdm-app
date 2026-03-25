@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db/prisma";
 import { requireRole } from "@/lib/auth/config";
-import { PERMISSION_ROLES } from "@/lib/constants/app-roles";
+import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/constants/app-roles";
 
 const REVALIDATE_PATH = "/dashboard/admin/chapters";
 
@@ -113,7 +113,7 @@ export async function createChapter(data: ChapterData): Promise<ActionResult> {
       });
 
       if (types.length > 0) {
-        await prisma.ministryHead.createMany({
+        await prisma.chapterMinistry.createMany({
           data: types.map((t) => ({
             chapter_id: newChapter.id,
             ministry_type_id: t.id,
@@ -223,22 +223,52 @@ export async function deleteChapter(id: number): Promise<ActionResult> {
       };
     }
 
-    await prisma.$transaction([
-      prisma.ministryHead.updateMany({
-        where: { chapter_id: id, deleted_at: null },
-        data: {
-          deleted_at: new Date(),
-          deleted_by: currentUser.user.id,
-        },
-      }),
-      prisma.chapter.update({
-        where: { id },
-        data: {
-          deleted_at: new Date(),
-          deleted_by: currentUser.user.id,
-        },
-      }),
-    ]);
+    // Block if any chapter ministry has an active head or members
+    const activeMinistry = await prisma.chapterMinistry.findFirst({
+      where: {
+        chapter_id: id,
+        OR: [
+          { ministry_members: { some: {} } },
+          {
+            user_roles: {
+              some: {
+                role: { key: ROLE_KEYS.MINISTRY_HEAD },
+                is_active: true,
+              },
+            },
+          },
+        ],
+      },
+      include: { ministry_type: { select: { name: true } } },
+    });
+
+    if (activeMinistry) {
+      return {
+        success: false,
+        title: "Deletion Prevented",
+        description: `"${activeMinistry.ministry_type.name}" still has an active head or members assigned. Remove all ministry assignments first.`,
+      };
+    }
+
+    // Clean up empty chapter ministry rows and their stale roles before deleting
+    const emptyMinistryIds = await prisma.chapterMinistry
+      .findMany({ where: { chapter_id: id }, select: { id: true } })
+      .then((rows) => rows.map((r) => r.id));
+
+    if (emptyMinistryIds.length > 0) {
+      await prisma.userRole.deleteMany({
+        where: { chapter_ministry_id: { in: emptyMinistryIds } },
+      });
+      await prisma.chapterMinistry.deleteMany({ where: { chapter_id: id } });
+    }
+
+    await prisma.chapter.update({
+      where: { id },
+      data: {
+        deleted_at: new Date(),
+        deleted_by: currentUser.user.id,
+      },
+    });
 
     revalidatePath(REVALIDATE_PATH);
     return {

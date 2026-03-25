@@ -48,9 +48,7 @@ export function OnboardingModal({ firstName, defaultOpen }: OnboardingModalProps
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
-    console.log("[OnboardingModal] mount — defaultOpen:", defaultOpen);
-    return () => console.log("[OnboardingModal] UNMOUNT");
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Password requirements
@@ -66,7 +64,6 @@ export function OnboardingModal({ firstName, defaultOpen }: OnboardingModalProps
   useEffect(() => {
     if (step !== 3) return;
     if (countdown <= 0) return;
-    console.log("[OnboardingModal] countdown tick:", countdown);
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(timer);
   }, [step, countdown]);
@@ -74,7 +71,6 @@ export function OnboardingModal({ firstName, defaultOpen }: OnboardingModalProps
   // Navigate only after countdown reaches zero
   useEffect(() => {
     if (step !== 3 || countdown > 0) return;
-    console.log("[OnboardingModal] countdown done — closing and refreshing");
     setOpen(false);
     router.refresh();
   }, [step, countdown, router]);

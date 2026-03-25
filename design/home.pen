@@ -1,0 +1,2585 @@
+{
+  "version": "2.9",
+  "children": [
+    {
+      "type": "frame",
+      "id": "PE2Yt",
+      "x": 0,
+      "y": 0,
+      "name": "FDM Homepage",
+      "width": 1440,
+      "fill": "$bg-page",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "O0ZCH",
+          "name": "Hero Banner",
+          "width": "fill_container",
+          "height": 520,
+          "fill": "$brand-red",
+          "layout": "vertical",
+          "gap": 20,
+          "padding": [
+            60,
+            80
+          ],
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "NJVz4",
+              "name": "Logo Area",
+              "layout": "vertical",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "oAiJB",
+                  "name": "Logo Circle",
+                  "width": 96,
+                  "height": 96,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 48,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "6M2bC",
+                      "name": "Cross Icon",
+                      "width": 48,
+                      "height": 48,
+                      "iconFontName": "heart",
+                      "iconFontFamily": "lucide",
+                      "fill": "$brand-red"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "YKOGX",
+                  "name": "FDM Title",
+                  "fill": "$text-on-red",
+                  "content": "Friends of the Divine Mercy",
+                  "textAlign": "center",
+                  "fontFamily": "Playfair Display",
+                  "fontSize": 48,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "PvMNr",
+              "name": "Tagline",
+              "fill": "#FFCDD0",
+              "content": "A community rooted in faith, mercy, and service",
+              "textAlign": "center",
+              "fontFamily": "Lato",
+              "fontSize": 20
+            },
+            {
+              "type": "text",
+              "id": "nmbHS",
+              "name": "Greeting",
+              "fill": "#FFCDD0",
+              "content": "Welcome back, Maria! 🙏",
+              "textAlign": "center",
+              "fontFamily": "Lato",
+              "fontSize": 18
+            },
+            {
+              "type": "frame",
+              "id": "dnHBE",
+              "name": "CTA Buttons",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "C48n7",
+                  "name": "CTA QR",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 8,
+                  "gap": 10,
+                  "padding": [
+                    14,
+                    28
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "bMrKK",
+                      "name": "ctaQrIcon",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "qr-code",
+                      "iconFontFamily": "lucide",
+                      "fill": "$brand-red"
+                    },
+                    {
+                      "type": "text",
+                      "id": "7hcOb",
+                      "name": "ctaQrLabel",
+                      "fill": "$brand-red",
+                      "content": "My QR Code",
+                      "fontFamily": "Lato",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ANLcr",
+                  "name": "CTA Attendance",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 2,
+                    "fill": "#FFFFFF"
+                  },
+                  "gap": 10,
+                  "padding": [
+                    14,
+                    28
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "ATnLs",
+                      "name": "ctaAttendIcon",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "calendar",
+                      "iconFontFamily": "lucide",
+                      "fill": "#FFFFFF"
+                    },
+                    {
+                      "type": "text",
+                      "id": "anUmY",
+                      "name": "ctaAttendLabel",
+                      "fill": "#FFFFFF",
+                      "content": "My Attendance",
+                      "fontFamily": "Lato",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "qn27h",
+          "name": "Quick Actions Section",
+          "width": "fill_container",
+          "fill": "$bg-page",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": [
+            56,
+            80
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "q1GpP",
+              "name": "QA Heading",
+              "fill": "$text-primary",
+              "content": "My Quick Actions",
+              "fontFamily": "Playfair Display",
+              "fontSize": 28,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "MXcqv",
+              "name": "QA Cards Row",
+              "width": "fill_container",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "NdojJ",
+                  "name": "QR Code Card",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191714",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": [
+                    32,
+                    28
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "yjDTa",
+                      "name": "Icon Wrap",
+                      "width": 64,
+                      "height": 64,
+                      "fill": "#FEECEC",
+                      "cornerRadius": 32,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "OuRmx",
+                          "name": "card1ico",
+                          "width": 32,
+                          "height": 32,
+                          "iconFontName": "qr-code",
+                          "iconFontFamily": "lucide",
+                          "fill": "$brand-red"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "g8V9j",
+                      "name": "card1title",
+                      "fill": "$text-primary",
+                      "content": "My QR Code",
+                      "textAlign": "center",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 20,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Lr8fw",
+                      "name": "card1desc",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Scan to check in at any FDM event or gathering",
+                      "textAlign": "center",
+                      "fontFamily": "Lato",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "6xB3T",
+                  "name": "Attendance Card",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191714",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": [
+                    32,
+                    28
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "8PCaS",
+                      "name": "Icon Wrap",
+                      "width": 64,
+                      "height": 64,
+                      "fill": "#FEECEC",
+                      "cornerRadius": 32,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "BrXQj",
+                          "name": "card2ico",
+                          "width": 32,
+                          "height": 32,
+                          "iconFontName": "calendar-days",
+                          "iconFontFamily": "lucide",
+                          "fill": "$brand-red"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "ev1xf",
+                      "name": "card2title",
+                      "fill": "$text-primary",
+                      "content": "My Attendance",
+                      "textAlign": "center",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 20,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "0tiSY",
+                      "name": "card2desc",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "View your attendance record and participation history",
+                      "textAlign": "center",
+                      "fontFamily": "Lato",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Nfa3M",
+                  "name": "Profile Card",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191714",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": [
+                    32,
+                    28
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "65XI0",
+                      "name": "Icon Wrap",
+                      "width": 64,
+                      "height": 64,
+                      "fill": "#FEECEC",
+                      "cornerRadius": 32,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "JafSi",
+                          "name": "card3ico",
+                          "width": 32,
+                          "height": 32,
+                          "iconFontName": "user",
+                          "iconFontFamily": "lucide",
+                          "fill": "$brand-red"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "Sj7LU",
+                      "name": "card3title",
+                      "fill": "$text-primary",
+                      "content": "My Profile",
+                      "textAlign": "center",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 20,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "URjec",
+                      "name": "card3desc",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Update your personal information and chapter details",
+                      "textAlign": "center",
+                      "fontFamily": "Lato",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "U5jRr",
+          "name": "Community Stats",
+          "width": "fill_container",
+          "fill": "$bg-warm-light",
+          "layout": "vertical",
+          "gap": 40,
+          "padding": [
+            56,
+            80
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "1K73q",
+              "name": "statsHeading",
+              "fill": "$text-primary",
+              "content": "Our Growing Community",
+              "textAlign": "center",
+              "fontFamily": "Playfair Display",
+              "fontSize": 32,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "yKEtT",
+              "name": "statsSub",
+              "fill": "$text-secondary",
+              "content": "United in faith across Metro Manila and nearby provinces",
+              "textAlign": "center",
+              "fontFamily": "Lato",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "gPTpR",
+              "name": "Stats Row",
+              "width": "fill_container",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "u6WkF",
+                  "name": "Members Stat",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": [
+                    32,
+                    24
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "yVUJS",
+                      "name": "stat1num",
+                      "fill": "$brand-red",
+                      "content": "2,847",
+                      "textAlign": "center",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 48,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "egSf2",
+                      "name": "stat1label",
+                      "fill": "$text-primary",
+                      "content": "Members",
+                      "textAlign": "center",
+                      "fontFamily": "Lato",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "99GLY",
+                      "name": "stat1sublabel",
+                      "fill": "$text-muted",
+                      "content": "Active registered members",
+                      "textAlign": "center",
+                      "fontFamily": "Lato",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "EbeYV",
+                  "name": "Chapters Stat",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": [
+                    32,
+                    24
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "hDunf",
+                      "name": "stat2num",
+                      "fill": "$brand-red",
+                      "content": "6",
+                      "textAlign": "center",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 48,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "yeNst",
+                      "name": "stat2label",
+                      "fill": "$text-primary",
+                      "content": "Chapters",
+                      "textAlign": "center",
+                      "fontFamily": "Lato",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "KBXLh",
+                      "name": "stat2sublabel",
+                      "fill": "$text-muted",
+                      "content": "Across Metro Manila & nearby",
+                      "textAlign": "center",
+                      "fontFamily": "Lato",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "d0YtE",
+                  "name": "Ministries Stat",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": [
+                    32,
+                    24
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "iBkdB",
+                      "name": "stat3num",
+                      "fill": "$brand-red",
+                      "content": "12",
+                      "textAlign": "center",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 48,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "rc5I9",
+                      "name": "stat3label",
+                      "fill": "$text-primary",
+                      "content": "Ministries",
+                      "textAlign": "center",
+                      "fontFamily": "Lato",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "9qZOd",
+                      "name": "stat3sublabel",
+                      "fill": "$text-muted",
+                      "content": "Serving the community with love",
+                      "textAlign": "center",
+                      "fontFamily": "Lato",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "RFcPh",
+                  "name": "Clusters Stat",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": [
+                    32,
+                    24
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "EPyfO",
+                      "name": "stat4num",
+                      "fill": "$brand-red",
+                      "content": "34",
+                      "textAlign": "center",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 48,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "WEZzE",
+                      "name": "stat4label",
+                      "fill": "$text-primary",
+                      "content": "Clusters",
+                      "textAlign": "center",
+                      "fontFamily": "Lato",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "OOflK",
+                      "name": "stat4sublabel",
+                      "fill": "$text-muted",
+                      "content": "Small faith communities nationwide",
+                      "textAlign": "center",
+                      "fontFamily": "Lato",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "VaIrw",
+          "name": "Announcements Section",
+          "width": "fill_container",
+          "fill": "$bg-page",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": [
+            56,
+            80
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "st7Kg",
+              "name": "Ann Header Row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "dwSEk",
+                  "name": "annTitle",
+                  "fill": "$text-primary",
+                  "content": "Announcements",
+                  "fontFamily": "Playfair Display",
+                  "fontSize": 32,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "ojSl6",
+                  "name": "annViewAll",
+                  "fill": "#FEECEC",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "JCvxm",
+                      "name": "annViewAllTxt",
+                      "fill": "$brand-red",
+                      "content": "View All",
+                      "fontFamily": "Lato",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "mp0EG",
+                      "name": "annViewAllIcon",
+                      "width": 16,
+                      "height": 16,
+                      "iconFontName": "arrow-right",
+                      "iconFontFamily": "lucide",
+                      "fill": "$brand-red"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "prvqn",
+              "name": "Ann Cards Row",
+              "width": "fill_container",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "dzYIv",
+                  "name": "Ann Card 1",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "0cizq",
+                      "name": "ann1badges",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "obbdU",
+                          "name": "ann1pin",
+                          "width": 16,
+                          "height": 16,
+                          "iconFontName": "pin",
+                          "iconFontFamily": "lucide",
+                          "fill": "$brand-red"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "T8p38",
+                          "name": "ann1badge",
+                          "fill": "$brand-red",
+                          "cornerRadius": 20,
+                          "padding": [
+                            4,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "CmcUs",
+                              "name": "ann1badgeTxt",
+                              "fill": "#FFFFFF",
+                              "content": "Global",
+                              "fontFamily": "Lato",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "PXAnE",
+                      "name": "ann1title",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Easter Recollection 2025",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 18,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "3CNwW",
+                      "name": "ann1excerpt",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Join us for a day of reflection and renewal as we celebrate the resurrection of our Lord. All chapters are invited to participate.",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Lato",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "MUUdD",
+                      "name": "ann1date",
+                      "fill": "$text-muted",
+                      "content": "March 29, 2025",
+                      "fontFamily": "Lato",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "rWf9Y",
+                  "name": "Ann Card 2",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "B58Va",
+                      "name": "ann2badges",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Whk6W",
+                          "name": "ann2badge",
+                          "fill": "#4A7C59",
+                          "cornerRadius": 20,
+                          "padding": [
+                            4,
+                            10
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "tlLkH",
+                              "name": "ann2badgeTxt",
+                              "fill": "#FFFFFF",
+                              "content": "Quezon City Chapter",
+                              "fontFamily": "Lato",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "0eTYI",
+                      "name": "ann2title",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "New Members' Orientation",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 18,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Q2RUC",
+                      "name": "ann2excerpt",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Welcome to all new members! Attend our orientation to learn about FDM's mission, chapters, and how you can serve.",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Lato",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "fj4cb",
+                      "name": "ann2date",
+                      "fill": "$text-muted",
+                      "content": "April 5, 2025",
+                      "fontFamily": "Lato",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Geosu",
+          "name": "Upcoming Events Section",
+          "width": "fill_container",
+          "fill": "$bg-warm-light",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": [
+            56,
+            80
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "qfCR8",
+              "name": "Events Header Row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "CKne2",
+                  "name": "evTitle",
+                  "fill": "$text-primary",
+                  "content": "Upcoming Events",
+                  "fontFamily": "Playfair Display",
+                  "fontSize": 32,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "Io579",
+                  "name": "evViewAll",
+                  "fill": "#FEECEC",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Jcq54",
+                      "name": "evViewAllTxt",
+                      "fill": "$brand-red",
+                      "content": "View All Events",
+                      "fontFamily": "Lato",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "kzEza",
+                      "name": "evViewAllIcon",
+                      "width": 16,
+                      "height": 16,
+                      "iconFontName": "arrow-right",
+                      "iconFontFamily": "lucide",
+                      "fill": "$brand-red"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "RDUlh",
+              "name": "Events Cards Row",
+              "width": "fill_container",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "oSq60",
+                  "name": "Event Card 1",
+                  "clip": true,
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "qazUd",
+                      "name": "Event Card Top",
+                      "width": "fill_container",
+                      "height": 8,
+                      "fill": "$brand-red"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "xanlb",
+                      "name": "Event Card Body",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 12,
+                      "padding": [
+                        20,
+                        24
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "fAW8u",
+                          "name": "ev1badge",
+                          "fill": "$brand-red",
+                          "cornerRadius": 20,
+                          "padding": [
+                            4,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "t3p8R",
+                              "name": "ev1badgeTxt",
+                              "fill": "#FFFFFF",
+                              "content": "Global",
+                              "fontFamily": "Lato",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "eEbl3",
+                          "name": "ev1name",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Divine Mercy Sunday Mass",
+                          "fontFamily": "Playfair Display",
+                          "fontSize": 18,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Q8UPE",
+                          "name": "ev1meta",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "TM7gJ",
+                              "name": "ev1date",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "LIlrV",
+                                  "name": "ev1dateIcon",
+                                  "width": 14,
+                                  "height": 14,
+                                  "iconFontName": "calendar",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "$brand-red"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "dEUAV",
+                                  "name": "ev1dateTxt",
+                                  "fill": "$text-secondary",
+                                  "content": "April 27, 2025 · 9:00 AM",
+                                  "fontFamily": "Lato",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "fLmuL",
+                              "name": "ev1loc",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "JxHXr",
+                                  "name": "ev1locIcon",
+                                  "width": 14,
+                                  "height": 14,
+                                  "iconFontName": "map-pin",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "$brand-red"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "LRKIX",
+                                  "name": "ev1locTxt",
+                                  "fill": "$text-secondary",
+                                  "content": "San Pedro Calungsod Parish, QC",
+                                  "fontFamily": "Lato",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "icINl",
+                  "name": "Event Card 2",
+                  "clip": true,
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "qhgj6",
+                      "name": "ev2top",
+                      "width": "fill_container",
+                      "height": 8,
+                      "fill": "#7B5EA7"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "3MxmA",
+                      "name": "ev2body",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 12,
+                      "padding": [
+                        20,
+                        24
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "vF2Hc",
+                          "name": "ev2badge",
+                          "fill": "#7B5EA7",
+                          "cornerRadius": 20,
+                          "padding": [
+                            4,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "J4mHB",
+                              "name": "ev2badgeTxt",
+                              "fill": "#FFFFFF",
+                              "content": "Makati Chapter",
+                              "fontFamily": "Lato",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "VhvXW",
+                          "name": "ev2name",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Monthly Chapter Prayer Meeting",
+                          "fontFamily": "Playfair Display",
+                          "fontSize": 18,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "UJRqR",
+                          "name": "ev2meta",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "Ry71O",
+                              "name": "ev2dateRow",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "vptbZ",
+                                  "name": "ev2dateIco",
+                                  "width": 14,
+                                  "height": 14,
+                                  "iconFontName": "calendar",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#7B5EA7"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "Os3ek",
+                                  "name": "ev2dateTxt",
+                                  "fill": "$text-secondary",
+                                  "content": "April 12, 2025 · 3:00 PM",
+                                  "fontFamily": "Lato",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "nf2Ol",
+                              "name": "ev2locRow",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "FRDEJ",
+                                  "name": "ev2locIco",
+                                  "width": 14,
+                                  "height": 14,
+                                  "iconFontName": "map-pin",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#7B5EA7"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "2bCZN",
+                                  "name": "ev2locTxt",
+                                  "fill": "$text-secondary",
+                                  "content": "Makati Community Hall",
+                                  "fontFamily": "Lato",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "cqu22",
+                  "name": "Event Card 3",
+                  "clip": true,
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "X1fKm",
+                      "name": "ev3top",
+                      "width": "fill_container",
+                      "height": 8,
+                      "fill": "#2E7D50"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "M3fM5",
+                      "name": "ev3body",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 12,
+                      "padding": [
+                        20,
+                        24
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "yvNG7",
+                          "name": "ev3badge",
+                          "fill": "#2E7D50",
+                          "cornerRadius": 20,
+                          "padding": [
+                            4,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "8Al2V",
+                              "name": "ev3badgeTxt",
+                              "fill": "#FFFFFF",
+                              "content": "Pasig Chapter",
+                              "fontFamily": "Lato",
+                              "fontSize": 12,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "ytGNU",
+                          "name": "ev3name",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Enthronement of the Sacred Image",
+                          "fontFamily": "Playfair Display",
+                          "fontSize": 18,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ed5R2",
+                          "name": "ev3meta",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "4JB49",
+                              "name": "ev3dateRow",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "as3Df",
+                                  "name": "ev3dateIco",
+                                  "width": 14,
+                                  "height": 14,
+                                  "iconFontName": "calendar",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#2E7D50"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "au72K",
+                                  "name": "ev3dateTxt",
+                                  "fill": "$text-secondary",
+                                  "content": "April 19, 2025 · 10:00 AM",
+                                  "fontFamily": "Lato",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Tm1Yh",
+                              "name": "ev3locRow",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "Ko6VV",
+                                  "name": "ev3locIco",
+                                  "width": 14,
+                                  "height": 14,
+                                  "iconFontName": "map-pin",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#2E7D50"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "2MSMo",
+                                  "name": "ev3locTxt",
+                                  "fill": "$text-secondary",
+                                  "content": "Residence of Bro. Santos, Pasig",
+                                  "fontFamily": "Lato",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "kM6QU",
+          "name": "Daily Gospel Section",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "gap": 64,
+          "padding": [
+            56,
+            80
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "xl5YC",
+              "name": "Gospel Left",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "RmFoU",
+                  "name": "gospelLabelRow",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "rpnX6",
+                      "name": "gospelCross",
+                      "width": 24,
+                      "height": 24,
+                      "iconFontName": "cross",
+                      "iconFontFamily": "lucide",
+                      "fill": "$brand-red"
+                    },
+                    {
+                      "type": "text",
+                      "id": "l8FNF",
+                      "name": "gospelSectionLabel",
+                      "fill": "$brand-red",
+                      "content": "Today's Gospel",
+                      "fontFamily": "Lato",
+                      "fontSize": 14,
+                      "fontWeight": "700",
+                      "letterSpacing": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "pzAc0",
+                  "name": "gospelDate",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Tuesday, March 25, 2025 — The Annunciation of the Lord",
+                  "fontFamily": "Playfair Display",
+                  "fontSize": 22,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "u05yw",
+                  "name": "gospelRef",
+                  "fill": "$brand-red",
+                  "content": "Luke 1:26–38",
+                  "fontFamily": "Lato",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "QoKTT",
+                  "name": "gospelExcerpt",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "\"The angel Gabriel was sent from God to a town of Galilee called Nazareth, to a virgin betrothed to a man named Joseph, of the house of David, and the virgin's name was Mary.\"",
+                  "lineHeight": 1.7,
+                  "fontFamily": "Playfair Display",
+                  "fontSize": 17,
+                  "fontWeight": "normal",
+                  "fontStyle": "italic"
+                },
+                {
+                  "type": "frame",
+                  "id": "0WYy0",
+                  "name": "gospelLink",
+                  "fill": "$brand-red",
+                  "cornerRadius": 8,
+                  "gap": 8,
+                  "padding": [
+                    10,
+                    20
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Wajog",
+                      "name": "gospelLinkTxt",
+                      "fill": "#FFFFFF",
+                      "content": "Read Full Reading",
+                      "fontFamily": "Lato",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "jGuxu",
+                      "name": "gospelLinkIcon",
+                      "width": 16,
+                      "height": 16,
+                      "iconFontName": "book-open",
+                      "iconFontFamily": "lucide",
+                      "fill": "#FFFFFF"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "xcYWR",
+              "name": "Gospel Right",
+              "width": 320,
+              "height": 320,
+              "fill": "#FEECEC",
+              "cornerRadius": 160,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "8OEDD",
+                  "name": "gospelDoveIcon",
+                  "opacity": 0.3,
+                  "width": 100,
+                  "height": 100,
+                  "iconFontName": "feather",
+                  "iconFontFamily": "lucide",
+                  "fill": "$brand-red"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "Jdgm1",
+                  "layoutPosition": "absolute",
+                  "x": 120,
+                  "y": 120,
+                  "name": "gospelCrossLarge",
+                  "width": 80,
+                  "height": 80,
+                  "iconFontName": "cross",
+                  "iconFontFamily": "lucide",
+                  "fill": "$brand-red"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "EmkN1",
+          "name": "Enthronement Highlight",
+          "width": "fill_container",
+          "fill": "$brand-red",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            72,
+            80
+          ],
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "o6zEk",
+              "name": "enthDecorTop",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "Yrfb9",
+                  "name": "enthStarL",
+                  "width": 20,
+                  "height": 20,
+                  "iconFontName": "star",
+                  "iconFontFamily": "lucide",
+                  "fill": "#FFCDD0"
+                },
+                {
+                  "type": "text",
+                  "id": "O6gcE",
+                  "name": "enthLabel",
+                  "fill": "#FFCDD0",
+                  "content": "ENTHRONEMENT OF THE SACRED IMAGE",
+                  "fontFamily": "Lato",
+                  "fontSize": 12,
+                  "fontWeight": "700",
+                  "letterSpacing": 3
+                },
+                {
+                  "type": "icon_font",
+                  "id": "zskJf",
+                  "name": "enthStarR",
+                  "width": 20,
+                  "height": 20,
+                  "iconFontName": "star",
+                  "iconFontFamily": "lucide",
+                  "fill": "#FFCDD0"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "oFtqX",
+              "name": "enthNumber",
+              "fill": "#FFFFFF",
+              "content": "1,248",
+              "textAlign": "center",
+              "fontFamily": "Playfair Display",
+              "fontSize": 80,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "l1K79",
+              "name": "enthNumberSub",
+              "fill": "#FFCDD0",
+              "content": "Households Enthroned",
+              "textAlign": "center",
+              "fontFamily": "Playfair Display",
+              "fontSize": 32,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "NcidW",
+              "name": "enthMonthly",
+              "fill": "#FFCDD0",
+              "content": "This month across all chapters",
+              "textAlign": "center",
+              "fontFamily": "Lato",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "6pTOB",
+              "name": "enthDivider",
+              "width": 64,
+              "height": 2,
+              "fill": "#FFFFFF40"
+            },
+            {
+              "type": "text",
+              "id": "BqyNW",
+              "name": "enthDesc",
+              "fill": "#FAF8F5CC",
+              "textGrowth": "fixed-width",
+              "width": 680,
+              "content": "The Enthronement of the Sacred Image of the Divine Mercy is a beautiful act of consecrating one's home to Jesus, inviting His mercy and grace to dwell in every household. Through this sacred rite, families proclaim their faith and surrender to God's boundless love.",
+              "lineHeight": 1.7,
+              "textAlign": "center",
+              "fontFamily": "Lato",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "4P7OM",
+          "name": "Ministry Showcase",
+          "width": "fill_container",
+          "fill": "$bg-page",
+          "layout": "vertical",
+          "gap": 40,
+          "padding": [
+            56,
+            80
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "aUS09",
+              "name": "minHeader",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Uk0ta",
+                  "name": "minTitle",
+                  "fill": "$text-primary",
+                  "content": "Our Ministries",
+                  "textAlign": "center",
+                  "fontFamily": "Playfair Display",
+                  "fontSize": 32,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "7fbMK",
+                  "name": "minSubtitle",
+                  "fill": "$text-secondary",
+                  "content": "Each ministry is a unique calling to serve God and community",
+                  "textAlign": "center",
+                  "fontFamily": "Lato",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "0FZW3",
+              "name": "Ministry Row 1",
+              "width": "fill_container",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "MhwM8",
+                  "name": "Ministry 1",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": [
+                    28,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "dtH68",
+                      "name": "min1icon",
+                      "width": 52,
+                      "height": 52,
+                      "fill": "#FEECEC",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "f9Eou",
+                          "name": "min1ico",
+                          "width": 26,
+                          "height": 26,
+                          "iconFontName": "music",
+                          "iconFontFamily": "lucide",
+                          "fill": "$brand-red"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "qF0jS",
+                      "name": "min1title",
+                      "fill": "$text-primary",
+                      "content": "Music Ministry",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 17,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "DkR6n",
+                      "name": "min1desc",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Leading worship through music and praise during gatherings",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Lato",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "7DWlX",
+                  "name": "Ministry 2",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": [
+                    28,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "dyK9A",
+                      "name": "min2icon",
+                      "width": 52,
+                      "height": 52,
+                      "fill": "#E8F5E9",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "D7c2B",
+                          "name": "min2ico",
+                          "width": 26,
+                          "height": 26,
+                          "iconFontName": "heart-handshake",
+                          "iconFontFamily": "lucide",
+                          "fill": "#2E7D50"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "0n620",
+                      "name": "min2title",
+                      "fill": "$text-primary",
+                      "content": "Social Services",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 17,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Wc24v",
+                      "name": "min2desc",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Reaching the poor and marginalized through acts of mercy",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Lato",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "awmWW",
+                  "name": "Ministry 3",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": [
+                    28,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "urNQo",
+                      "name": "min3icon",
+                      "width": 52,
+                      "height": 52,
+                      "fill": "#EDE7F6",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "ppqps",
+                          "name": "min3ico",
+                          "width": 26,
+                          "height": 26,
+                          "iconFontName": "book",
+                          "iconFontFamily": "lucide",
+                          "fill": "#7B5EA7"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "O9e70",
+                      "name": "min3title",
+                      "fill": "$text-primary",
+                      "content": "Faith Formation",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 17,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "yur2V",
+                      "name": "min3desc",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Bible studies and catechesis to deepen members' faith life",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Lato",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zu0vN",
+              "name": "Ministry Row 2",
+              "width": "fill_container",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "832lN",
+                  "name": "Ministry 4",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": [
+                    28,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "hXFTk",
+                      "name": "min4icon",
+                      "width": 52,
+                      "height": 52,
+                      "fill": "#FFF8E1",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "rHiP0",
+                          "name": "min4ico",
+                          "width": 26,
+                          "height": 26,
+                          "iconFontName": "users",
+                          "iconFontFamily": "lucide",
+                          "fill": "#F59E0B"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "4bDRG",
+                      "name": "min4title",
+                      "fill": "$text-primary",
+                      "content": "Youth Ministry",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 17,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "PY1zS",
+                      "name": "min4desc",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Nurturing the next generation of faith-filled servant leaders",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Lato",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "IfwLP",
+                  "name": "Ministry 5",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": [
+                    28,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "9AWSJ",
+                      "name": "min5icon",
+                      "width": 52,
+                      "height": 52,
+                      "fill": "#FCE4EC",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "gSdzZ",
+                          "name": "min5ico",
+                          "width": 26,
+                          "height": 26,
+                          "iconFontName": "hand",
+                          "iconFontFamily": "lucide",
+                          "fill": "#E91E63"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "1pCiT",
+                      "name": "min5title",
+                      "fill": "$text-primary",
+                      "content": "Intercessory Prayer",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 17,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "hACeA",
+                      "name": "min5desc",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Lifting up community intentions in prayer before the Lord",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Lato",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "4Dcqh",
+                  "name": "Ministry 6",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1C191710",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": [
+                    28,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "NMNbN",
+                      "name": "min6icon",
+                      "width": 52,
+                      "height": 52,
+                      "fill": "#E3F2FD",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "zzOhQ",
+                          "name": "min6ico",
+                          "width": 26,
+                          "height": 26,
+                          "iconFontName": "house",
+                          "iconFontFamily": "lucide",
+                          "fill": "#1976D2"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "M1fBJ",
+                      "name": "min6title",
+                      "fill": "$text-primary",
+                      "content": "Family & Household",
+                      "fontFamily": "Playfair Display",
+                      "fontSize": 17,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "TK6vx",
+                      "name": "min6desc",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Supporting families in building homes rooted in Divine Mercy",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Lato",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Tm3ZL",
+          "name": "Prayer Corner",
+          "width": "fill_container",
+          "fill": "$bg-warm-light",
+          "layout": "vertical",
+          "gap": 28,
+          "padding": [
+            72,
+            80
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "zowKt",
+              "name": "prayerLabelRow",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "npSWT",
+                  "name": "prayerStar1",
+                  "width": 20,
+                  "height": 20,
+                  "iconFontName": "sparkles",
+                  "iconFontFamily": "lucide",
+                  "fill": "$brand-red"
+                },
+                {
+                  "type": "text",
+                  "id": "cfo7D",
+                  "name": "prayerLabel",
+                  "fill": "$brand-red",
+                  "content": "DIVINE MERCY PRAYER CORNER",
+                  "fontFamily": "Lato",
+                  "fontSize": 12,
+                  "fontWeight": "700",
+                  "letterSpacing": 3
+                },
+                {
+                  "type": "icon_font",
+                  "id": "mHg6m",
+                  "name": "prayerStar2",
+                  "width": 20,
+                  "height": 20,
+                  "iconFontName": "sparkles",
+                  "iconFontFamily": "lucide",
+                  "fill": "$brand-red"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "G8dvn",
+              "name": "prayerTitle",
+              "fill": "$text-primary",
+              "content": "The Divine Mercy Chaplet",
+              "textAlign": "center",
+              "fontFamily": "Playfair Display",
+              "fontSize": 36,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "o3ZSr",
+              "name": "Prayer Card",
+              "width": 680,
+              "fill": "#FFFFFF",
+              "cornerRadius": 20,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#1C191714",
+                "offset": {
+                  "x": 0,
+                  "y": 8
+                },
+                "blur": 32
+              },
+              "layout": "vertical",
+              "gap": 20,
+              "padding": [
+                40,
+                48
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "uIVib",
+                  "name": "prayerCross",
+                  "opacity": 0.6,
+                  "width": 36,
+                  "height": 36,
+                  "iconFontName": "cross",
+                  "iconFontFamily": "lucide",
+                  "fill": "$brand-red"
+                },
+                {
+                  "type": "text",
+                  "id": "6hQO0",
+                  "name": "prayerVerse1",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "\"Eternal Father, I offer You the Body and Blood, Soul and Divinity of Your dearly beloved Son, Our Lord Jesus Christ, in atonement for our sins and those of the whole world.\"",
+                  "lineHeight": 1.7,
+                  "textAlign": "center",
+                  "fontFamily": "Playfair Display",
+                  "fontSize": 18,
+                  "fontWeight": "normal",
+                  "fontStyle": "italic"
+                },
+                {
+                  "type": "text",
+                  "id": "Hr4TX",
+                  "name": "prayerVerse2",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "\"For the sake of His sorrowful Passion, have mercy on us and on the whole world.\"",
+                  "lineHeight": 1.6,
+                  "textAlign": "center",
+                  "fontFamily": "Playfair Display",
+                  "fontSize": 16,
+                  "fontWeight": "normal",
+                  "fontStyle": "italic"
+                },
+                {
+                  "type": "frame",
+                  "id": "Q4dt4",
+                  "name": "prayerDivider",
+                  "opacity": 0.4,
+                  "width": 48,
+                  "height": 2,
+                  "fill": "$brand-red"
+                },
+                {
+                  "type": "frame",
+                  "id": "iOgo9",
+                  "name": "prayerBtn",
+                  "fill": "$brand-red",
+                  "cornerRadius": 8,
+                  "gap": 10,
+                  "padding": [
+                    14,
+                    32
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "WpyZ8",
+                      "name": "prayerBtnIco",
+                      "width": 18,
+                      "height": 18,
+                      "iconFontName": "heart",
+                      "iconFontFamily": "lucide",
+                      "fill": "#FFFFFF"
+                    },
+                    {
+                      "type": "text",
+                      "id": "7Xf62",
+                      "name": "prayerBtnTxt",
+                      "fill": "#FFFFFF",
+                      "content": "Pray With Us",
+                      "fontFamily": "Lato",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "YEIFM",
+          "name": "Footer",
+          "width": "fill_container",
+          "fill": "$text-primary",
+          "gap": 24,
+          "padding": [
+            32,
+            80
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "fYQ7a",
+              "name": "footerLeft",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "jNuWS",
+                  "name": "footerName",
+                  "fill": "#FFFFFF",
+                  "content": "Friends of the Divine Mercy",
+                  "fontFamily": "Playfair Display",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "evWjm",
+                  "name": "footerTagline",
+                  "fill": "#FFFFFF80",
+                  "content": "A community rooted in faith, mercy, and service",
+                  "fontFamily": "Lato",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "bm0D8",
+              "name": "footerRight",
+              "fill": "#FFFFFF60",
+              "content": "© 2025 FDM. All rights reserved.",
+              "fontFamily": "Lato",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "bg-card": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "bg-dark": {
+      "type": "color",
+      "value": "#2C1810"
+    },
+    "bg-page": {
+      "type": "color",
+      "value": "#FAF8F5"
+    },
+    "bg-warm-light": {
+      "type": "color",
+      "value": "#F5F0E8"
+    },
+    "border-light": {
+      "type": "color",
+      "value": "#E7E2D8"
+    },
+    "brand-red": {
+      "type": "color",
+      "value": "#a92227"
+    },
+    "brand-red-dark": {
+      "type": "color",
+      "value": "#7d191d"
+    },
+    "brand-red-light": {
+      "type": "color",
+      "value": "#c93b40"
+    },
+    "font-body": {
+      "type": "string",
+      "value": "Lato"
+    },
+    "font-heading": {
+      "type": "string",
+      "value": "Playfair Display"
+    },
+    "text-muted": {
+      "type": "color",
+      "value": "#A8A29E"
+    },
+    "text-on-dark": {
+      "type": "color",
+      "value": "#FAF8F5"
+    },
+    "text-on-red": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "text-primary": {
+      "type": "color",
+      "value": "#1C1917"
+    },
+    "text-secondary": {
+      "type": "color",
+      "value": "#57534E"
+    }
+  }
+}

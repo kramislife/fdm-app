@@ -51,7 +51,7 @@ export function DetailField({
 
 interface DetailMetaProps {
   id: number;
-  createdAt: string;
+  createdAt?: string | null;
   updatedAt?: string | null;
   createdBy?: { first_name: string; last_name: string } | null;
   updatedBy?: { first_name: string; last_name: string } | null;
@@ -76,12 +76,14 @@ export function DetailMeta({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
-        <DetailField
-          label="Date Created"
-          contentClassName="text-xs text-muted-foreground"
-        >
-          <DateCell date={createdAt} />
-        </DetailField>
+        {createdAt && (
+          <DetailField
+            label="Date Created"
+            contentClassName="text-xs text-muted-foreground"
+          >
+            <DateCell date={createdAt} />
+          </DetailField>
+        )}
 
         {createdBy && (
           <DetailField
