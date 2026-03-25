@@ -49,7 +49,7 @@ export const footerConfig: FooterConfig = {
     heading: "Quick Links",
     links: [
       { label: "Find a Chapter", href: "/chapters" },
-      { label: "Member Login", href: "/login" },
+      // { label: "Member Login", href: "/login" },
       { label: "Prayer Requests", href: "/contact-us" },
       { label: "Privacy Policy", href: "/privacy-policy" },
       { label: "Terms of Use", href: "/terms-of-use" },
