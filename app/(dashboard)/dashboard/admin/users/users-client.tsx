@@ -45,7 +45,11 @@ import { Label } from "@/components/ui/label";
 import { UserQRDialog } from "@/components/shared/qr-code";
 import { ConfirmActionDialog } from "@/components/admin/confirm-dialog";
 import { toast } from "sonner";
-import { ManageRolesSheet, getDisplayRoles } from "./manage-roles-sheet";
+import {
+  ManageRolesSheet,
+  getDisplayRoles,
+  getAllDisplayRoles,
+} from "./manage-roles-sheet";
 
 // ------------------------------- Types --------------------------------------
 
@@ -255,17 +259,25 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
               </DetailField>
               <DetailField label={FIELD_LABELS.roles}>
                 <div className="flex flex-wrap gap-2">
-                  {getDisplayRoles(row.user_roles).map((ur: any) => (
-                    <Badge
-                      key={ur.id}
-                      variant="secondary"
-                      className="h-auto rounded-md"
-                    >
-                      {ur.role.name}
-                      {ur.chapter && ` (${ur.chapter.name})`}
-                    </Badge>
-                  ))}
-                  {getDisplayRoles(row.user_roles).length === 0 && (
+                  {getAllDisplayRoles(row.user_roles).map((ur: any) => {
+                    const ministryName =
+                      ur.chapter_ministry?.ministry_type?.name;
+                    return (
+                      <Badge
+                        key={ur.id}
+                        variant="secondary"
+                        className="h-auto rounded-md"
+                      >
+                        {ur.role.name}
+                        {ministryName
+                          ? ` - ${ministryName}${ur.chapter ? ` (${ur.chapter.name})` : ""}`
+                          : ur.chapter
+                            ? ` (${ur.chapter.name})`
+                            : ""}
+                      </Badge>
+                    );
+                  })}
+                  {getAllDisplayRoles(row.user_roles).length === 0 && (
                     <span className="text-muted-foreground">
                       No roles assigned
                     </span>

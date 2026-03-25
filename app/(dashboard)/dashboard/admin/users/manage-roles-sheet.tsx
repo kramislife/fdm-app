@@ -48,8 +48,13 @@ export const formatRoleName = (ur: any) => {
   return sub ? `${name} (${sub})` : name;
 };
 
+// For manage-roles sheet — excludes roles that are managed elsewhere
 export const getDisplayRoles = (userRoles: any[]) =>
   userRoles.filter((ur) => !EXCLUDED_ROLE_KEYS.has(ur.role.key));
+
+// For read-only display (detail view) — shows all roles except the base member role
+export const getAllDisplayRoles = (userRoles: any[]) =>
+  userRoles.filter((ur) => ur.role.key !== "member");
 
 // -------------------------------- RemovableBadge --------------------------------
 

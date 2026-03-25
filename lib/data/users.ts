@@ -95,6 +95,9 @@ export async function getUsers(params: TableParams = {}) {
             id: true,
             role: { select: { id: true, key: true, name: true, scope: true } },
             chapter: { select: { id: true, name: true } },
+            chapter_ministry: {
+              select: { ministry_type: { select: { name: true } } },
+            },
           },
         },
       },
