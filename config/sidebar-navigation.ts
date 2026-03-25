@@ -111,11 +111,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
         label: "Events",
         href: "/dashboard/admin/events",
         icon: BsCalendar2DateFill,
-        roles: [
-          "director_adviser",
-          "elder",
-          "head_servant",
-        ],
+        roles: ["director_adviser", "elder", "head_servant"],
       },
       {
         label: "Attendance",
@@ -155,7 +151,13 @@ export const SIDEBAR_NAV: NavGroup[] = [
         label: "Finance",
         href: "/dashboard/finance",
         icon: RiHandCoinFill,
-        roles: ["director_adviser", "elder", "head_servant", "finance_head", "finance"],
+        roles: [
+          "director_adviser",
+          "elder",
+          "head_servant",
+          "finance_head",
+          "finance",
+        ],
       },
       {
         label: "Announcements",
@@ -196,16 +198,16 @@ export const SIDEBAR_NAV: NavGroup[] = [
         ],
       },
       {
-        label: "Chapters",
-        href: "/dashboard/admin/chapters",
-        icon: FaBuildingUser,
-        roles: ["director_adviser", "elder"],
-      },
-      {
         label: "Chapter Ministries",
         href: "/dashboard/admin/chapter-ministries",
         icon: FaChurch,
         roles: ["director_adviser", "elder", "head_servant"],
+      },
+      {
+        label: "Chapters",
+        href: "/dashboard/admin/chapters",
+        icon: FaBuildingUser,
+        roles: ["director_adviser", "elder"],
       },
       {
         label: "Ministry Types",
