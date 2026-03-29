@@ -4,6 +4,18 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db/prisma";
 import { requireRole } from "@/lib/auth/config";
 import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/constants/app-roles";
+import {
+  logActivity,
+  diffFields,
+  buildUpdateMessage,
+  formatName,
+} from "@/lib/services/activity-log";
+import {
+  ACTIVITY_ACTIONS,
+  ACTIVITY_ENTITIES,
+  EVENT_FIELD_LABELS,
+} from "@/lib/constants/activity-log";
+import { formatDateTime } from "@/lib/utils/format";
 
 const REVALIDATE_PATH = "/dashboard/admin/events";
 
@@ -120,7 +132,7 @@ export async function createEvent(data: EventForm): Promise<ActionResult> {
     const expiresAt = qrToken ? new Date() : null;
     if (expiresAt) expiresAt.setMinutes(expiresAt.getMinutes() + 15);
 
-    await prisma.event.create({
+    const created = await prisma.event.create({
       data: {
         name: data.name.trim(),
         event_type_id:
@@ -140,6 +152,28 @@ export async function createEvent(data: EventForm): Promise<ActionResult> {
         qr_expires_at: expiresAt,
         created_by: currentUser.user.id,
       },
+    });
+
+    let chapterName: string | null = null;
+    if (data.scope === "chapter" && data.chapter_id) {
+      const ch = await prisma.chapter.findUnique({
+        where: { id: Number(data.chapter_id) },
+        select: { name: true },
+      });
+      chapterName = ch?.name ?? null;
+    }
+
+    const actorName = formatName(currentUser.user);
+    const chapterSuffix = chapterName ? ` for ${chapterName} Chapter` : "";
+    await logActivity({
+      actorId: currentUser.user.id,
+      actorName,
+      action: ACTIVITY_ACTIONS.CREATED,
+      entityType: ACTIVITY_ENTITIES.EVENT,
+      entityId: created.id,
+      entityLabel: created.name,
+      chapterId: created.chapter_id ?? null,
+      message: `${actorName} created ${created.name} event${chapterSuffix}`,
     });
 
     revalidatePath(REVALIDATE_PATH);
@@ -189,7 +223,16 @@ export async function updateEvent(
 
     const existing = await prisma.event.findUnique({
       where: { id },
-      select: { qr_token: true, qr_enabled: true, event_date: true },
+      select: {
+        name: true,
+        event_date: true,
+        location: true,
+        scope: true,
+        qr_token: true,
+        qr_enabled: true,
+        chapter_id: true,
+        event_type: { select: { name: true } },
+      },
     });
 
     if (!existing) throw new Error("Event not found");
@@ -257,6 +300,49 @@ export async function updateEvent(
       },
     });
 
+    // Resolve new event type name for human-readable diff
+    let newEventTypeName: string | null = null;
+    if (data.event_type_id && data.event_type_id !== "none") {
+      const et = await prisma.eventType.findUnique({
+        where: { id: Number(data.event_type_id) },
+        select: { name: true },
+      });
+      newEventTypeName = et?.name ?? null;
+    }
+
+    const prev = {
+      name: existing.name,
+      event_type: existing.event_type?.name ?? null,
+      event_date: formatDateTime(existing.event_date),
+      location: existing.location,
+      scope: existing.scope === "global" ? "Global" : "Chapter",
+      qr_enabled: existing.qr_enabled ? "Enabled" : "Disabled",
+    };
+    const next = {
+      name: data.name.trim(),
+      event_type: newEventTypeName,
+      event_date: formatDateTime(combinedDate),
+      location: data.location.trim() || null,
+      scope: data.scope === "global" ? "Global" : "Chapter",
+      qr_enabled: data.qr_enabled ? "Enabled" : "Disabled",
+    };
+
+    const changes = diffFields(prev, next, EVENT_FIELD_LABELS);
+    if (changes.length > 0) {
+      const actorName = formatName(currentUser.user);
+      await logActivity({
+        actorId: currentUser.user.id,
+        actorName,
+        action: ACTIVITY_ACTIONS.UPDATED,
+        entityType: ACTIVITY_ENTITIES.EVENT,
+        entityId: id,
+        entityLabel: next.name,
+        chapterId: existing.chapter_id ?? null,
+        message: buildUpdateMessage(actorName, next.name, changes),
+        metadata: { changes },
+      });
+    }
+
     revalidatePath(REVALIDATE_PATH);
     return {
       success: true,
@@ -291,12 +377,31 @@ export async function deleteEvent(id: number): Promise<ActionResult> {
   }
 
   try {
+    const event = await prisma.event.findUnique({
+      where: { id },
+      select: { name: true, chapter_id: true },
+    });
+
+    if (!event) throw new Error("Event not found");
+
     await prisma.event.update({
       where: { id },
       data: {
         deleted_at: new Date(),
         deleted_by: currentUser.user.id,
       },
+    });
+
+    const actorName = formatName(currentUser.user);
+    await logActivity({
+      actorId: currentUser.user.id,
+      actorName,
+      action: ACTIVITY_ACTIONS.DELETED,
+      entityType: ACTIVITY_ENTITIES.EVENT,
+      entityId: id,
+      entityLabel: event.name,
+      chapterId: event.chapter_id ?? null,
+      message: `${actorName} deleted ${event.name} event`,
     });
 
     revalidatePath(REVALIDATE_PATH);
@@ -316,7 +421,7 @@ export async function generateEventQR(id: number) {
   try {
     const event = await prisma.event.findUnique({
       where: { id },
-      select: { qr_interval: true },
+      select: { name: true, qr_interval: true, chapter_id: true },
     });
 
     if (!event) throw new Error("Event not found");
@@ -332,6 +437,18 @@ export async function generateEventQR(id: number) {
         qr_expires_at: expiresAt,
         updated_by: currentUser.user.id,
       },
+    });
+
+    const actorName = formatName(currentUser.user);
+    await logActivity({
+      actorId: currentUser.user.id,
+      actorName,
+      action: ACTIVITY_ACTIONS.ENCODED,
+      entityType: ACTIVITY_ENTITIES.EVENT,
+      entityId: id,
+      entityLabel: event.name,
+      chapterId: event.chapter_id ?? null,
+      message: `${actorName} generated a QR code for ${event.name} event`,
     });
 
     revalidatePath(REVALIDATE_PATH);

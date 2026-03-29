@@ -1,6 +1,11 @@
 // ------------------------------- Date & Time (Asia/Manila) ---------------------------------
 const PH_TIMEZONE = "Asia/Manila";
 
+/** Internal: returns elapsed seconds between date and now */
+function elapsedSeconds(d: Date): number {
+  return Math.floor((Date.now() - d.getTime()) / 1000);
+}
+
 function parseSafeDate(date: Date | string | null | undefined): Date | null {
   if (!date) return null;
   const d = typeof date === "string" ? new Date(date) : date;
@@ -86,6 +91,76 @@ export function formatToISOTime(
     minute: "2-digit",
     hour12: false,
   }).format(d);
+}
+
+// ------------------------------- Relative Time & Date ---------------------------------
+
+/**
+ * Relative time only — how long ago.
+ * "Just now" · "2m ago" · "5h ago" · "3d ago"
+ * Falls back to formatDate() beyond 7 days.
+ */
+export function formatTimeAgo(date: Date | string | null | undefined): string {
+  const d = parseSafeDate(date);
+  if (!d) return "—";
+
+  const s = elapsedSeconds(d);
+  if (s < 60) return "Just now";
+  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+  if (s < 604800) return `${Math.floor(s / 86400)}d ago`;
+
+  return formatDate(d);
+}
+
+/**
+ * Relative date label only — which calendar day (PH timezone).
+ * "Today" · "Yesterday" · "Jan 23, 2026" (short) or "January 23, 2026" (long)
+ */
+export function formatRelativeDate(
+  date: Date | string | null | undefined,
+  monthFormat: "short" | "long" = "short",
+): string {
+  const d = parseSafeDate(date);
+  if (!d) return "—";
+
+  // Reuse formatToISODate — already handles PH timezone, returns "YYYY-MM-DD"
+  const target = formatToISODate(d);
+  const today = formatToISODate(new Date());
+  const yesterday = formatToISODate(new Date(Date.now() - 86_400_000));
+
+  if (target === today) return "Today";
+  if (target === yesterday) return "Yesterday";
+
+  return formatDate(d, monthFormat);
+}
+
+/**
+ * Smart timestamp for activity feeds (PH timezone throughout).
+ *
+ * < 1 min               → "Just now"
+ * 1–59 min              → "2m ago"
+ * 1–23 h (same day)     → "Today, 04:33 PM"
+ * yesterday             → "Yesterday, 04:33 PM"
+ * older                 → "Jan 23, 2026, 04:33 PM"
+ */
+export function formatActivityTime(
+  date: Date | string | null | undefined,
+): string {
+  const d = parseSafeDate(date);
+  if (!d) return "—";
+
+  const s = elapsedSeconds(d);
+  if (s < 60) return "Just now";
+  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+
+  const label = formatRelativeDate(d);
+
+  if (label === "Today" || label === "Yesterday") {
+    return `${label}, ${formatTime(d)}`;
+  }
+
+  return formatDateTime(d);
 }
 
 export const DAYS_OF_WEEK = [

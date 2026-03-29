@@ -5,6 +5,17 @@ import { prisma } from "@/lib/db/prisma";
 import { requireRole } from "@/lib/auth/config";
 import { PERMISSION_ROLES } from "@/lib/constants/app-roles";
 import { toKey } from "@/lib/utils/slugify";
+import {
+  logActivity,
+  diffFields,
+  buildUpdateMessage,
+  formatName,
+} from "@/lib/services/activity-log";
+import {
+  ACTIVITY_ACTIONS,
+  ACTIVITY_ENTITIES,
+  EVENT_TYPE_FIELD_LABELS,
+} from "@/lib/constants/activity-log";
 
 const REVALIDATE_PATH = "/dashboard/admin/event-types";
 
@@ -70,7 +81,7 @@ export async function createEventType(
       };
     }
 
-    await prisma.eventType.create({
+    const created = await prisma.eventType.create({
       data: {
         key,
         name: data.name.trim(),
@@ -78,6 +89,17 @@ export async function createEventType(
         is_active: data.is_active,
         created_by: currentUser.user.id,
       },
+    });
+
+    const actorName = formatName(currentUser.user);
+    await logActivity({
+      actorId: currentUser.user.id,
+      actorName,
+      action: ACTIVITY_ACTIONS.CREATED,
+      entityType: ACTIVITY_ENTITIES.EVENT_TYPE,
+      entityId: created.id,
+      entityLabel: created.name,
+      message: `${actorName} created event type ${created.name}`,
     });
 
     revalidatePath(REVALIDATE_PATH);
@@ -101,11 +123,25 @@ export async function updateEventType(
 
   try {
     const key = toKey(data.name);
-    const existing = await prisma.eventType.findFirst({
+
+    const current = await prisma.eventType.findUnique({
+      where: { id },
+      select: { name: true, description: true, is_active: true },
+    });
+
+    if (!current) {
+      return {
+        success: false,
+        title: "Not Found",
+        description: "Event type not found.",
+      };
+    }
+
+    const duplicate = await prisma.eventType.findFirst({
       where: { key, id: { not: id }, deleted_at: null },
     });
 
-    if (existing) {
+    if (duplicate) {
       return {
         success: false,
         title: "Already Exists",
@@ -114,16 +150,35 @@ export async function updateEventType(
       };
     }
 
+    const next = {
+      name: data.name.trim(),
+      description: data.description?.trim() || null,
+      is_active: data.is_active,
+    };
+
     await prisma.eventType.update({
       where: { id },
-      data: {
-        name: data.name.trim(),
-        key,
-        description: data.description?.trim() || null,
-        is_active: data.is_active,
-        updated_by: currentUser.user.id,
-      },
+      data: { ...next, key, updated_by: currentUser.user.id },
     });
+
+    const changes = diffFields(
+      { ...current, is_active: current.is_active ? "Active" : "Inactive" },
+      { ...next, is_active: data.is_active ? "Active" : "Inactive" },
+      EVENT_TYPE_FIELD_LABELS,
+    );
+    if (changes.length > 0) {
+      const actorName = formatName(currentUser.user);
+      await logActivity({
+        actorId: currentUser.user.id,
+        actorName,
+        action: ACTIVITY_ACTIONS.UPDATED,
+        entityType: ACTIVITY_ENTITIES.EVENT_TYPE,
+        entityId: id,
+        entityLabel: next.name,
+        message: buildUpdateMessage(actorName, next.name, changes),
+        metadata: { changes },
+      });
+    }
 
     revalidatePath(REVALIDATE_PATH);
     return {
@@ -140,6 +195,19 @@ export async function deleteEventType(id: number): Promise<ActionResult> {
   const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   try {
+    const eventType = await prisma.eventType.findUnique({
+      where: { id },
+      select: { name: true },
+    });
+
+    if (!eventType) {
+      return {
+        success: false,
+        title: "Not Found",
+        description: "Event type not found.",
+      };
+    }
+
     const eventCount = await prisma.event.count({
       where: { event_type_id: id },
     });
@@ -158,6 +226,17 @@ export async function deleteEventType(id: number): Promise<ActionResult> {
         deleted_at: new Date(),
         deleted_by: currentUser.user.id,
       },
+    });
+
+    const actorName = formatName(currentUser.user);
+    await logActivity({
+      actorId: currentUser.user.id,
+      actorName,
+      action: ACTIVITY_ACTIONS.DELETED,
+      entityType: ACTIVITY_ENTITIES.EVENT_TYPE,
+      entityId: id,
+      entityLabel: eventType.name,
+      message: `${actorName} deleted event type ${eventType.name}`,
     });
 
     revalidatePath(REVALIDATE_PATH);

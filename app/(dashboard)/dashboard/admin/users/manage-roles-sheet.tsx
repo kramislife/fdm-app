@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MdLibraryAdd } from "react-icons/md";
-import { X } from "lucide-react";
+import { X, Lock } from "lucide-react";
 import { cn } from "@/lib/utils/utils";
 import { toast } from "sonner";
 import { updateUserRoles, type UserRoleInput } from "./actions";
@@ -48,13 +48,35 @@ export const formatRoleName = (ur: any) => {
   return sub ? `${name} (${sub})` : name;
 };
 
-// For manage-roles sheet — excludes roles that are managed elsewhere
+// Editable roles in manage-roles sheet — excludes roles managed elsewhere
 export const getDisplayRoles = (userRoles: any[]) =>
-  userRoles.filter((ur) => !EXCLUDED_ROLE_KEYS.has(ur.role.key));
+  userRoles.filter((ur) => ur.is_active && !EXCLUDED_ROLE_KEYS.has(ur.role.key));
+
+// Ministry Head roles — shown read-only in manage-roles sheet
+export const getMinistryHeadRoles = (userRoles: any[]) =>
+  userRoles.filter((ur) => ur.is_active && ur.role.key === "ministry_head");
 
 // For read-only display (detail view) — shows all roles except the base member role
 export const getAllDisplayRoles = (userRoles: any[]) =>
-  userRoles.filter((ur) => ur.role.key !== "member");
+  userRoles.filter((ur) => ur.is_active && ur.role.key !== "member");
+
+// -------------------------------- ReadOnlyBadge --------------------------------
+
+function ReadOnlyBadge({ name, sub }: { name: string; sub?: string }) {
+  return (
+    <Badge
+      variant="secondary"
+      className="gap-1.5 h-auto py-1 rounded-md opacity-70"
+      title="Managed in Chapter Ministries"
+    >
+      <Lock className="size-2.5 shrink-0" />
+      <span>
+        <span className="font-bold">{name}</span>
+        {sub ? ` (${sub})` : ""}
+      </span>
+    </Badge>
+  );
+}
 
 // -------------------------------- RemovableBadge --------------------------------
 
@@ -137,6 +159,7 @@ export function ManageRolesSheet({
   }));
 
   const activeDisplayRoles = getDisplayRoles(user.user_roles);
+  const ministryHeadRoles = getMinistryHeadRoles(user.user_roles);
 
   const getAvailableRolesToAdd = () => {
     const activeTakenIds = new Set(
@@ -283,7 +306,11 @@ export function ManageRolesSheet({
         {/* Current roles */}
         <DetailSection>
           <DetailField label="Current Roles" fullWidth>
-            {activeDisplayRoles.length > 0 ? (
+            {activeDisplayRoles.length === 0 && ministryHeadRoles.length === 0 ? (
+              <span className="text-sm text-muted-foreground">
+                No roles assigned
+              </span>
+            ) : (
               <div className="flex flex-wrap gap-2">
                 {activeDisplayRoles.map((ur: any) => {
                   const marked = pendingRemoveSet.has(ur.id);
@@ -304,11 +331,26 @@ export function ManageRolesSheet({
                     />
                   );
                 })}
+                {ministryHeadRoles.map((ur: any) => {
+                  const ministryName = ur.chapter_ministry?.ministry_type?.name;
+                  const sub = [ministryName, ur.chapter?.name]
+                    .filter(Boolean)
+                    .join(", ");
+                  return (
+                    <ReadOnlyBadge
+                      key={ur.id}
+                      name={ur.role.name}
+                      sub={sub || undefined}
+                    />
+                  );
+                })}
               </div>
-            ) : (
-              <span className="text-sm text-muted-foreground">
-                No roles assigned
-              </span>
+            )}
+            {ministryHeadRoles.length > 0 && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Ministry Head roles are assigned in{" "}
+                <span className="font-medium">Chapter Ministries</span>.
+              </p>
             )}
           </DetailField>
         </DetailSection>

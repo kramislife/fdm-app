@@ -5,6 +5,11 @@ import { prisma } from "@/lib/db/prisma";
 import { requireRole } from "@/lib/auth/config";
 import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/constants/app-roles";
 import { getChapterActiveUsers } from "@/lib/data/chapter-ministries";
+import { logActivity, formatName } from "@/lib/services/activity-log";
+import {
+  ACTIVITY_ACTIONS,
+  ACTIVITY_ENTITIES,
+} from "@/lib/constants/activity-log";
 
 const REVALIDATE_PATH = "/dashboard/admin/chapter-ministries";
 
@@ -35,7 +40,12 @@ export async function updateChapterMinistry(
 
     const chapterMinistry = await prisma.chapterMinistry.findUnique({
       where: { id: chapterMinistryId },
-      select: { chapter_id: true },
+      select: {
+        chapter_id: true,
+        chapter: { select: { name: true } },
+        ministry_type: { select: { name: true } },
+        head: { select: { id: true, first_name: true, last_name: true } },
+      },
     });
 
     if (!chapterMinistry) {
@@ -103,6 +113,42 @@ export async function updateChapterMinistry(
       data: {
         head_user_id: userId,
         updated_by: currentUser.user.id,
+      },
+    });
+
+    const targetUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { first_name: true, last_name: true },
+    });
+
+    const actorName = formatName(currentUser.user);
+    const targetName = targetUser ? formatName(targetUser) : String(userId);
+    const ministryName = chapterMinistry.ministry_type.name;
+    const chapterName = chapterMinistry.chapter.name;
+    const previousHead = chapterMinistry.head;
+    const isReassignment =
+      previousHead !== null &&
+      previousHead !== undefined &&
+      previousHead.id !== userId;
+
+    await logActivity({
+      actorId: currentUser.user.id,
+      actorName,
+      action: ACTIVITY_ACTIONS.ASSIGNED,
+      entityType: ACTIVITY_ENTITIES.CHAPTER_MINISTRY,
+      entityId: chapterMinistryId,
+      entityLabel: `${ministryName} — ${chapterName}`,
+      chapterId: chapterMinistry.chapter_id,
+      message: `${actorName} assigned ${targetName} of ${chapterName} Chapter as head of ${ministryName} Ministry`,
+      metadata: {
+        role: "Ministry Head",
+        target_user_id: userId,
+        target_user: targetName,
+        chapter: chapterName,
+        ...(isReassignment && {
+          previous_user_id: previousHead.id,
+          previous_user: formatName(previousHead),
+        }),
       },
     });
 

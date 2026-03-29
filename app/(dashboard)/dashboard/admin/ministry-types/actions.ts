@@ -5,6 +5,17 @@ import { prisma } from "@/lib/db/prisma";
 import { requireRole } from "@/lib/auth/config";
 import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/constants/app-roles";
 import { toKey } from "@/lib/utils/slugify";
+import {
+  logActivity,
+  diffFields,
+  buildUpdateMessage,
+  formatName,
+} from "@/lib/services/activity-log";
+import {
+  ACTIVITY_ACTIONS,
+  ACTIVITY_ENTITIES,
+  MINISTRY_TYPE_FIELD_LABELS,
+} from "@/lib/constants/activity-log";
 
 const REVALIDATE_PATH = "/dashboard/admin/ministry-types";
 
@@ -80,6 +91,17 @@ export async function createMinistryType(
       },
     });
 
+    const actorName = formatName(currentUser.user);
+    await logActivity({
+      actorId: currentUser.user.id,
+      actorName,
+      action: ACTIVITY_ACTIONS.CREATED,
+      entityType: ACTIVITY_ENTITIES.MINISTRY_TYPE,
+      entityId: newType.id,
+      entityLabel: newType.name,
+      message: `${actorName} created ministry type ${newType.name}`,
+    });
+
     // Auto-create ministry for existing chapters
     try {
       const chapters = await prisma.chapter.findMany({
@@ -126,11 +148,25 @@ export async function updateMinistryType(
 
   try {
     const key = toKey(data.name);
-    const existing = await prisma.ministryType.findFirst({
+
+    const current = await prisma.ministryType.findUnique({
+      where: { id },
+      select: { name: true, description: true, is_active: true },
+    });
+
+    if (!current) {
+      return {
+        success: false,
+        title: "Not Found",
+        description: "Ministry type not found.",
+      };
+    }
+
+    const duplicate = await prisma.ministryType.findFirst({
       where: { key, id: { not: id }, deleted_at: null },
     });
 
-    if (existing) {
+    if (duplicate) {
       return {
         success: false,
         title: "Already Exists",
@@ -139,16 +175,35 @@ export async function updateMinistryType(
       };
     }
 
+    const next = {
+      name: data.name.trim(),
+      description: data.description?.trim() || null,
+      is_active: data.is_active,
+    };
+
     await prisma.ministryType.update({
       where: { id },
-      data: {
-        name: data.name.trim(),
-        key,
-        description: data.description?.trim() || null,
-        is_active: data.is_active,
-        updated_by: currentUser.user.id,
-      },
+      data: { ...next, key, updated_by: currentUser.user.id },
     });
+
+    const changes = diffFields(
+      { ...current, is_active: current.is_active ? "Active" : "Inactive" },
+      { ...next, is_active: data.is_active ? "Active" : "Inactive" },
+      MINISTRY_TYPE_FIELD_LABELS,
+    );
+    if (changes.length > 0) {
+      const actorName = formatName(currentUser.user);
+      await logActivity({
+        actorId: currentUser.user.id,
+        actorName,
+        action: ACTIVITY_ACTIONS.UPDATED,
+        entityType: ACTIVITY_ENTITIES.MINISTRY_TYPE,
+        entityId: id,
+        entityLabel: next.name,
+        message: buildUpdateMessage(actorName, next.name, changes),
+        metadata: { changes },
+      });
+    }
 
     revalidatePath(REVALIDATE_PATH);
     return {
@@ -167,6 +222,19 @@ export async function deleteMinistryType(id: number): Promise<ActionResult> {
   const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   try {
+    const ministryType = await prisma.ministryType.findUnique({
+      where: { id },
+      select: { name: true },
+    });
+
+    if (!ministryType) {
+      return {
+        success: false,
+        title: "Not Found",
+        description: "Ministry type not found.",
+      };
+    }
+
     const activeInUse = await prisma.chapterMinistry.findFirst({
       where: {
         ministry_type_id: id,
@@ -202,7 +270,9 @@ export async function deleteMinistryType(id: number): Promise<ActionResult> {
       await prisma.userRole.deleteMany({
         where: { chapter_ministry_id: { in: emptyMinistryIds } },
       });
-      await prisma.chapterMinistry.deleteMany({ where: { ministry_type_id: id } });
+      await prisma.chapterMinistry.deleteMany({
+        where: { ministry_type_id: id },
+      });
     }
 
     await prisma.ministryType.update({
@@ -211,6 +281,17 @@ export async function deleteMinistryType(id: number): Promise<ActionResult> {
         deleted_at: new Date(),
         deleted_by: currentUser.user.id,
       },
+    });
+
+    const actorName = formatName(currentUser.user);
+    await logActivity({
+      actorId: currentUser.user.id,
+      actorName,
+      action: ACTIVITY_ACTIONS.DELETED,
+      entityType: ACTIVITY_ENTITIES.MINISTRY_TYPE,
+      entityId: id,
+      entityLabel: ministryType.name,
+      message: `${actorName} deleted ministry type ${ministryType.name}`,
     });
 
     revalidatePath(REVALIDATE_PATH);

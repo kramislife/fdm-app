@@ -30,7 +30,8 @@ model Role {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  user_roles     UserRole[]
+  user_roles UserRole[]
+
   @@index([created_at])
   @@map("roles")
 }
@@ -51,9 +52,9 @@ model MinistryType {
   deleted_at DateTime?
   deleted_by Int?
 
-  creator         User?          @relation("MinistryTypeCreator", fields: [created_by], references: [id])
-  updated_by_user User?          @relation("MinistryTypeUpdatedBy", fields: [updated_by], references: [id])
-  deleted_by_user User?          @relation("MinistryTypeDeletedBy", fields: [deleted_by], references: [id])
+  creator            User?             @relation("MinistryTypeCreator", fields: [created_by], references: [id])
+  updated_by_user    User?             @relation("MinistryTypeUpdatedBy", fields: [updated_by], references: [id])
+  deleted_by_user    User?             @relation("MinistryTypeDeletedBy", fields: [deleted_by], references: [id])
   chapter_ministries ChapterMinistry[]
 
   @@index([created_at])
@@ -130,11 +131,11 @@ model User {
   cluster_members  ClusterMember[]
 
   attendance         Attendance[]
-  events_created     Event[]        @relation("EventCreatedBy")
-  events_updated     Event[]        @relation("EventUpdatedBy")
-  events_deleted     Event[]        @relation("EventDeletedBy")
-  guest_logs_encoded GuestLog[]     @relation("EncodedBy")
-  guest_logs_linked  GuestLog[]     @relation("LinkedUser")
+  events_created     Event[]      @relation("EventCreatedBy")
+  events_updated     Event[]      @relation("EventUpdatedBy")
+  events_deleted     Event[]      @relation("EventDeletedBy")
+  guest_logs_encoded GuestLog[]   @relation("EncodedBy")
+  guest_logs_linked  GuestLog[]   @relation("LinkedUser")
 
   enthronements_contact   EnthronementRecord[] @relation("ContactMember")
   enthronements_performed EnthronementRecord[] @relation("EnthronedBy")
@@ -158,6 +159,8 @@ model User {
 
   chapter_ministries_headed  ChapterMinistry[] @relation("ChapterMinistryHead")
   chapter_ministries_updated ChapterMinistry[] @relation("ChapterMinistryUpdater")
+
+  activity_logs ActivityLog[] @relation("ActivityLogActor")
 
   @@index([auth_id])
   @@index([first_name])
@@ -194,17 +197,18 @@ model Chapter {
   deleted_at DateTime?
   deleted_by Int?
 
-  creator         User?           @relation("ChapterCreator", fields: [created_by], references: [id])
-  updated_by_user User?           @relation("ChapterUpdatedBy", fields: [updated_by], references: [id])
-  deleted_by_user User?           @relation("ChapterDeletedBy", fields: [deleted_by], references: [id])
+  creator            User?             @relation("ChapterCreator", fields: [created_by], references: [id])
+  updated_by_user    User?             @relation("ChapterUpdatedBy", fields: [updated_by], references: [id])
+  deleted_by_user    User?             @relation("ChapterDeletedBy", fields: [deleted_by], references: [id])
   chapter_ministries ChapterMinistry[]
   clusters           Cluster[]
-  user_roles      UserRole[]
-  user_chapters   UserChapter[]
-  events          Event[]
-  guest_logs      GuestLog[]
-  finance_records FinanceRecord[]
-  announcements   Announcement[]
+  user_roles         UserRole[]
+  user_chapters      UserChapter[]
+  events             Event[]
+  guest_logs         GuestLog[]
+  finance_records    FinanceRecord[]
+  announcements      Announcement[]
+  activity_logs      ActivityLog[]     @relation("ActivityLogChapter")
 
   @@index([region])
   @@index([province])
@@ -274,9 +278,9 @@ model Event {
   chapter_id    Int?
   event_type_id Int?
   scope         String   @default("global") @db.VarChar(10)
-  event_date DateTime
-  location   String? @db.VarChar(255)
-  location_url String? @db.VarChar(500)
+  event_date    DateTime
+  location      String?  @db.VarChar(255)
+  location_url  String?  @db.VarChar(500)
 
   qr_enabled    Boolean   @default(false)
   qr_token      String?   @db.VarChar(500)
@@ -290,11 +294,11 @@ model Event {
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
 
-  chapter         Chapter?  @relation(fields: [chapter_id], references: [id])
+  chapter         Chapter?   @relation(fields: [chapter_id], references: [id])
   event_type      EventType? @relation(fields: [event_type_id], references: [id])
-  creator         User      @relation("EventCreatedBy", fields: [created_by], references: [id])
-  updated_by_user User?     @relation("EventUpdatedBy", fields: [updated_by], references: [id])
-  deleted_by_user User?     @relation("EventDeletedBy", fields: [deleted_by], references: [id])
+  creator         User       @relation("EventCreatedBy", fields: [created_by], references: [id])
+  updated_by_user User?      @relation("EventUpdatedBy", fields: [updated_by], references: [id])
+  deleted_by_user User?      @relation("EventDeletedBy", fields: [deleted_by], references: [id])
 
   attendance Attendance[]
   guest_logs GuestLog[]
@@ -304,7 +308,6 @@ model Event {
   @@index([created_at])
   @@map("events")
 }
-
 
 // ============================================================
 // [3] RELATIONSHIP / JUNCTION TABLES
@@ -496,4 +499,30 @@ model Announcement {
   @@index([chapter_id])
   @@index([created_at])
   @@map("announcements")
+}
+
+// ============================================================
+// [5] AUDIT / ACTIVITY LOG
+// ============================================================
+
+model ActivityLog {
+  id           Int      @id @default(autoincrement())
+  actor_id     Int
+  action       String   @db.VarChar(50)
+  entity_type  String   @db.VarChar(50)
+  entity_id    Int
+  entity_label String   @db.VarChar(255)
+  message      String   @db.VarChar(500)
+  metadata     Json?
+  chapter_id   Int?
+  created_at   DateTime @default(now())
+
+  actor   User     @relation("ActivityLogActor", fields: [actor_id], references: [id])
+  chapter Chapter? @relation("ActivityLogChapter", fields: [chapter_id], references: [id])
+
+  @@index([actor_id])
+  @@index([entity_type, entity_id])
+  @@index([chapter_id])
+  @@index([created_at])
+  @@map("activity_logs")
 }

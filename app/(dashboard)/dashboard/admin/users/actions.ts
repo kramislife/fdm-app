@@ -8,6 +8,18 @@ import { ACCOUNT_STATUS } from "@/lib/constants/status";
 import { revalidatePath } from "next/cache";
 import crypto from "node:crypto";
 import { isValidEmailFormat, isValidPhoneNumber } from "@/lib/utils/format";
+import {
+  logActivity,
+  diffFields,
+  buildUpdateMessage,
+  formatName,
+} from "@/lib/services/activity-log";
+import {
+  ACTIVITY_ACTIONS,
+  ACTIVITY_ENTITIES,
+  USER_FIELD_LABELS,
+  type FieldChange,
+} from "@/lib/constants/activity-log";
 
 export type UserFormData = {
   first_name: string;
@@ -111,6 +123,25 @@ export async function createUser(data: UserFormData): Promise<ActionResult> {
         },
       });
 
+      const createdQR = await prisma.user.findFirst({
+        where: { member_qr: memberQr },
+        select: { id: true, first_name: true, last_name: true },
+      });
+
+      if (createdQR) {
+        const actorName = formatName(actor.user);
+        const targetName = formatName(createdQR);
+        await logActivity({
+          actorId: actorId,
+          actorName,
+          action: ACTIVITY_ACTIONS.CREATED,
+          entityType: ACTIVITY_ENTITIES.USER,
+          entityId: createdQR.id,
+          entityLabel: targetName,
+          message: `${actorName} created QR-only member ${targetName}`,
+        });
+      }
+
       revalidatePath("/dashboard/admin/users");
       return {
         success: true,
@@ -168,7 +199,7 @@ export async function createUser(data: UserFormData): Promise<ActionResult> {
     const authId = authResult.user.id;
 
     // 3. Create public.users row
-    await prisma.user.create({
+    const createdUser = await prisma.user.create({
       data: {
         first_name: data.first_name,
         last_name: data.last_name,
@@ -195,6 +226,18 @@ export async function createUser(data: UserFormData): Promise<ActionResult> {
           },
         },
       },
+    });
+
+    const actorName = formatName(actor.user);
+    const newUserName = formatName(createdUser);
+    await logActivity({
+      actorId,
+      actorName,
+      action: ACTIVITY_ACTIONS.CREATED,
+      entityType: ACTIVITY_ENTITIES.USER,
+      entityId: createdUser.id,
+      entityLabel: newUserName,
+      message: `${actorName} created user ${newUserName}`,
     });
 
     revalidatePath("/dashboard/admin/users");
@@ -232,7 +275,11 @@ export async function updateUser(
       select: {
         id: true,
         first_name: true,
+        last_name: true,
         email: true,
+        contact_number: true,
+        birthday: true,
+        address: true,
         account_status: true,
         auth_id: true,
         is_qr_only: true,
@@ -395,11 +442,76 @@ export async function updateUser(
       },
     });
 
-    revalidatePath("/dashboard/admin/users");
+    const actorNameUpdate = formatName(actor.user);
+    const prev = {
+      first_name: existing.first_name,
+      last_name: existing.last_name,
+      email: existing.email,
+      contact_number: existing.contact_number,
+      birthday: existing.birthday
+        ? existing.birthday.toISOString().split("T")[0]
+        : null,
+      address: existing.address,
+    };
+    const next = {
+      first_name: data.first_name,
+      last_name: data.last_name,
+      email: data.email?.trim() || null,
+      contact_number: data.contact_number || null,
+      birthday: data.birthday || null,
+      address: data.address || null,
+    };
+    const userChanges = diffFields(prev, next, USER_FIELD_LABELS);
+    const updatedUserName = formatName({
+      first_name: data.first_name,
+      last_name: data.last_name,
+    });
+    if (userChanges.length > 0) {
+      await logActivity({
+        actorId,
+        actorName: actorNameUpdate,
+        action: ACTIVITY_ACTIONS.UPDATED,
+        entityType: ACTIVITY_ENTITIES.USER,
+        entityId: id,
+        entityLabel: updatedUserName,
+        message: buildUpdateMessage(
+          actorNameUpdate,
+          updatedUserName,
+          userChanges,
+        ),
+        metadata: { changes: userChanges },
+      });
+    }
 
-    // Warn if home chapter changed and user has active chapter-scoped roles in old chapter
+    // Log home chapter change separately (it's a relation, not a plain field)
     const oldChapterId = existing.user_chapters[0]?.chapter_id ?? null;
     const oldChapterName = existing.user_chapters[0]?.chapter?.name ?? null;
+    const newChapterId = data.chapter_id ?? null;
+    if (data.chapter_id !== undefined && oldChapterId !== newChapterId) {
+      let newChapterName: string | null = null;
+      if (newChapterId) {
+        const ch = await prisma.chapter.findUnique({
+          where: { id: newChapterId },
+          select: { name: true },
+        });
+        newChapterName = ch?.name ?? null;
+      }
+      const chapterChange: FieldChange[] = [
+        { field: "home chapter", old: oldChapterName, new: newChapterName },
+      ];
+      await logActivity({
+        actorId,
+        actorName: actorNameUpdate,
+        action: ACTIVITY_ACTIONS.UPDATED,
+        entityType: ACTIVITY_ENTITIES.USER,
+        entityId: id,
+        entityLabel: updatedUserName,
+        message: buildUpdateMessage(actorNameUpdate, updatedUserName, chapterChange),
+        metadata: { changes: chapterChange },
+      });
+    }
+
+    revalidatePath("/dashboard/admin/users");
     if (data.chapter_id && oldChapterId && data.chapter_id !== oldChapterId) {
       const activeChapterRoles = await prisma.userRole.findMany({
         where: {
@@ -481,6 +593,18 @@ export async function deactivateUser(id: number): Promise<ActionResult> {
       }),
     ]);
 
+    const actorNameDeact = formatName(actor.user);
+    const targetNameDeact = formatName(user);
+    await logActivity({
+      actorId,
+      actorName: actorNameDeact,
+      action: ACTIVITY_ACTIONS.DEACTIVATED,
+      entityType: ACTIVITY_ENTITIES.USER,
+      entityId: id,
+      entityLabel: targetNameDeact,
+      message: `${actorNameDeact} deactivated the account of ${targetNameDeact}`,
+    });
+
     revalidatePath("/dashboard/admin/users");
     return {
       success: true,
@@ -496,12 +620,12 @@ export async function deactivateUser(id: number): Promise<ActionResult> {
 // ─── Restore User ──────────────────────────────────────────────────────────────
 
 export async function restoreUser(id: number): Promise<ActionResult> {
-  await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
+  const restoreActor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
 
   try {
     const user = await prisma.user.findUnique({
       where: { id },
-      select: { deactivated_at: true, first_name: true },
+      select: { deactivated_at: true, first_name: true, last_name: true },
     });
 
     if (!user || !user.deactivated_at) {
@@ -523,6 +647,18 @@ export async function restoreUser(id: number): Promise<ActionResult> {
       }),
     ]);
 
+    const actorNameRestore = formatName(restoreActor.user);
+    const targetNameRestore = formatName(user);
+    await logActivity({
+      actorId: restoreActor.user.id,
+      actorName: actorNameRestore,
+      action: ACTIVITY_ACTIONS.ACTIVATED,
+      entityType: ACTIVITY_ENTITIES.USER,
+      entityId: id,
+      entityLabel: targetNameRestore,
+      message: `${actorNameRestore} restored the account of ${targetNameRestore}`,
+    });
+
     revalidatePath("/dashboard/admin/users");
     return {
       success: true,
@@ -537,13 +673,15 @@ export async function restoreUser(id: number): Promise<ActionResult> {
 // ─── Delete User ───────────────────────────────────────────────────────────────
 
 export async function deleteUser(id: number): Promise<ActionResult> {
-  await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
+  const deleteActor = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   try {
     const user = await prisma.user.findUnique({
       where: { id },
       select: {
         auth_id: true,
+        first_name: true,
+        last_name: true,
         account_status: true,
         created_at: true,
         is_qr_only: true,
@@ -586,11 +724,24 @@ export async function deleteUser(id: number): Promise<ActionResult> {
       await supabaseAdmin.auth.admin.deleteUser(user.auth_id);
     }
 
+    const deletedUserName = formatName(user);
+
     await prisma.$transaction([
       prisma.userRole.deleteMany({ where: { user_id: id } }),
       prisma.userChapter.deleteMany({ where: { user_id: id } }),
       prisma.user.delete({ where: { id } }),
     ]);
+
+    const actorNameDelete = formatName(deleteActor.user);
+    await logActivity({
+      actorId: deleteActor.user.id,
+      actorName: actorNameDelete,
+      action: ACTIVITY_ACTIONS.DELETED,
+      entityType: ACTIVITY_ENTITIES.USER,
+      entityId: id,
+      entityLabel: deletedUserName,
+      message: `${actorNameDelete} deleted user ${deletedUserName}`,
+    });
 
     revalidatePath("/dashboard/admin/users");
     return { success: true, title: "User Deleted" };
@@ -602,7 +753,7 @@ export async function deleteUser(id: number): Promise<ActionResult> {
 // ─── Resend Credentials ────────────────────────────────────────────────────────
 
 export async function resendCredentials(id: number): Promise<ActionResult> {
-  await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
+  const actor = await requireRole([...PERMISSION_ROLES.USERS_VIEW]);
 
   try {
     const user = await prisma.user.findUnique({
@@ -676,6 +827,18 @@ export async function resendCredentials(id: number): Promise<ActionResult> {
         activation_email_sent_at: new Date(),
         activation_email_resent: { increment: 1 },
       },
+    });
+
+    const actorName = formatName(actor.user);
+    const targetName = formatName(user);
+    await logActivity({
+      actorId: actor.user.id,
+      actorName,
+      action: ACTIVITY_ACTIONS.UPDATED,
+      entityType: ACTIVITY_ENTITIES.USER,
+      entityId: id,
+      entityLabel: targetName,
+      message: `${actorName} resent credentials to ${targetName}`,
     });
 
     revalidatePath("/dashboard/admin/users");
@@ -753,6 +916,18 @@ export async function generateUserQR(id: number): Promise<ActionResult> {
         qr_regenerated_count: { increment: 1 },
         updated_by: actor.user.id,
       },
+    });
+
+    const actorNameQr = formatName(actor.user);
+    const targetNameQr = formatName(targetUser);
+    await logActivity({
+      actorId: actor.user.id,
+      actorName: actorNameQr,
+      action: ACTIVITY_ACTIONS.ENCODED,
+      entityType: ACTIVITY_ENTITIES.USER,
+      entityId: id,
+      entityLabel: targetNameQr,
+      message: `${actorNameQr} generated a QR code for ${targetNameQr}`,
     });
 
     revalidatePath("/dashboard/admin/users");
@@ -1169,6 +1344,62 @@ export async function updateUserRoles(
         title: "No Changes",
         description: "No roles were added or removed.",
       };
+    }
+
+    const actorNameRoles = formatName(actor.user);
+    const targetNameRoles = formatName(targetUser);
+
+    // Log each removed role
+    for (const removeId of removeIds) {
+      const ur = targetUser.user_roles.find((r) => r.id === removeId);
+      if (!ur) continue;
+      const chapterName = ur.chapter_id
+        ? (chapterById.get(ur.chapter_id) ?? null)
+        : null;
+      await logActivity({
+        actorId: actor.user.id,
+        actorName: actorNameRoles,
+        action: ACTIVITY_ACTIONS.REMOVED,
+        entityType: ACTIVITY_ENTITIES.USER_ROLE,
+        entityId: removeId,
+        entityLabel: `${ur.role.name}${chapterName ? ` — ${chapterName}` : ""}`,
+        message: chapterName
+          ? `${actorNameRoles} removed ${targetNameRoles} of ${chapterName} Chapter as ${ur.role.name}`
+          : `${actorNameRoles} removed ${ur.role.name} role from ${targetNameRoles}`,
+        metadata: {
+          role: ur.role.name,
+          target_user_id: userId,
+          target_user: targetNameRoles,
+          ...(chapterName ? { chapter: chapterName } : {}),
+        },
+      });
+    }
+
+    // Log each added role
+    for (const add of adds) {
+      const role = roleById.get(add.roleId);
+      if (!role) continue;
+      const chapterName = add.chapterId
+        ? (chapterById.get(add.chapterId) ?? null)
+        : null;
+      await logActivity({
+        actorId: actor.user.id,
+        actorName: actorNameRoles,
+        action: ACTIVITY_ACTIONS.ASSIGNED,
+        entityType: ACTIVITY_ENTITIES.USER_ROLE,
+        entityId: userId,
+        entityLabel: `${role.name}${chapterName ? ` — ${chapterName}` : ""}`,
+        chapterId: add.chapterId ?? null,
+        message: chapterName
+          ? `${actorNameRoles} assigned ${targetNameRoles} of ${chapterName} Chapter as ${role.name}`
+          : `${actorNameRoles} assigned ${role.name} role to ${targetNameRoles}`,
+        metadata: {
+          role: role.name,
+          target_user_id: userId,
+          target_user: targetNameRoles,
+          ...(chapterName ? { chapter: chapterName } : {}),
+        },
+      });
     }
 
     revalidatePath("/dashboard/admin/users");

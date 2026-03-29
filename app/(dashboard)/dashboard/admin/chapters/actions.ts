@@ -4,6 +4,17 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db/prisma";
 import { requireRole } from "@/lib/auth/config";
 import { PERMISSION_ROLES, ROLE_KEYS } from "@/lib/constants/app-roles";
+import {
+  logActivity,
+  diffFields,
+  buildUpdateMessage,
+  formatName,
+} from "@/lib/services/activity-log";
+import {
+  ACTIVITY_ACTIONS,
+  ACTIVITY_ENTITIES,
+  CHAPTER_FIELD_LABELS,
+} from "@/lib/constants/activity-log";
 
 const REVALIDATE_PATH = "/dashboard/admin/chapters";
 
@@ -105,6 +116,17 @@ export async function createChapter(data: ChapterData): Promise<ActionResult> {
       },
     });
 
+    const actorNameCreate = formatName(currentUser.user);
+    await logActivity({
+      actorId: currentUser.user.id,
+      actorName: actorNameCreate,
+      action: ACTIVITY_ACTIONS.CREATED,
+      entityType: ACTIVITY_ENTITIES.CHAPTER,
+      entityId: newChapter.id,
+      entityLabel: newChapter.name,
+      message: `${actorNameCreate} created ${newChapter.name} chapter`,
+    });
+
     // Auto-create ministries from existing types
     try {
       const types = await prisma.ministryType.findMany({
@@ -145,7 +167,31 @@ export async function updateChapter(
   if (validationError) return validationError;
 
   try {
-    const existing = await prisma.chapter.findFirst({
+    const current = await prisma.chapter.findUnique({
+      where: { id },
+      select: {
+        name: true,
+        fellowship_day: true,
+        region: true,
+        province: true,
+        city: true,
+        barangay: true,
+        street: true,
+        landmark: true,
+        google_maps_url: true,
+        is_active: true,
+      },
+    });
+
+    if (!current) {
+      return {
+        success: false,
+        title: "Not Found",
+        description: "Chapter not found.",
+      };
+    }
+
+    const duplicate = await prisma.chapter.findFirst({
       where: {
         name: { equals: data.name.trim(), mode: "insensitive" },
         id: { not: id },
@@ -153,7 +199,7 @@ export async function updateChapter(
       },
     });
 
-    if (existing) {
+    if (duplicate) {
       return {
         success: false,
         title: "Already Exists",
@@ -162,26 +208,50 @@ export async function updateChapter(
       };
     }
 
+    const next = {
+      name: data.name.trim(),
+      fellowship_day: data.fellowship_day || null,
+      region: data.region,
+      province: data.province,
+      city: data.city,
+      barangay: data.barangay,
+      street: data.street?.trim() || null,
+      landmark: data.landmark?.trim() || null,
+      google_maps_url: data.google_maps_url?.trim() || null,
+      is_active: data.is_active,
+    };
+
     await prisma.chapter.update({
       where: { id },
       data: {
-        name: data.name.trim(),
-        region: data.region,
+        ...next,
         region_code: data.region_code,
-        province: data.province,
         province_code: data.province_code,
-        city: data.city,
         city_code: data.city_code,
-        barangay: data.barangay,
         barangay_code: data.barangay_code,
-        street: data.street?.trim() || null,
-        google_maps_url: data.google_maps_url?.trim() || null,
-        landmark: data.landmark?.trim() || null,
-        fellowship_day: data.fellowship_day || null,
-        is_active: data.is_active,
         updated_by: currentUser.user.id,
       },
     });
+
+    const changes = diffFields(
+      { ...current, is_active: current.is_active ? "Active" : "Inactive" },
+      { ...next, is_active: data.is_active ? "Active" : "Inactive" },
+      CHAPTER_FIELD_LABELS,
+    );
+    if (changes.length > 0) {
+      const actorName = formatName(currentUser.user);
+      await logActivity({
+        actorId: currentUser.user.id,
+        actorName,
+        action: ACTIVITY_ACTIONS.UPDATED,
+        entityType: ACTIVITY_ENTITIES.CHAPTER,
+        entityId: id,
+        entityLabel: next.name,
+        chapterId: id,
+        message: buildUpdateMessage(actorName, `${next.name} Chapter`, changes),
+        metadata: { changes },
+      });
+    }
 
     revalidatePath(REVALIDATE_PATH);
     return {
@@ -198,6 +268,19 @@ export async function deleteChapter(id: number): Promise<ActionResult> {
   const currentUser = await requireRole([...PERMISSION_ROLES.SUPER_ADMIN]);
 
   try {
+    const chapter = await prisma.chapter.findUnique({
+      where: { id },
+      select: { name: true },
+    });
+
+    if (!chapter) {
+      return {
+        success: false,
+        title: "Not Found",
+        description: "Chapter not found.",
+      };
+    }
+
     const clusterCount = await prisma.cluster.count({
       where: { chapter_id: id, deleted_at: null },
     });
@@ -268,6 +351,17 @@ export async function deleteChapter(id: number): Promise<ActionResult> {
         deleted_at: new Date(),
         deleted_by: currentUser.user.id,
       },
+    });
+
+    const actorName = formatName(currentUser.user);
+    await logActivity({
+      actorId: currentUser.user.id,
+      actorName,
+      action: ACTIVITY_ACTIONS.DELETED,
+      entityType: ACTIVITY_ENTITIES.CHAPTER,
+      entityId: id,
+      entityLabel: chapter.name,
+      message: `${actorName} deleted ${chapter.name} chapter`,
     });
 
     revalidatePath(REVALIDATE_PATH);

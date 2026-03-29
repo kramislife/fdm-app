@@ -4,14 +4,14 @@ import { OnboardingModal } from "./onboarding-modal";
 
 export async function OnboardingEnforcer() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return null;
 
   const dbUser = await getUserWithRoles(user.id);
   if (!dbUser) return null;
-
-  console.log("[OnboardingEnforcer] render — is_temp_password:", dbUser.is_temp_password);
 
   // Always render the modal so React keeps the component alive across
   // the automatic server re-render that follows the completeFirstLogin action.
