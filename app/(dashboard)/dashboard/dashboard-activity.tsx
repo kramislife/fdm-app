@@ -80,13 +80,13 @@ function LogEntry({ log, isNew, onSeen }: LogEntryProps) {
   return (
     <div
       ref={ref}
-      className="flex items-start gap-5 py-5 border-b border-border/50 last:border-b-0"
+      className="flex items-start gap-3 py-5 border-b border-border/50 last:border-b-0"
     >
-      <div className="relative shrink-0 mt-1">
+      <div className="relative shrink-0">
         <UserAvatar
           initials={initials}
           photoUrl={log.actor.photo_url}
-          className="h-9 w-9"
+          className="h-10 w-10"
         />
         <span className="absolute -bottom-1 -right-1 rounded-full ring-2 ring-background">
           <ActivityActionIcon
@@ -106,7 +106,7 @@ function LogEntry({ log, isNew, onSeen }: LogEntryProps) {
           )}
         </p>
 
-        <div className="flex items-center gap-1.5 mt-1.5 text-xs">
+        <div className="flex items-center gap-2 mt-1 text-xs">
           <span className="text-muted-foreground">
             {ACTIVITY_ENTITY_LABELS[log.entity_type as ActivityEntity] ??
               log.entity_type}
