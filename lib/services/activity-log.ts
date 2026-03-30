@@ -1,6 +1,6 @@
 import "server-only";
 
-import { Prisma } from "@/lib/generated/prisma";
+import { Prisma } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/db/prisma";
 import type {
   ActivityAction,

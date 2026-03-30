@@ -13,6 +13,7 @@ import type { ActivityLogItem } from "@/lib/data/activity-logs";
 import {
   ACTIVITY_ACTION_LABELS,
   ACTIVITY_ACTION_STYLES,
+  ACTIVITY_ENTITY_COLORS,
   ACTIVITY_ENTITY_LABELS,
   type ActivityAction,
   type ActivityEntity,
@@ -107,7 +108,12 @@ function LogEntry({ log, isNew, onSeen }: LogEntryProps) {
         </p>
 
         <div className="flex items-center gap-2 mt-1 text-xs">
-          <span className="text-muted-foreground">
+          <span
+            className={
+              ACTIVITY_ENTITY_COLORS[log.entity_type as ActivityEntity] ??
+              "text-muted-foreground"
+            }
+          >
             {ACTIVITY_ENTITY_LABELS[log.entity_type as ActivityEntity] ??
               log.entity_type}
           </span>

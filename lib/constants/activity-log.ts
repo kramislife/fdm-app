@@ -189,99 +189,50 @@ export const ENTITY_FIELD_LABELS: Partial<
 // Consumed by components/shared/activity-log/*.tsx
 // ------------------------------------------------------------
 
-export type ActivityBadgeVariant =
-  | "default"
-  | "secondary"
-  | "destructive"
-  | "outline"
-  | "success"
-  | "info"
-  | "error"
-  | "warning";
-
-/** Icon bubble + badge styling per action */
+/** Icon bubble styling per action */
 export const ACTIVITY_ACTION_STYLES: Record<
   ActivityAction,
-  { color: string; bg: string; badgeVariant: ActivityBadgeVariant }
+  { color: string; bg: string }
 > = {
-  [ACTIVITY_ACTIONS.CREATED]: {
-    color: "text-success",
-    bg: "bg-success/10",
-    badgeVariant: "success",
-  },
-  [ACTIVITY_ACTIONS.UPDATED]: {
-    color: "text-info",
-    bg: "bg-info/10",
-    badgeVariant: "info",
-  },
+  [ACTIVITY_ACTIONS.CREATED]: { color: "text-success", bg: "bg-success/10" },
+  [ACTIVITY_ACTIONS.UPDATED]: { color: "text-info", bg: "bg-info/10" },
   [ACTIVITY_ACTIONS.DELETED]: {
     color: "text-destructive",
     bg: "bg-destructive/10",
-    badgeVariant: "error",
   },
-  [ACTIVITY_ACTIONS.RESTORED]: {
-    color: "text-success",
-    bg: "bg-success/10",
-    badgeVariant: "success",
-  },
-  [ACTIVITY_ACTIONS.ACTIVATED]: {
-    color: "text-success",
-    bg: "bg-success/10",
-    badgeVariant: "success",
-  },
+  [ACTIVITY_ACTIONS.RESTORED]: { color: "text-success", bg: "bg-success/10" },
+  [ACTIVITY_ACTIONS.ACTIVATED]: { color: "text-success", bg: "bg-success/10" },
   [ACTIVITY_ACTIONS.DEACTIVATED]: {
     color: "text-amber-600",
     bg: "bg-amber-500/10",
-    badgeVariant: "warning",
   },
-  [ACTIVITY_ACTIONS.ASSIGNED]: {
-    color: "text-info",
-    bg: "bg-info/10",
-    badgeVariant: "info",
-  },
+  [ACTIVITY_ACTIONS.ASSIGNED]: { color: "text-info", bg: "bg-info/10" },
   [ACTIVITY_ACTIONS.REMOVED]: {
     color: "text-amber-600",
     bg: "bg-amber-500/10",
-    badgeVariant: "warning",
   },
-  [ACTIVITY_ACTIONS.PUBLISHED]: {
-    color: "text-success",
-    bg: "bg-success/10",
-    badgeVariant: "success",
-  },
+  [ACTIVITY_ACTIONS.PUBLISHED]: { color: "text-success", bg: "bg-success/10" },
   [ACTIVITY_ACTIONS.UNPUBLISHED]: {
     color: "text-muted-foreground",
     bg: "bg-muted",
-    badgeVariant: "secondary",
   },
-  [ACTIVITY_ACTIONS.CHECKED_IN]: {
-    color: "text-success",
-    bg: "bg-success/10",
-    badgeVariant: "success",
-  },
-  [ACTIVITY_ACTIONS.ENCODED]: {
-    color: "text-info",
-    bg: "bg-info/10",
-    badgeVariant: "info",
-  },
+  [ACTIVITY_ACTIONS.CHECKED_IN]: { color: "text-success", bg: "bg-success/10" },
+  [ACTIVITY_ACTIONS.ENCODED]: { color: "text-info", bg: "bg-info/10" },
 };
 
-/** Badge styling per entity type */
-export const ACTIVITY_ENTITY_STYLES: Record<
-  ActivityEntity,
-  { badgeVariant: ActivityBadgeVariant }
-> = {
-  [ACTIVITY_ENTITIES.USER]: { badgeVariant: "info" },
-  [ACTIVITY_ENTITIES.USER_ROLE]: { badgeVariant: "warning" },
-  [ACTIVITY_ENTITIES.CHAPTER]: { badgeVariant: "default" },
-  [ACTIVITY_ENTITIES.CLUSTER]: { badgeVariant: "secondary" },
-  [ACTIVITY_ENTITIES.CHAPTER_MINISTRY]: { badgeVariant: "secondary" },
-  [ACTIVITY_ENTITIES.EVENT]: { badgeVariant: "info" },
-  [ACTIVITY_ENTITIES.EVENT_TYPE]: { badgeVariant: "outline" },
-  [ACTIVITY_ENTITIES.MINISTRY_TYPE]: { badgeVariant: "outline" },
-  [ACTIVITY_ENTITIES.ANNOUNCEMENT]: { badgeVariant: "secondary" },
-  [ACTIVITY_ENTITIES.FINANCE_RECORD]: { badgeVariant: "warning" },
-  [ACTIVITY_ENTITIES.ATTENDANCE]: { badgeVariant: "success" },
-  [ACTIVITY_ENTITIES.GUEST_LOG]: { badgeVariant: "secondary" },
-  [ACTIVITY_ENTITIES.ENTHRONEMENT_RECORD]: { badgeVariant: "secondary" },
+/** Text color per entity type — used in the activity log meta line */
+export const ACTIVITY_ENTITY_COLORS: Record<ActivityEntity, string> = {
+  [ACTIVITY_ENTITIES.USER]: "text-violet-600",
+  [ACTIVITY_ENTITIES.USER_ROLE]: "text-amber-600",
+  [ACTIVITY_ENTITIES.CHAPTER]: "text-emerald-600",
+  [ACTIVITY_ENTITIES.CLUSTER]: "text-cyan-600",
+  [ACTIVITY_ENTITIES.CHAPTER_MINISTRY]: "text-purple-600",
+  [ACTIVITY_ENTITIES.EVENT]: "text-rose-600",
+  [ACTIVITY_ENTITIES.EVENT_TYPE]: "text-teal-600",
+  [ACTIVITY_ENTITIES.MINISTRY_TYPE]: "text-indigo-600",
+  [ACTIVITY_ENTITIES.ANNOUNCEMENT]: "text-sky-600",
+  [ACTIVITY_ENTITIES.FINANCE_RECORD]: "text-green-600",
+  [ACTIVITY_ENTITIES.ATTENDANCE]: "text-lime-600",
+  [ACTIVITY_ENTITIES.GUEST_LOG]: "text-orange-600",
+  [ACTIVITY_ENTITIES.ENTHRONEMENT_RECORD]: "text-pink-600",
 };
