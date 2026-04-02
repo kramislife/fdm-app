@@ -11,11 +11,8 @@ import {
 } from "@/lib/utils/format";
 import type { ActivityLogItem } from "@/lib/data/activity-logs";
 import {
-  ACTIVITY_ACTION_LABELS,
-  ACTIVITY_ACTION_STYLES,
   ACTIVITY_ENTITY_COLORS,
   ACTIVITY_ENTITY_LABELS,
-  type ActivityAction,
   type ActivityEntity,
 } from "@/lib/constants/activity-log";
 
@@ -100,14 +97,14 @@ function LogEntry({ log, isNew, onSeen }: LogEntryProps) {
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="flex items-center gap-2 text-sm font-medium leading-snug text-foreground">
+        <p className="flex items-center gap-2 text-xs md:text-sm font-medium leading-snug text-foreground">
           <span className="flex-1">{log.message}</span>
           {isNew && (
             <span className="shrink-0 size-2 rounded-full bg-success" />
           )}
         </p>
 
-        <div className="flex items-center gap-2 mt-1 text-xs">
+        <div className="flex flex-wrap items-center gap-x-1 gap-y-0.5 mt-1 text-xs">
           <span
             className={
               ACTIVITY_ENTITY_COLORS[log.entity_type as ActivityEntity] ??
@@ -116,17 +113,6 @@ function LogEntry({ log, isNew, onSeen }: LogEntryProps) {
           >
             {ACTIVITY_ENTITY_LABELS[log.entity_type as ActivityEntity] ??
               log.entity_type}
-          </span>
-          <span aria-hidden className="text-muted-foreground">
-            ·
-          </span>
-          <span
-            className={
-              ACTIVITY_ACTION_STYLES[log.action as ActivityAction]?.color ??
-              "text-muted-foreground"
-            }
-          >
-            {ACTIVITY_ACTION_LABELS[log.action as ActivityAction] ?? log.action}
           </span>
           <span aria-hidden className="text-muted-foreground">
             ·
