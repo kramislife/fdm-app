@@ -65,7 +65,7 @@ export async function generateBrandedQRCard(
   const QR_X = (CARD_W - QR_SIZE) / 2;
   const QR_Y = NAME_Y + 4;
   const TAGLINE_Y = QR_Y + QR_SIZE + 12;
-  const BRANDING_Y = TAGLINE_Y + 20;
+  const BRANDING_Y = TAGLINE_Y + 28;
   const CARD_INNER_H = BRANDING_Y + 16 + 20 - CARD_Y;
   const CANVAS_H = CARD_Y + CARD_INNER_H + 44;
 
@@ -123,12 +123,12 @@ export async function generateBrandedQRCard(
 
   // Tagline
   ctx.fillStyle = "#888888";
-  ctx.font = "13px Inter, ui-sans-serif, sans-serif";
+  ctx.font = "15px Inter, ui-sans-serif, sans-serif";
   ctx.fillText("Show your QR to record your attendance", CARD_W / 2, TAGLINE_Y);
 
   // Branding
   ctx.fillStyle = "#dc2626"; // text-red-600
-  ctx.font = "bold 11px Inter, ui-sans-serif, sans-serif";
+  ctx.font = "bold 13px Inter, ui-sans-serif, sans-serif";
   ctx.fillText("FRIENDS OF THE DIVINE MERCY", CARD_W / 2, BRANDING_Y);
 
   return canvas.toDataURL("image/png");
