@@ -16,6 +16,8 @@ import { MdFileDownload } from "react-icons/md";
 import { BsQrCode } from "react-icons/bs";
 import { ConfirmActionDialog } from "@/components/admin/confirm-dialog";
 import { regenerateMyQR, type QRActionResult } from "./qr-code.actions";
+import { generateBrandedQRCard } from "./qr-download-card";
+import fdmIcon from "@/app/assets/media/web-icon.png";
 
 interface UserQRDialogProps {
   memberQr: string;
@@ -101,10 +103,15 @@ export function UserQRDialog({
     return () => clearInterval(interval);
   }, [open, expiresAt, isPending]);
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!dataUrl) return;
+    const branded = await generateBrandedQRCard(
+      dataUrl,
+      userName,
+      fdmIcon.src,
+    );
     const link = document.createElement("a");
-    link.href = dataUrl;
+    link.href = branded;
     link.download = `FRIENDS_${userName.replace(/\s+/g, "_")}.png`;
     document.body.appendChild(link);
     link.click();

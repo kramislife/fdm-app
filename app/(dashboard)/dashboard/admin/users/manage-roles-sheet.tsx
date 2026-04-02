@@ -50,7 +50,9 @@ export const formatRoleName = (ur: any) => {
 
 // Editable roles in manage-roles sheet — excludes roles managed elsewhere
 export const getDisplayRoles = (userRoles: any[]) =>
-  userRoles.filter((ur) => ur.is_active && !EXCLUDED_ROLE_KEYS.has(ur.role.key));
+  userRoles.filter(
+    (ur) => ur.is_active && !EXCLUDED_ROLE_KEYS.has(ur.role.key),
+  );
 
 // Ministry Head roles — shown read-only in manage-roles sheet
 export const getMinistryHeadRoles = (userRoles: any[]) =>
@@ -306,7 +308,8 @@ export function ManageRolesSheet({
         {/* Current roles */}
         <DetailSection>
           <DetailField label="Current Roles" fullWidth>
-            {activeDisplayRoles.length === 0 && ministryHeadRoles.length === 0 ? (
+            {activeDisplayRoles.length === 0 &&
+            ministryHeadRoles.length === 0 ? (
               <span className="text-sm text-muted-foreground">
                 No roles assigned
               </span>
@@ -345,12 +348,6 @@ export function ManageRolesSheet({
                   );
                 })}
               </div>
-            )}
-            {ministryHeadRoles.length > 0 && (
-              <p className="mt-2 text-xs text-muted-foreground">
-                Ministry Head roles are assigned in{" "}
-                <span className="font-medium">Chapter Ministries</span>.
-              </p>
             )}
           </DetailField>
         </DetailSection>

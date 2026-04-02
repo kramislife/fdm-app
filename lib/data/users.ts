@@ -93,6 +93,7 @@ export async function getUsers(params: TableParams = {}) {
           where: { is_active: true },
           select: {
             id: true,
+            is_active: true,
             role: { select: { id: true, key: true, name: true, scope: true } },
             chapter: { select: { id: true, name: true } },
             chapter_ministry: {
