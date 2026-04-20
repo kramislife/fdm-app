@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ChaptersPage() {
   return (
-    <main className="overflow-x-hidden min-h-screen">
+    <main className="min-h-screen">
       <ChaptersHero />
       <ChaptersFilterGrid />
     </main>

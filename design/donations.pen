@@ -1,0 +1,1281 @@
+{
+  "version": "2.11",
+  "children": [
+    {
+      "type": "frame",
+      "id": "f826R",
+      "x": 0,
+      "y": 0,
+      "name": "page",
+      "width": 1440,
+      "fill": "#F5F2E9FF",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "E1zRP",
+          "name": "hero",
+          "clip": true,
+          "width": "fill_container",
+          "height": 300,
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 150,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#1A0707FF",
+                "position": 0
+              },
+              {
+                "color": "#5C1414FF",
+                "position": 0.6
+              },
+              {
+                "color": "#2A0808FF",
+                "position": 1
+              }
+            ]
+          },
+          "layout": "vertical",
+          "gap": 18,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "tKaBj",
+              "layoutPosition": "absolute",
+              "x": 960,
+              "y": -180,
+              "fill": "#FFFFFF06",
+              "width": 500,
+              "height": 500
+            },
+            {
+              "type": "ellipse",
+              "id": "cyO90",
+              "layoutPosition": "absolute",
+              "x": -80,
+              "y": 60,
+              "fill": "#FFFFFF05",
+              "width": 260,
+              "height": 260
+            },
+            {
+              "type": "frame",
+              "id": "pApqn",
+              "name": "heroTag",
+              "fill": "#FFFFFF15",
+              "cornerRadius": 9999,
+              "gap": 8,
+              "padding": [
+                6,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "XHxGH",
+                  "width": 13,
+                  "height": 13,
+                  "iconFontName": "heart",
+                  "iconFontFamily": "lucide",
+                  "fill": "#F5C518FF"
+                },
+                {
+                  "type": "text",
+                  "id": "UFtYI",
+                  "fill": "#F5C518FF",
+                  "content": "Friends of the Divine Mercy",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "28XlD",
+              "fill": "#FFFFFFFF",
+              "content": "Donate & Support Our Mission",
+              "textAlign": "center",
+              "fontFamily": "Playfair Display",
+              "fontSize": 44,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "RtAIv",
+              "fill": "#FFFFFFB0",
+              "textGrowth": "fixed-width",
+              "width": 520,
+              "content": "Support our community programs, spiritual activities, and outreach.\nEvery gift — big or small — keeps the mission alive.",
+              "lineHeight": 1.65,
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 15,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "cAqmb",
+          "name": "cardsSection",
+          "width": "fill_container",
+          "fill": "#F5F2E9FF",
+          "layout": "vertical",
+          "gap": 36,
+          "padding": [
+            64,
+            120
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "bJkxo",
+              "name": "sectionHead",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "437k3",
+                  "name": "labelRow",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 1,
+                      "id": "yLej1",
+                      "fill": "#8B1C1CFF",
+                      "width": 48,
+                      "height": 2
+                    },
+                    {
+                      "type": "text",
+                      "id": "FY5Zw",
+                      "fill": "#8B1C1CFF",
+                      "content": "PAYMENT METHODS",
+                      "fontFamily": "Inter",
+                      "fontSize": 11,
+                      "fontWeight": "700",
+                      "letterSpacing": 2
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 1,
+                      "id": "Nt4wW",
+                      "fill": "#8B1C1CFF",
+                      "width": 48,
+                      "height": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "INaNA",
+                  "fill": "#2D2926FF",
+                  "content": "Choose Your Donation Channel",
+                  "fontFamily": "Playfair Display",
+                  "fontSize": 30,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "PtYED",
+                  "fill": "#5E5954FF",
+                  "textGrowth": "fixed-width",
+                  "width": 460,
+                  "content": "Tap the account number to copy it instantly. All payment details are verified.",
+                  "lineHeight": 1.6,
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "lVa53",
+              "name": "cardsRow",
+              "gap": 28,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "zI8o8",
+                  "name": "gcashCard",
+                  "clip": true,
+                  "width": 380,
+                  "height": 240,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 135,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#004BD4FF",
+                        "position": 0
+                      },
+                      {
+                        "color": "#0066FFFF",
+                        "position": 0.5
+                      },
+                      {
+                        "color": "#0052E8FF",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "cornerRadius": 20,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#0066FF35",
+                    "offset": {
+                      "x": 0,
+                      "y": 14
+                    },
+                    "blur": 36
+                  },
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "mq3wp",
+                      "x": 185,
+                      "y": -90,
+                      "fill": "#FFFFFF10",
+                      "width": 290,
+                      "height": 290
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "gsvPH",
+                      "x": -50,
+                      "y": 110,
+                      "fill": "#FFFFFF08",
+                      "width": 180,
+                      "height": 180
+                    },
+                    {
+                      "type": "text",
+                      "id": "gmgaL",
+                      "x": 24,
+                      "y": 22,
+                      "fill": "#FFFFFFFF",
+                      "content": "GCash",
+                      "fontFamily": "Inter",
+                      "fontSize": 24,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "wiu9t",
+                      "x": 96,
+                      "y": 30,
+                      "fill": "#FFFFFF90",
+                      "content": "e-Wallet",
+                      "fontFamily": "Inter",
+                      "fontSize": 11
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 7,
+                      "id": "qv6FB",
+                      "x": 24,
+                      "y": 72,
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 130,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "#FFD700FF",
+                            "position": 0
+                          },
+                          {
+                            "color": "#B8850EFF",
+                            "position": 1
+                          }
+                        ]
+                      },
+                      "width": 44,
+                      "height": 34
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "boYHV",
+                      "x": 328,
+                      "y": 72,
+                      "width": 22,
+                      "height": 22,
+                      "iconFontName": "wifi",
+                      "iconFontFamily": "lucide",
+                      "fill": "#FFFFFF80"
+                    },
+                    {
+                      "type": "text",
+                      "id": "lMSEw",
+                      "x": 24,
+                      "y": 124,
+                      "fill": "#FFFFFF70",
+                      "content": "MOBILE NUMBER",
+                      "fontFamily": "Inter",
+                      "fontSize": 9,
+                      "fontWeight": "600",
+                      "letterSpacing": 1.5
+                    },
+                    {
+                      "type": "text",
+                      "id": "wDnIs",
+                      "x": 24,
+                      "y": 138,
+                      "fill": "#FFFFFFFF",
+                      "content": "0917  798  3366",
+                      "fontFamily": "Geist Mono",
+                      "fontSize": 21,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "iGupn",
+                      "x": 24,
+                      "y": 198,
+                      "fill": "#FFFFFFCC",
+                      "content": "NIHRA OWE",
+                      "fontFamily": "Inter",
+                      "fontSize": 11,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "EDosj",
+                      "x": 248,
+                      "y": 192,
+                      "name": "gcashCopy",
+                      "fill": "#FFFFFF22",
+                      "cornerRadius": 9999,
+                      "gap": 5,
+                      "padding": [
+                        5,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "97JzN",
+                          "width": 11,
+                          "height": 11,
+                          "iconFontName": "copy",
+                          "iconFontFamily": "lucide",
+                          "fill": "#FFFFFFFF"
+                        },
+                        {
+                          "type": "text",
+                          "id": "1n5LC",
+                          "fill": "#FFFFFFFF",
+                          "content": "Tap to Copy",
+                          "fontFamily": "Inter",
+                          "fontSize": 10,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "YGvn8",
+                  "name": "mayaCard",
+                  "clip": true,
+                  "width": 380,
+                  "height": 240,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 135,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#005B35FF",
+                        "position": 0
+                      },
+                      {
+                        "color": "#008755FF",
+                        "position": 0.5
+                      },
+                      {
+                        "color": "#006B40FF",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "cornerRadius": 20,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#00875535",
+                    "offset": {
+                      "x": 0,
+                      "y": 14
+                    },
+                    "blur": 36
+                  },
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "jxRlZ",
+                      "x": 185,
+                      "y": -90,
+                      "fill": "#FFFFFF10",
+                      "width": 290,
+                      "height": 290
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "HgUwg",
+                      "x": -50,
+                      "y": 110,
+                      "fill": "#FFFFFF08",
+                      "width": 180,
+                      "height": 180
+                    },
+                    {
+                      "type": "text",
+                      "id": "CzZUa",
+                      "x": 24,
+                      "y": 22,
+                      "fill": "#FFFFFFFF",
+                      "content": "Maya",
+                      "fontFamily": "Inter",
+                      "fontSize": 24,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "2Eal1",
+                      "x": 81,
+                      "y": 30,
+                      "fill": "#FFFFFF90",
+                      "content": "e-Wallet",
+                      "fontFamily": "Inter",
+                      "fontSize": 11
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 7,
+                      "id": "rVNeo",
+                      "x": 24,
+                      "y": 72,
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 130,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "#FFD700FF",
+                            "position": 0
+                          },
+                          {
+                            "color": "#B8850EFF",
+                            "position": 1
+                          }
+                        ]
+                      },
+                      "width": 44,
+                      "height": 34
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "cOXfh",
+                      "x": 328,
+                      "y": 72,
+                      "width": 22,
+                      "height": 22,
+                      "iconFontName": "wifi",
+                      "iconFontFamily": "lucide",
+                      "fill": "#FFFFFF80"
+                    },
+                    {
+                      "type": "text",
+                      "id": "QIilZ",
+                      "x": 24,
+                      "y": 124,
+                      "fill": "#FFFFFF70",
+                      "content": "MOBILE NUMBER",
+                      "fontFamily": "Inter",
+                      "fontSize": 9,
+                      "fontWeight": "600",
+                      "letterSpacing": 1.5
+                    },
+                    {
+                      "type": "text",
+                      "id": "FlDs5",
+                      "x": 24,
+                      "y": 138,
+                      "fill": "#FFFFFFFF",
+                      "content": "0917  000  0000",
+                      "fontFamily": "Geist Mono",
+                      "fontSize": 21,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "EKJyW",
+                      "x": 24,
+                      "y": 198,
+                      "fill": "#FFFFFFCC",
+                      "content": "FDM COMMUNITY",
+                      "fontFamily": "Inter",
+                      "fontSize": 11,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "7SqNT",
+                      "x": 248,
+                      "y": 192,
+                      "name": "mayaCopy",
+                      "fill": "#FFFFFF22",
+                      "cornerRadius": 9999,
+                      "gap": 5,
+                      "padding": [
+                        5,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "wuOHr",
+                          "width": 11,
+                          "height": 11,
+                          "iconFontName": "copy",
+                          "iconFontFamily": "lucide",
+                          "fill": "#FFFFFFFF"
+                        },
+                        {
+                          "type": "text",
+                          "id": "sE1sr",
+                          "fill": "#FFFFFFFF",
+                          "content": "Tap to Copy",
+                          "fontFamily": "Inter",
+                          "fontSize": 10,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "wBJ3W",
+                  "name": "bankCard",
+                  "clip": true,
+                  "width": 380,
+                  "height": 240,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 135,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#8B0000FF",
+                        "position": 0
+                      },
+                      {
+                        "color": "#C0001AFF",
+                        "position": 0.5
+                      },
+                      {
+                        "color": "#7A0016FF",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "cornerRadius": 20,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#C0001A35",
+                    "offset": {
+                      "x": 0,
+                      "y": 14
+                    },
+                    "blur": 36
+                  },
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "afAA1",
+                      "x": 185,
+                      "y": -90,
+                      "fill": "#FFFFFF08",
+                      "width": 290,
+                      "height": 290
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "5tk4k",
+                      "x": -50,
+                      "y": 110,
+                      "fill": "#FFFFFF05",
+                      "width": 180,
+                      "height": 180
+                    },
+                    {
+                      "type": "frame",
+                      "id": "nAeWc",
+                      "x": 24,
+                      "y": 22,
+                      "name": "bankNameRow",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "P3QxW",
+                          "fill": "#FFFFFFFF",
+                          "content": "Security Bank",
+                          "fontFamily": "Inter",
+                          "fontSize": 17,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 2,
+                          "id": "fGAMC",
+                          "fill": "#F5C518FF",
+                          "width": 3,
+                          "height": 22
+                        },
+                        {
+                          "type": "text",
+                          "id": "1ydhX",
+                          "fill": "#FFFFFFCC",
+                          "content": "Savings Account",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 7,
+                      "id": "yzKJX",
+                      "x": 24,
+                      "y": 72,
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 130,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "#FFD700FF",
+                            "position": 0
+                          },
+                          {
+                            "color": "#B8850EFF",
+                            "position": 1
+                          }
+                        ]
+                      },
+                      "width": 44,
+                      "height": 34
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "2t0Vl",
+                      "x": 328,
+                      "y": 72,
+                      "width": 22,
+                      "height": 22,
+                      "iconFontName": "wifi",
+                      "iconFontFamily": "lucide",
+                      "fill": "#FFFFFF80"
+                    },
+                    {
+                      "type": "text",
+                      "id": "lP6Ju",
+                      "x": 24,
+                      "y": 124,
+                      "fill": "#FFFFFF70",
+                      "content": "ACCOUNT NUMBER",
+                      "fontFamily": "Inter",
+                      "fontSize": 9,
+                      "fontWeight": "600",
+                      "letterSpacing": 1.5
+                    },
+                    {
+                      "type": "text",
+                      "id": "ISYEo",
+                      "x": 24,
+                      "y": 138,
+                      "fill": "#FFFFFFFF",
+                      "content": "0000  0447  8352  0",
+                      "fontFamily": "Geist Mono",
+                      "fontSize": 18,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "NHJLz",
+                      "x": 24,
+                      "y": 198,
+                      "fill": "#FFFFFFCC",
+                      "content": "FRIENDS OF DIVINE MERCY",
+                      "fontFamily": "Inter",
+                      "fontSize": 9,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "TYI3T",
+                      "x": 228,
+                      "y": 192,
+                      "name": "bankCopy",
+                      "fill": "#FFFFFF22",
+                      "cornerRadius": 9999,
+                      "gap": 5,
+                      "padding": [
+                        5,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "JA5mJ",
+                          "width": 11,
+                          "height": 11,
+                          "iconFontName": "copy",
+                          "iconFontFamily": "lucide",
+                          "fill": "#FFFFFFFF"
+                        },
+                        {
+                          "type": "text",
+                          "id": "kAdoB",
+                          "fill": "#FFFFFFFF",
+                          "content": "Tap to Copy",
+                          "fontFamily": "Inter",
+                          "fontSize": 10,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "G1U17",
+          "name": "howSection",
+          "width": "fill_container",
+          "fill": "#E8E4D8FF",
+          "layout": "vertical",
+          "gap": 40,
+          "padding": [
+            64,
+            120
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "MtoXm",
+              "name": "howHead",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "IVT11",
+                  "name": "howLabelRow",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 1,
+                      "id": "OThnm",
+                      "fill": "#8B1C1CFF",
+                      "width": 48,
+                      "height": 2
+                    },
+                    {
+                      "type": "text",
+                      "id": "teip7",
+                      "fill": "#8B1C1CFF",
+                      "content": "HOW TO DONATE",
+                      "fontFamily": "Inter",
+                      "fontSize": 11,
+                      "fontWeight": "700",
+                      "letterSpacing": 2
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 1,
+                      "id": "Yn0xQ",
+                      "fill": "#8B1C1CFF",
+                      "width": 48,
+                      "height": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "SUmZl",
+                  "fill": "#2D2926FF",
+                  "content": "Simple Steps to Give",
+                  "fontFamily": "Playfair Display",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "QE9GT",
+              "name": "stepsRow",
+              "width": "fill_container",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "SclcW",
+                  "name": "step1",
+                  "width": "fill_container",
+                  "fill": "#F5F2E9FF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#0000000A",
+                    "offset": {
+                      "x": 0,
+                      "y": 1
+                    },
+                    "blur": 4
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": [
+                    28,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "F7V1b",
+                      "name": "step1Num",
+                      "width": 40,
+                      "height": 40,
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 135,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "#7A1818FF",
+                            "position": 0
+                          },
+                          {
+                            "color": "#B83232FF",
+                            "position": 1
+                          }
+                        ]
+                      },
+                      "cornerRadius": 9999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "etAza",
+                          "fill": "#FFFFFFFF",
+                          "content": "1",
+                          "fontFamily": "Inter",
+                          "fontSize": 18,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "QEsch",
+                      "fill": "#2D2926FF",
+                      "content": "Choose a Channel",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "hBLRz",
+                      "fill": "#5E5954FF",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Select GCash, Maya, or BDO bank transfer based on your preferred payment method.",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "JikzQ",
+                  "name": "step2",
+                  "width": "fill_container",
+                  "fill": "#F5F2E9FF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#0000000A",
+                    "offset": {
+                      "x": 0,
+                      "y": 1
+                    },
+                    "blur": 4
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": [
+                    28,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "3nl7v",
+                      "name": "step2Num",
+                      "width": 40,
+                      "height": 40,
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 135,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "#7A1818FF",
+                            "position": 0
+                          },
+                          {
+                            "color": "#B83232FF",
+                            "position": 1
+                          }
+                        ]
+                      },
+                      "cornerRadius": 9999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "PtWeD",
+                          "fill": "#FFFFFFFF",
+                          "content": "2",
+                          "fontFamily": "Inter",
+                          "fontSize": 18,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "wgp5R",
+                      "fill": "#2D2926FF",
+                      "content": "Copy Account Details",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "zdHEX",
+                      "fill": "#5E5954FF",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Tap the account number on the card to copy it instantly. Paste directly into your banking app.",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "7OCxj",
+                  "name": "step3",
+                  "width": "fill_container",
+                  "fill": "#F5F2E9FF",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#0000000A",
+                    "offset": {
+                      "x": 0,
+                      "y": 1
+                    },
+                    "blur": 4
+                  },
+                  "layout": "vertical",
+                  "gap": 14,
+                  "padding": [
+                    28,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "MfaSB",
+                      "name": "step3Num",
+                      "width": 40,
+                      "height": 40,
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 135,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "#7A1818FF",
+                            "position": 0
+                          },
+                          {
+                            "color": "#B83232FF",
+                            "position": 1
+                          }
+                        ]
+                      },
+                      "cornerRadius": 9999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "pxrcw",
+                          "fill": "#FFFFFFFF",
+                          "content": "3",
+                          "fontFamily": "Inter",
+                          "fontSize": 18,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "qQzyz",
+                      "fill": "#2D2926FF",
+                      "content": "Send & Notify",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "5kwoN",
+                      "fill": "#5E5954FF",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Complete the transfer then send a screenshot to your chapter coordinator for confirmation.",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "MjozY",
+          "name": "notesSection",
+          "clip": true,
+          "width": "fill_container",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 145,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#1A0707FF",
+                "position": 0
+              },
+              {
+                "color": "#4A1010FF",
+                "position": 1
+              }
+            ]
+          },
+          "layout": "vertical",
+          "gap": 28,
+          "padding": [
+            56,
+            120,
+            64,
+            120
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "mhxZR",
+              "layoutPosition": "absolute",
+              "x": 1100,
+              "y": -120,
+              "fill": "#FFFFFF05",
+              "width": 400,
+              "height": 400
+            },
+            {
+              "type": "frame",
+              "id": "Ep0RT",
+              "name": "noteCard",
+              "width": 860,
+              "fill": "#FFFFFF0E",
+              "cornerRadius": 16,
+              "gap": 20,
+              "padding": [
+                28,
+                32
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "liacF",
+                  "name": "noteIconWrap",
+                  "width": 44,
+                  "height": 44,
+                  "fill": "#F5C51820",
+                  "cornerRadius": 12,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "zR8rV",
+                      "width": 22,
+                      "height": 22,
+                      "iconFontName": "info",
+                      "iconFontFamily": "lucide",
+                      "fill": "#F5C518FF"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "pW4QF",
+                  "name": "noteContent",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "P9fqa",
+                      "fill": "#FFFFFFFF",
+                      "content": "Important Reminder",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "2XvKG",
+                      "fill": "#FFFFFFB0",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "After sending your donation, please inform your chapter coordinator and keep a copy of your transaction receipt for verification. For inquiries, contact your local FDM chapter.",
+                      "lineHeight": 1.65,
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "dvVxe",
+              "fill": "#FFFFFF70",
+              "content": "Thank you for your generosity. May God bless you abundantly.",
+              "textAlign": "center",
+              "fontFamily": "Playfair Display",
+              "fontSize": 14,
+              "fontWeight": "normal",
+              "fontStyle": "italic"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

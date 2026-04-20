@@ -3,6 +3,7 @@ import {
   Info,
   MapPin,
   Phone,
+  Heart,
   QrCode,
   CalendarCheck,
   User,
@@ -23,6 +24,7 @@ export const navLinks: NavLink[] = [
   { label: "About", href: "/about", icon: Info },
   { label: "Chapters", href: "/chapters", icon: MapPin },
   { label: "Contact Us", href: "/contact-us", icon: Phone },
+  { label: "Donations", href: "/donations", icon: Heart },
 ];
 
 // ------------------------- User Navigation Links -------------------------------

@@ -62,12 +62,12 @@ export function ChaptersFilterGrid() {
             >
               <Button
                 variant={activeArea === area ? "default" : "outline"}
-                className="px-5 rounded-full flex items-center justify-center h-10 transition-all active:scale-95"
+                className="px-5 rounded-full flex items-center justify-center transition-all active:scale-95 text-xs md:text-sm"
                 onClick={() => handleFilter(area)}
               >
                 {area}
                 {area !== ALL_AREAS && (
-                  <span className="ml-1 mt-0.5 text-xs opacity-60">
+                  <span className="mt-0.5 text-xs opacity-60">
                     ({areaCounts[area]})
                   </span>
                 )}
