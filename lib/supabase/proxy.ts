@@ -38,6 +38,7 @@ export async function updateSession(request: NextRequest) {
       "/about",
       "/chapters",
       "/contact",
+      "/donations",
       "/auth",
       "/scan",
     ].some((p) => pathname.startsWith(p));
