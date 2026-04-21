@@ -160,6 +160,7 @@ export const CHAPTER_FIELD_LABELS: Record<string, string> = {
   street: "street",
   landmark: "landmark",
   google_maps_url: "Google Maps link",
+  image_url: "image",
   is_active: "status",
 };
 

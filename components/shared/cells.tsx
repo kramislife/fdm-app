@@ -1,5 +1,7 @@
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils/utils";
 import {
   formatDateTime,
   formatDate,
@@ -213,5 +215,41 @@ export function QRActionCell({
     >
       {isGenerating ? "Generating..." : "Generate"}
     </Button>
+  );
+}
+
+// ------------------------------- Image Cell -----------------------------------------
+interface ImageCellProps {
+  src: string | null | undefined;
+  alt: string;
+  aspectRatio?: string;
+  width?: string;
+  className?: string;
+  sizes?: string;
+  fallback?: string;
+}
+
+export function ImageCell({
+  src,
+  alt,
+  aspectRatio = "aspect-4/3",
+  width = "w-full",
+  className,
+  sizes = "(max-width: 768px) 100vw, 400px",
+  fallback = "—",
+}: ImageCellProps) {
+  if (!src) return <>{fallback}</>;
+
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-md border",
+        aspectRatio,
+        width,
+        className,
+      )}
+    >
+      <Image src={src} alt={alt} fill sizes={sizes} className="object-cover" />
+    </div>
   );
 }

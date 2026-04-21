@@ -186,6 +186,7 @@ model Chapter {
   street          String? @db.VarChar(255)
   google_maps_url String? @db.VarChar(500)
   landmark        String? @db.VarChar(255)
+  image_url       String? @db.VarChar(500)
   is_active       Boolean @default(true)
 
   created_at DateTime @default(now())

@@ -4,11 +4,17 @@ import type { Column } from "@/components/admin/data-table";
 import type { Pagination } from "@/lib/utils/table";
 import type { AddressValue } from "@/lib/types/types";
 import { DAYS_OF_WEEK } from "@/lib/utils/format";
-import { StatusBadge, TextCell, LinkCell } from "@/components/shared/cells";
+import {
+  StatusBadge,
+  TextCell,
+  LinkCell,
+  ImageCell,
+} from "@/components/shared/cells";
 import {
   FormInput,
   FormSelect,
   FormSwitch,
+  FormImage,
 } from "@/components/shared/form-fields";
 import {
   DetailField,
@@ -35,6 +41,7 @@ export type ChapterRow = {
   street: string | null;
   google_maps_url: string | null;
   landmark: string | null;
+  image_url: string | null;
   fellowship_day: string | null;
   is_active: boolean;
   member_count: number;
@@ -48,6 +55,7 @@ type ChapterForm = {
   name: string;
   fellowship_day: string;
   is_active: boolean;
+  image: string | null;
 } & AddressValue;
 
 // ------------------------------- Constants --------------------------------------
@@ -64,6 +72,7 @@ const FIELD_LABELS = {
   fellowship_day: "Schedule",
   status: "Status",
   members: "Members",
+  image: "Chapter Image",
 };
 
 const EMPTY_FORM: ChapterForm = {
@@ -81,6 +90,7 @@ const EMPTY_FORM: ChapterForm = {
   landmark: "",
   fellowship_day: "",
   is_active: true,
+  image: null,
 };
 
 const columns: Column[] = [
@@ -136,6 +146,7 @@ function getFormFromRow(row: ChapterRow): ChapterForm {
     landmark: row.landmark ?? "",
     fellowship_day: row.fellowship_day ?? "",
     is_active: row.is_active,
+    image: row.image_url,
   };
 }
 
@@ -208,6 +219,13 @@ export function ChaptersClient({ chapters, pagination }: Props) {
               <StatusBadge isActive={row.is_active} />
             </DetailField>
           </DetailSection>
+          {row.image_url && (
+            <DetailSection>
+              <DetailField label={FIELD_LABELS.image} fullWidth>
+                <ImageCell src={row.image_url} alt={row.name} />
+              </DetailField>
+            </DetailSection>
+          )}
           <DetailMeta
             id={row.id}
             createdAt={row.created_at}
@@ -263,6 +281,12 @@ export function ChaptersClient({ chapters, pagination }: Props) {
             onCheckedChange={(v) => setForm((f) => ({ ...f, is_active: v }))}
             activeDescription="This chapter is visible and operational"
             inactiveDescription="This chapter is currently inactive"
+          />
+          <FormImage
+            label={FIELD_LABELS.image}
+            id="ch-image"
+            value={form.image}
+            onChange={(v) => setForm((f) => ({ ...f, image: v }))}
           />
         </div>
       )}

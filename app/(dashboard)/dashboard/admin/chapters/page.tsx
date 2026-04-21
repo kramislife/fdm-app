@@ -40,6 +40,7 @@ export default async function ChaptersPage({ searchParams }: PageProps) {
     street: ch.street ?? null,
     google_maps_url: ch.google_maps_url ?? null,
     landmark: ch.landmark ?? null,
+    image_url: ch.image_url ?? null,
     fellowship_day: ch.fellowship_day ?? null,
     is_active: ch.is_active,
     member_count: ch._count.user_chapters,

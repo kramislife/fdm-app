@@ -15,8 +15,13 @@ import {
   ACTIVITY_ENTITIES,
   CHAPTER_FIELD_LABELS,
 } from "@/lib/constants/activity-log";
+import {
+  uploadToCloudinary,
+  deleteFromCloudinary,
+} from "@/lib/services/cloudinary";
 
 const REVALIDATE_PATH = "/dashboard/admin/chapters";
+const CHAPTER_IMAGE_FOLDER = "fdm/chapters";
 
 type ChapterData = {
   name: string;
@@ -33,6 +38,7 @@ type ChapterData = {
   landmark?: string;
   fellowship_day: string;
   is_active: boolean;
+  image?: string | null;
 };
 
 type ActionResult = {
@@ -116,6 +122,19 @@ export async function createChapter(data: ChapterData): Promise<ActionResult> {
       },
     });
 
+    if (data.image && data.image.startsWith("data:")) {
+      const uploadedUrl = await uploadToCloudinary(data.image, {
+        folder: CHAPTER_IMAGE_FOLDER,
+        publicId: String(newChapter.id),
+      });
+      if (uploadedUrl) {
+        await prisma.chapter.update({
+          where: { id: newChapter.id },
+          data: { image_url: uploadedUrl },
+        });
+      }
+    }
+
     const actorNameCreate = formatName(currentUser.user);
     await logActivity({
       actorId: currentUser.user.id,
@@ -179,6 +198,7 @@ export async function updateChapter(
         street: true,
         landmark: true,
         google_maps_url: true,
+        image_url: true,
         is_active: true,
       },
     });
@@ -208,6 +228,23 @@ export async function updateChapter(
       };
     }
 
+    let nextImageUrl: string | null = current.image_url;
+
+    if (data.image === null || data.image === "") {
+      if (current.image_url) {
+        await deleteFromCloudinary(`${CHAPTER_IMAGE_FOLDER}/${id}`);
+      }
+      nextImageUrl = null;
+    } else if (data.image && data.image.startsWith("data:")) {
+      const uploadedUrl = await uploadToCloudinary(data.image, {
+        folder: CHAPTER_IMAGE_FOLDER,
+        publicId: String(id),
+      });
+      if (uploadedUrl) {
+        nextImageUrl = uploadedUrl;
+      }
+    }
+
     const next = {
       name: data.name.trim(),
       fellowship_day: data.fellowship_day || null,
@@ -218,6 +255,7 @@ export async function updateChapter(
       street: data.street?.trim() || null,
       landmark: data.landmark?.trim() || null,
       google_maps_url: data.google_maps_url?.trim() || null,
+      image_url: nextImageUrl,
       is_active: data.is_active,
     };
 
@@ -233,9 +271,25 @@ export async function updateChapter(
       },
     });
 
+    const imageChanged = (current.image_url ?? null) !== (nextImageUrl ?? null);
+
     const changes = diffFields(
-      { ...current, is_active: current.is_active ? "Active" : "Inactive" },
-      { ...next, is_active: data.is_active ? "Active" : "Inactive" },
+      {
+        ...current,
+        is_active: current.is_active ? "Active" : "Inactive",
+        image_url: current.image_url ? "attached" : "none",
+      },
+      {
+        ...next,
+        is_active: data.is_active ? "Active" : "Inactive",
+        image_url: imageChanged
+          ? nextImageUrl
+            ? "attached"
+            : "none"
+          : current.image_url
+            ? "attached"
+            : "none",
+      },
       CHAPTER_FIELD_LABELS,
     );
     if (changes.length > 0) {
@@ -270,7 +324,7 @@ export async function deleteChapter(id: number): Promise<ActionResult> {
   try {
     const chapter = await prisma.chapter.findUnique({
       where: { id },
-      select: { name: true },
+      select: { name: true, image_url: true },
     });
 
     if (!chapter) {
@@ -350,8 +404,13 @@ export async function deleteChapter(id: number): Promise<ActionResult> {
       data: {
         deleted_at: new Date(),
         deleted_by: currentUser.user.id,
+        image_url: null,
       },
     });
+
+    if (chapter.image_url) {
+      await deleteFromCloudinary(`${CHAPTER_IMAGE_FOLDER}/${id}`);
+    }
 
     const actorName = formatName(currentUser.user);
     await logActivity({

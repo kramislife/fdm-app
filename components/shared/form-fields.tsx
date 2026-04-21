@@ -1,10 +1,13 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useRef, useState } from "react";
+import Image from "next/image";
+import { ImagePlus, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -15,7 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils/utils";
-
 
 // ------------------------------- Types -----------------------------------------
 
@@ -286,5 +288,144 @@ export function FormSwitch({
         <p className="text-xs text-muted-foreground">{statusDescription}</p>
       )}
     </div>
+  );
+}
+
+// ------------------------------- Image -----------------------------------------
+
+interface FormImageProps extends Omit<BaseFormFieldProps, "required"> {
+  value: string | null;
+  onChange: (value: string | null) => void;
+  aspectRatio?: string;
+  maxSizeMb?: number;
+  accept?: string;
+}
+
+const DEFAULT_ACCEPT = "image/png,image/jpeg,image/jpg,image/webp";
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+export function FormImage({
+  label,
+  id,
+  description,
+  error,
+  wrapperClassName,
+  labelClassName,
+  value,
+  onChange,
+  aspectRatio = "aspect-4/3",
+  maxSizeMb = 4,
+  accept = DEFAULT_ACCEPT,
+}: FormImageProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setLocalError(null);
+
+    if (!file.type.startsWith("image/")) {
+      setLocalError("Please select an image file.");
+      return;
+    }
+
+    const maxBytes = maxSizeMb * 1024 * 1024;
+    if (file.size > maxBytes) {
+      setLocalError(`Image must be smaller than ${maxSizeMb}MB.`);
+      return;
+    }
+
+    try {
+      const base64 = await fileToBase64(file);
+      onChange(base64);
+    } catch {
+      setLocalError("Failed to read the image. Please try again.");
+    }
+  }
+
+  function handleRemove() {
+    onChange(null);
+    setLocalError(null);
+    if (inputRef.current) inputRef.current.value = "";
+  }
+
+  function handlePickClick() {
+    inputRef.current?.click();
+  }
+
+  const displayError = error ?? localError ?? undefined;
+  const hasImage = !!value;
+
+  return (
+    <FieldWrapper
+      label={label}
+      id={id}
+      description={description}
+      error={displayError}
+      className={wrapperClassName}
+      labelClassName={labelClassName}
+    >
+      <input
+        ref={inputRef}
+        id={id}
+        type="file"
+        accept={accept}
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
+      {hasImage ? (
+        <div
+          className={cn(
+            "relative w-full overflow-hidden rounded-md border bg-muted",
+            aspectRatio,
+          )}
+        >
+          <Image
+            src={value}
+            alt={label}
+            fill
+            sizes="(max-width: 768px) 100vw, 400px"
+            className="object-cover"
+            unoptimized={value.startsWith("data:")}
+          />
+          <Button
+            type="button"
+            size="icon"
+            onClick={handleRemove}
+            className="absolute right-2 top-2 size-7"
+            aria-label="Remove image"
+          >
+            <X className="size-4" />
+          </Button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={handlePickClick}
+          className={cn(
+            "flex w-full flex-col items-center justify-center gap-2 rounded-md border border-primary/50 border-dashed text-muted-foreground transition-colors hover:bg-muted/50 cursor-pointer",
+            aspectRatio,
+            displayError && ERROR_CLASSES,
+          )}
+        >
+          <ImagePlus className="size-6" />
+          <span className="text-sm font-medium">Click to upload image</span>
+          <span className="text-xs">
+            PNG, JPG, WEBP (Recommended ratio 4:3)
+          </span>
+        </button>
+      )}
+    </FieldWrapper>
   );
 }
