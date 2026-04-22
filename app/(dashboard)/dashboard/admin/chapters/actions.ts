@@ -37,6 +37,7 @@ type ChapterData = {
   google_maps_url?: string;
   landmark?: string;
   fellowship_day: string;
+  fellowship_time?: string;
   is_active: boolean;
   image?: string | null;
 };
@@ -59,7 +60,10 @@ function validateChapter(data: ChapterData): ActionResult | null {
   if (!data.province) errors.province = "Province is required.";
   if (!data.city) errors.city = "City is required.";
   if (!data.barangay) errors.barangay = "Barangay is required.";
-  if (!data.fellowship_day) errors.fellowship_day = "Schedule is required.";
+  if (!data.fellowship_day)
+    errors.fellowship_day = "Fellowship day is required.";
+  if (!data.fellowship_time?.trim())
+    errors.fellowship_time = "Fellowship time is required.";
 
   if (Object.keys(errors).length > 0) {
     return {
@@ -117,6 +121,7 @@ export async function createChapter(data: ChapterData): Promise<ActionResult> {
         google_maps_url: data.google_maps_url?.trim() || null,
         landmark: data.landmark?.trim() || null,
         fellowship_day: data.fellowship_day || null,
+        fellowship_time: data.fellowship_time?.trim() || null,
         is_active: data.is_active,
         created_by: currentUser.user.id,
       },
@@ -191,6 +196,7 @@ export async function updateChapter(
       select: {
         name: true,
         fellowship_day: true,
+        fellowship_time: true,
         region: true,
         province: true,
         city: true,
@@ -248,6 +254,7 @@ export async function updateChapter(
     const next = {
       name: data.name.trim(),
       fellowship_day: data.fellowship_day || null,
+      fellowship_time: data.fellowship_time?.trim() || null,
       region: data.region,
       province: data.province,
       city: data.city,

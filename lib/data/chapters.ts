@@ -9,7 +9,7 @@ import {
 const ORDER_FIELDS: Record<string, string> = {
   name: "name",
   street: "street",
-  fellowship_day: "fellowship_day",
+  schedule: "fellowship_day",
 };
 
 export async function getChapters(params: TableParams = {}) {

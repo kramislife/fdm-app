@@ -153,6 +153,7 @@ export const USER_FIELD_LABELS: Record<string, string> = {
 export const CHAPTER_FIELD_LABELS: Record<string, string> = {
   name: "name",
   fellowship_day: "fellowship day",
+  fellowship_time: "fellowship time",
   region: "region",
   province: "province",
   city: "city",

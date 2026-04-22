@@ -172,6 +172,41 @@ export const DAYS_OF_WEEK = [
   "Saturday",
 ];
 
+/** Format a "HH:mm" string (24h) as "7:00 PM". Returns empty string if invalid. */
+export function formatTimeString(time: string | null | undefined): string {
+  if (!time) return "";
+  const match = /^(\d{1,2}):(\d{2})$/.exec(time.trim());
+  if (!match) return "";
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  if (
+    Number.isNaN(hours) ||
+    Number.isNaN(minutes) ||
+    hours < 0 ||
+    hours > 23 ||
+    minutes < 0 ||
+    minutes > 59
+  ) {
+    return "";
+  }
+  const period = hours >= 12 ? "PM" : "AM";
+  const displayHour = hours % 12 === 0 ? 12 : hours % 12;
+  const displayMinutes = minutes.toString().padStart(2, "0");
+  return `${displayHour}:${displayMinutes} ${period}`;
+}
+
+/** Combine a day and "HH:mm" time into "Saturday, 7:00 PM". */
+export function formatSchedule(
+  day: string | null | undefined,
+  time: string | null | undefined,
+): string {
+  const dayStr = (day ?? "").trim();
+  const timeStr = formatTimeString(time);
+  if (dayStr && timeStr) return `${capitalizeWords(dayStr)}, ${timeStr}`;
+  if (dayStr) return capitalizeWords(dayStr);
+  return timeStr;
+}
+
 // Capitalize first letter of each word (for names/titles)
 export function capitalizeWords(str: string) {
   return str.replace(/\b\w/g, (char) => char.toUpperCase());

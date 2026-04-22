@@ -3,7 +3,7 @@
 import type { Column } from "@/components/admin/data-table";
 import type { Pagination } from "@/lib/utils/table";
 import type { AddressValue } from "@/lib/types/types";
-import { DAYS_OF_WEEK } from "@/lib/utils/format";
+import { DAYS_OF_WEEK, formatSchedule } from "@/lib/utils/format";
 import {
   StatusBadge,
   TextCell,
@@ -43,6 +43,7 @@ export type ChapterRow = {
   landmark: string | null;
   image_url: string | null;
   fellowship_day: string | null;
+  fellowship_time: string | null;
   is_active: boolean;
   member_count: number;
   created_at: string;
@@ -54,6 +55,7 @@ export type ChapterRow = {
 type ChapterForm = {
   name: string;
   fellowship_day: string;
+  fellowship_time: string;
   is_active: boolean;
   image: string | null;
 } & AddressValue;
@@ -69,7 +71,9 @@ const FIELD_LABELS = {
   street: "Street Address",
   gmaps: "Address Link",
   landmark: "Landmark",
-  fellowship_day: "Schedule",
+  fellowship_day: "Day",
+  fellowship_time: "Time",
+  schedule: "Schedule",
   status: "Status",
   members: "Members",
   image: "Chapter Image",
@@ -89,6 +93,7 @@ const EMPTY_FORM: ChapterForm = {
   google_maps_url: "",
   landmark: "",
   fellowship_day: "",
+  fellowship_time: "",
   is_active: true,
   image: null,
 };
@@ -103,8 +108,8 @@ const columns: Column[] = [
   },
   { key: "gmaps", label: FIELD_LABELS.gmaps, maxWidth: "300px" },
   {
-    key: "fellowship_day",
-    label: FIELD_LABELS.fellowship_day,
+    key: "schedule",
+    label: FIELD_LABELS.schedule,
     sortable: true,
   },
   {
@@ -123,6 +128,8 @@ function validate(form: ChapterForm) {
   if (!form.name.trim()) errors.name = `${FIELD_LABELS.name} name is required`;
   if (!form.fellowship_day)
     errors.fellowship_day = `${FIELD_LABELS.fellowship_day} is required`;
+  if (!form.fellowship_time)
+    errors.fellowship_time = `${FIELD_LABELS.fellowship_time} is required`;
   if (!form.region) errors.region = `${FIELD_LABELS.region} is required`;
   if (!form.province) errors.province = `${FIELD_LABELS.province} is required`;
   if (!form.city) errors.city = `${FIELD_LABELS.city} is required`;
@@ -145,6 +152,7 @@ function getFormFromRow(row: ChapterRow): ChapterForm {
     google_maps_url: row.google_maps_url ?? "",
     landmark: row.landmark ?? "",
     fellowship_day: row.fellowship_day ?? "",
+    fellowship_time: row.fellowship_time ?? "",
     is_active: row.is_active,
     image: row.image_url,
   };
@@ -171,7 +179,11 @@ export function ChaptersClient({ chapters, pagination }: Props) {
         name: <TextCell value={row.name} capitalize />,
         street: <TextCell value={row.street} />,
         gmaps: <LinkCell href={row.google_maps_url} />,
-        fellowship_day: <TextCell value={row.fellowship_day} capitalize />,
+        schedule: (
+          <TextCell
+            value={formatSchedule(row.fellowship_day, row.fellowship_time)}
+          />
+        ),
         members: <TextCell value={row.member_count} />,
         status: <StatusBadge isActive={row.is_active} />,
       })}
@@ -182,8 +194,10 @@ export function ChaptersClient({ chapters, pagination }: Props) {
             <DetailField label={FIELD_LABELS.name}>
               <TextCell value={row.name} capitalize />
             </DetailField>
-            <DetailField label={FIELD_LABELS.fellowship_day}>
-              <TextCell value={row.fellowship_day} capitalize />
+            <DetailField label={FIELD_LABELS.schedule}>
+              <TextCell
+                value={formatSchedule(row.fellowship_day, row.fellowship_time)}
+              />
             </DetailField>
             <DetailField label={FIELD_LABELS.region}>
               <TextCell value={row.region} capitalize />
@@ -241,7 +255,7 @@ export function ChaptersClient({ chapters, pagination }: Props) {
       validate={validate}
       renderForm={(form, setForm, _isEditing, errors, _initialValues) => (
         <div className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-y-5 gap-x-2">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-y-5 gap-x-2">
             <FormInput
               label={FIELD_LABELS.name}
               id="ch-name"
@@ -263,6 +277,18 @@ export function ChaptersClient({ chapters, pagination }: Props) {
                 label: day,
               }))}
               error={errors.fellowship_day}
+              wrapperClassName="col-span-1"
+              required
+            />
+            <FormInput
+              label={FIELD_LABELS.fellowship_time}
+              id="ch-fellowship-time"
+              type="time"
+              value={form.fellowship_time}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, fellowship_time: e.target.value }))
+              }
+              error={errors.fellowship_time}
               wrapperClassName="col-span-1"
               required
             />
