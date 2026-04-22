@@ -3,7 +3,6 @@ import type { NavLink, BaseImage, SocialLink } from "@/lib/types/types";
 import divineMercy from "@/app/assets/media/divine-mercy-footer.png";
 
 import { navLinks } from "@/config/navigation";
-import { chaptersContent } from "@/config/about";
 import { socialLinks } from "@/config/contact";
 
 export interface FooterQuote {
@@ -14,11 +13,6 @@ export interface FooterQuote {
 export interface FooterColumn {
   heading: string;
   links: NavLink[];
-}
-
-export interface FooterChaptersColumn {
-  heading: string;
-  items: string[];
 }
 
 export interface FooterBrandColumn {
@@ -32,7 +26,6 @@ export interface FooterConfig {
   backgroundImage: BaseImage;
   navigation: FooterColumn;
   quickLinks: FooterColumn;
-  chapters: FooterChaptersColumn;
   brand: FooterBrandColumn;
 }
 
@@ -54,10 +47,6 @@ export const footerConfig: FooterConfig = {
       { label: "Privacy Policy", href: "/privacy-policy" },
       { label: "Terms of Use", href: "/terms-of-use" },
     ],
-  },
-  chapters: {
-    heading: "Our Chapters",
-    items: chaptersContent.items.map((c) => c.name),
   },
   brand: {
     heading: "About FDM",

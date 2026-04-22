@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getPublicChapters } from "@/lib/data/chapters";
 import { ChaptersHero } from "./_components/chapters-hero";
 import { ChaptersFilterGrid } from "./_components/chapters-filter-grid";
 
@@ -8,11 +9,13 @@ export const metadata: Metadata = {
     "Find a chapter near you and join our community in prayer and service.",
 };
 
-export default function ChaptersPage() {
+export default async function ChaptersPage() {
+  const chapters = await getPublicChapters();
+
   return (
     <main className="min-h-screen">
       <ChaptersHero />
-      <ChaptersFilterGrid />
+      <ChaptersFilterGrid chapters={chapters} />
     </main>
   );
 }

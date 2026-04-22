@@ -2,10 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { footerConfig } from "@/config/footer";
+import { getPublicChapters } from "@/lib/data/chapters";
+import { capitalizeWords } from "@/lib/utils/format";
 
-export function PublicFooter() {
-  const { backgroundImage, navigation, quickLinks, chapters, brand } =
-    footerConfig;
+export async function PublicFooter() {
+  const { backgroundImage, navigation, quickLinks, brand } = footerConfig;
+  const chapters = await getPublicChapters();
 
   return (
     <footer className="relative overflow-hidden">
@@ -73,15 +75,15 @@ export function PublicFooter() {
         {/* Our Chapters Column */}
         <div className="space-y-5">
           <p className="text-sm font-bold uppercase tracking-widest text-muted/50">
-            {chapters.heading}
+            Our Chapters
           </p>
           <ul className="flex flex-col gap-3">
-            {chapters.items.map((item) => (
+            {chapters.map((chapter) => (
               <li
-                key={item}
+                key={chapter.id}
                 className="flex items-center gap-2 text-sm text-white/80"
               >
-                {item}
+                {capitalizeWords(chapter.name)}
               </li>
             ))}
           </ul>

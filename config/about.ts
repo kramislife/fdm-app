@@ -2,13 +2,6 @@ import { Heart, Users, Plus } from "lucide-react";
 
 import heroImage from "@/app/assets/media/god-mercy.jpg";
 
-import qcImage from "@/app/assets/media/chapters/qc.png";
-import bataanImage from "@/app/assets/media/chapters/bataan.png";
-import caviteImage from "@/app/assets/media/chapters/cavite.png";
-import pasayImage from "@/app/assets/media/chapters/pasay.png";
-import pasigImage from "@/app/assets/media/chapters/pasig.png";
-import talaImage from "@/app/assets/media/chapters/tala.png";
-
 import communityImage from "@/app/assets/media/faces-of-faith.jpg";
 import storyImage from "@/app/assets/media/story-of-mercy.jpg";
 
@@ -49,18 +42,7 @@ export interface PillarsContent extends BaseSection {
   items: PillarItem[];
 }
 
-export interface Chapter {
-  id: string;
-  name: string;
-  location: string;
-  day: string;
-  description: string;
-  image: BaseImage;
-}
-
-export interface ChaptersContent extends SectionWithDescription {
-  items: Chapter[];
-}
+export interface ChaptersContent extends SectionWithDescription {}
 
 export interface CommunityGallery extends SectionWithImage {}
 
@@ -162,62 +144,6 @@ export const chaptersContent: ChaptersContent = {
   title: "Communities United in Mercy",
   description:
     "Across different areas, our chapters gather weekly for the Believers Fellowship — a time of prayer, worship, and formation centered on the message of Divine Mercy.",
-  items: [
-    {
-      id: "quezon-city",
-      name: "Quezon City",
-      location: "Metro Manila",
-      day: "Saturday",
-      description:
-        "One of FDM's founding chapters. Gathers every Saturday for the Believers Fellowship — prayer, formation, and community in the heart of QC.",
-      image: { src: qcImage, alt: "Quezon City Chapter gathering" },
-    },
-    {
-      id: "bataan",
-      name: "Bataan",
-      location: "Luzon Province",
-      day: "Saturday",
-      description:
-        "Bringing Divine Mercy to the province of Bataan. Members gather every Saturday for fellowship, sharing faith across the historic province.",
-      image: { src: bataanImage, alt: "Bataan Chapter community" },
-    },
-    {
-      id: "cavite",
-      name: "Cavite",
-      location: "Cavite Province",
-      day: "Friday",
-      description:
-        "A Friday chapter rooted in service and prayer. The Cavite community gathers weekly, bringing the message of mercy to their province.",
-      image: { src: caviteImage, alt: "Cavite Chapter gathering" },
-    },
-    {
-      id: "pasay",
-      name: "Pasay",
-      location: "Metro Manila",
-      day: "Thursday",
-      description:
-        "Every Thursday, the Pasay chapter gathers in the heart of Metro Manila — a community anchored in mercy, fellowship, and service.",
-      image: { src: pasayImage, alt: "Pasay Chapter community" },
-    },
-    {
-      id: "pasig",
-      name: "Pasig",
-      location: "Metro Manila",
-      day: "Saturday",
-      description:
-        "Covering Sta. Clara and Sta. Martha areas. Two vibrant communities, one heart — united every Saturday under the banner of Divine Mercy.",
-      image: { src: pasigImage, alt: "Pasig Chapter gathering" },
-    },
-    {
-      id: "tala",
-      name: "Tala",
-      location: "Metro Manila",
-      day: "Wednesday",
-      description:
-        "A mid-week gathering every Wednesday in Tala, Caloocan. A community devoted to prayer, service, and the daily living of God's mercy.",
-      image: { src: talaImage, alt: "Tala Chapter community" },
-    },
-  ],
 };
 
 // ------------------------------- Community / Gallery ----------------------------------

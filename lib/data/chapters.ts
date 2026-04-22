@@ -65,3 +65,23 @@ export async function getChaptersForSelect() {
     orderBy: { name: "asc" },
   });
 }
+
+export async function getPublicChapters() {
+  return prisma.chapter.findMany({
+    where: { is_active: true, deleted_at: null },
+    select: {
+      id: true,
+      name: true,
+      region: true,
+      province: true,
+      city: true,
+      barangay: true,
+      landmark: true,
+      google_maps_url: true,
+      image_url: true,
+      fellowship_day: true,
+      fellowship_time: true,
+    },
+    orderBy: { name: "asc" },
+  });
+}
