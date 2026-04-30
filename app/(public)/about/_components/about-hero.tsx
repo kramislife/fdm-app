@@ -14,7 +14,7 @@ export function AboutHero() {
               variant="outline"
               className="gap-2 py-3 uppercase tracking-widest text-primary"
             >
-              <span className="h-2 w-2 rounded-full bg-primary" />
+              <span className="h-2 w-2 rounded-full bg-primary mb-0.5" />
               {heroContent.badge}
             </Badge>
           </Reveal>

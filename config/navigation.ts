@@ -4,6 +4,7 @@ import {
   MapPin,
   Phone,
   Heart,
+  BookHeart,
   QrCode,
   CalendarCheck,
   User,
@@ -23,6 +24,7 @@ export const navLinks: NavLink[] = [
   { label: "Home", href: "/", icon: Home },
   { label: "About", href: "/about", icon: Info },
   { label: "Chapters", href: "/chapters", icon: MapPin },
+  { label: "Devotions", href: "/devotions", icon: BookHeart },
   { label: "Contact Us", href: "/contact-us", icon: Phone },
   { label: "Donations", href: "/donations", icon: Heart },
 ];
