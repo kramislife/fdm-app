@@ -24,7 +24,7 @@ export function DevotionsHero() {
 
   return (
     <section className="px-5 py-10 md:px-10 md:py-20">
-      <div className="flex flex-col md:flex-row items-center gap-5">
+      <div className="flex flex-col md:flex-row items-center gap-5 md:gap-10">
         {/* Left: Dynamic text driven by active card */}
         <Reveal direction="left" className="w-full md:w-1/2">
           <div className="space-y-5 text-center md:text-left">
