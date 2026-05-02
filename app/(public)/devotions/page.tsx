@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DevotionsHero } from "./_components/devotions-hero";
+import { DevotionsAbc } from "./_components/devotions-abc";
 
 export const metadata: Metadata = {
   title: "Devotions | FDM",
@@ -11,6 +12,7 @@ export default function DevotionsPage() {
   return (
     <main className="min-h-screen">
       <DevotionsHero />
+      <DevotionsAbc />
     </main>
   );
 }

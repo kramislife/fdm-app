@@ -65,3 +65,32 @@ export const devotions: Devotion[] = [
     ],
   },
 ];
+
+// ---------------------------- ABC of Mercy ----------------------------
+
+export interface AbcOfMercyItem {
+  letter: string;
+  title: string;
+  description: string;
+}
+
+export const abcOfMercy: AbcOfMercyItem[] = [
+  {
+    letter: "A",
+    title: "ASK FOR HIS MERCY",
+    description:
+      "God wants us to approach Him in prayer constantly, repenting for our sins and asking Him to pour His mercy out upon us and upon the whole world.",
+  },
+  {
+    letter: "B",
+    title: "BE MERCIFUL",
+    description:
+      "God wants us to receive his mercy and let it flow through us to others. He wants us to extend love and forgiveness to others just as He does to us.",
+  },
+  {
+    letter: "C",
+    title: "COMPLETELY TRUST IN JESUS",
+    description:
+      "God wants us to know that the graces of His mercy are dependent upon our trust. The more we trust in Jesus, the more we will receive.",
+  },
+];
