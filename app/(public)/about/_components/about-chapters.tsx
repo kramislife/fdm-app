@@ -10,11 +10,18 @@ export async function AboutChapters() {
 
   return (
     <section className="px-5 py-10 md:px-10 md:py-20 overflow-hidden">
-      <Reveal className="mx-auto mb-10 max-w-4xl space-y-5 text-center">
-        <p className="text-xs font-bold uppercase text-primary">
-          {chaptersContent.eyebrow}
-        </p>
-        <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight">
+      <Reveal
+        direction="up"
+        className="mx-auto mb-10 max-w-4xl space-y-5 text-center"
+      >
+        <div className="flex items-center justify-center gap-3">
+          <span className="h-px w-10 bg-primary" />
+          <p className="text-xs font-bold uppercase tracking-[5px] text-primary">
+            {chaptersContent.eyebrow}
+          </p>
+          <span className="h-px w-10 bg-primary" />
+        </div>
+        <h2 className="font-serif text-2xl font-bold md:text-3xl lg:text-4xl">
           {chaptersContent.title}
         </h2>
         <p className="text-sm md:text-base leading-relaxed text-muted-foreground">

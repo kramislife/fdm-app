@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils/utils";
 
 export interface AccordionItemData {
@@ -13,13 +13,22 @@ interface AccordionItemProps {
   item: AccordionItemData;
   isActive: boolean;
   onActivate: () => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
 }
 
-function AccordionItem({ item, isActive, onActivate }: AccordionItemProps) {
+function AccordionItem({
+  item,
+  isActive,
+  onActivate,
+  onMouseEnter,
+  onMouseLeave,
+}: AccordionItemProps) {
   return (
     <button
       type="button"
-      onMouseEnter={onActivate}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       onFocus={onActivate}
       onClick={onActivate}
       aria-pressed={isActive}
@@ -92,11 +101,35 @@ export function InteractiveImageAccordion({
   onActiveChange,
 }: InteractiveImageAccordionProps) {
   const [activeIndex, setActiveIndex] = useState(defaultActiveIndex);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function handleActivate(index: number) {
     setActiveIndex(index);
     onActiveChange?.(index);
   }
+
+  function handleMouseEnter(index: number) {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      handleActivate(index);
+    }, 150);
+  }
+
+  function handleMouseLeave() {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div
@@ -111,6 +144,8 @@ export function InteractiveImageAccordion({
           item={item}
           isActive={index === activeIndex}
           onActivate={() => handleActivate(index)}
+          onMouseEnter={() => handleMouseEnter(index)}
+          onMouseLeave={handleMouseLeave}
         />
       ))}
     </div>

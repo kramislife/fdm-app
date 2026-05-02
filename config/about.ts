@@ -95,7 +95,7 @@ export const missionContent: MissionContent = {
   eyebrow: "Our Mission",
   title: "Spreading God’s Mercy through Faith, Service, and Community",
   description:
-    "Our mission is to live out the message of Jesus to St. Faustina to exercise mercy to our neighbor always and everywhere by deed, word, and prayer. We carry out corporal and spiritual acts of mercy, evangelization, propagation, and building communities.",
+    "To live out the message of Jesus to St. Faustina to exercise mercy to our neighbor always and everywhere by deed, word, and prayer. We carry out corporal and spiritual acts of mercy, evangelization, propagation, and building communities.",
   items: [
     { src: prayerImage, alt: "3 o'clock Prayer" },
     { src: bigasImage, alt: "Biyayang Bigas" },
