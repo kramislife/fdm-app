@@ -226,4 +226,38 @@ export const devotionsHistory: DevotionHistoryItem[] = [
     title: "Pope John Paul II",
     description: "Cardinal Karol Wojtyla became Pope John Paul II.",
   },
+  {
+    date: "April 18, 1993 (2nd Sunday of Easter)",
+    year: "1993",
+    title: "Beatification of Sis. Faustina",
+    description: "Sis. Faustina was beatified.",
+  },
+  {
+    date: "April 30, 2000",
+    year: "2000",
+    title: "Canonization of Blessed Faustina",
+    description:
+      "Blessed Faustina was canonized in Rome; Divine Mercy Sunday was proclaimed.",
+  },
+  {
+    date: "September 8, 2008",
+    year: "2008",
+    title: "Beatification of Fr. Michael Sopocko",
+    description:
+      "Fr. Michael Sopocko was beatified; the extra ordinary Polish priest, confessor and spiritual guide to Sis. Faustina Kowalska; known as the “only priest who believed Sis. Faustina”.",
+  },
+  {
+    date: "May 1, 2011 (Feast of Mercy)",
+    year: "2011",
+    title: "Beatification of Pope John Paul II",
+    description: "Pope John Paul II was beatified.",
+  },
+  {
+    date: "April 27, 2014 (Feast of Mercy)",
+    year: "2014",
+    title: "Canonization of Pope John Paul II",
+    description: "Pope John Paul was canonized.",
+    quote:
+      "“From Poland will come forth the SPARK that would prepare the world for My final coming.” Diary 1732",
+  },
 ];

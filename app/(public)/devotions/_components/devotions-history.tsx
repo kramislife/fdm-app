@@ -76,10 +76,10 @@ export function DevotionsHistory() {
       <div className="flex flex-col lg:flex-row gap-5 md:gap-10">
         {/* LEFT TIMELINE (alternating) */}
         <div className="flex-1 relative">
-          {/* Vertical center line on md+; left line on mobile */}
-          <div className="absolute left-3 md:left-1/2 md:-translate-x-1/2 top-3 bottom-3 w-px bg-primary/20" />
+          {/* Vertical center line on md+ only */}
+          <div className="hidden md:block absolute left-1/2 -translate-x-1/2 top-3 bottom-3 w-px bg-primary/20" />
 
-          <div className="space-y-10">
+          <div className="space-y-10 md:space-y-16">
             {devotionsHistory.map((item, i) => {
               const isLeft = i % 2 === 0;
 
@@ -90,16 +90,13 @@ export function DevotionsHistory() {
                   delay={i * 0.08}
                 >
                   <div className="relative">
-                    {/* Mobile dot */}
-                    <div className="md:hidden absolute left-3 top-6 -translate-x-[5px] size-3 rounded-full bg-primary ring-4 ring-background" />
-
                     {/* Desktop center dot */}
                     <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
                       <span className="block size-3 rounded-full bg-primary ring-4 ring-background" />
                     </div>
 
                     {/* Mobile: single column */}
-                    <div className="md:hidden pl-10">
+                    <div className="md:hidden">
                       <div className="mb-10">
                         <GhostYear year={item.year} />
                       </div>
