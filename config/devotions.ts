@@ -3,6 +3,14 @@ import procession from "@/app/assets/media/devotions/procession.jpg";
 import prayer from "@/app/assets/media/devotions/prayer.png";
 import chaplet from "@/app/assets/media/devotions/chaplet.png";
 import novena from "@/app/assets/media/devotions/novena.png";
+import faustinaImage from "@/app/assets/media/devotions/faustina.webp";
+import {
+  Church,
+  GraduationCap,
+  MapPin,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 
 // ---------------------------- Types ----------------------------
 
@@ -74,6 +82,11 @@ export interface AbcOfMercyItem {
   description: string;
 }
 
+export const abcOfMercyHeader = {
+  badge: "ABC's of Mercy",
+  title: "The Message of Mercy",
+};
+
 export const abcOfMercy: AbcOfMercyItem[] = [
   {
     letter: "A",
@@ -92,5 +105,125 @@ export const abcOfMercy: AbcOfMercyItem[] = [
     title: "COMPLETELY TRUST IN JESUS",
     description:
       "God wants us to know that the graces of His mercy are dependent upon our trust. The more we trust in Jesus, the more we will receive.",
+  },
+];
+
+// ---------------------------- History of Divine Mercy ----------------------------
+
+export const devotionsHistoryHeader = {
+  badge: "The History",
+  title: "The History of Divine Mercy",
+  description:
+    "A journey of revelation, devotion, and faith — from the convent in Vilnius to the universal Church.",
+};
+
+export interface FaustinaInfoItem {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
+
+export const faustinaProfile = {
+  image: faustinaImage,
+  name: "St. Maria Faustina",
+  role: "The Apostle of Mercy",
+  quote: "Known for her prayer, heroic obedience, and profound humility.",
+  info: [
+    {
+      icon: MapPin,
+      title: "Origins",
+      description: "Born Helena Kowalska, August 25, 1905, in Poland.",
+    },
+    {
+      icon: Users,
+      title: "Family",
+      description: "The 3rd of 10 children in a poor, devout peasant family.",
+    },
+    {
+      icon: GraduationCap,
+      title: "Education",
+      description: "Completed only three years of basic schooling.",
+    },
+    {
+      icon: Church,
+      title: "Calling",
+      description: "Felt a call at age 7; entered the convent at age 20.",
+    },
+  ] satisfies FaustinaInfoItem[],
+};
+
+export interface DevotionHistoryItem {
+  date: string;
+  year: string;
+  title?: string;
+  description: string;
+  quote?: string;
+}
+
+export const devotionsHistory: DevotionHistoryItem[] = [
+  {
+    date: "February 22, 1931",
+    year: "1931",
+    title: "How it began",
+    description:
+      "Jesus appeared in a vision to a young Polish nun, Sis. Maria Faustina Kowalska inside a convent in Vilnius, Poland.",
+    quote:
+      "“Tell the whole world about my mercy; that whoever approaches the Fount of Life on this day will be granted complete remission of sins and punishment. Mankind will not have peace until it turns with trust to my mercy.” Diary 699.",
+  },
+  {
+    date: "June 1934",
+    year: "1934",
+    title: "The First Image",
+    description:
+      "The first Divine Mercy image was completed under Sis. Faustina’s directions; she wept in disappointment and complained to Jesus.",
+    quote: "“Who will paint you as beautiful as you are?” Diary 313.",
+  },
+  {
+    date: "July 1934",
+    year: "1934",
+    title: "Secretary and Apostle of Mercy",
+    description:
+      "Sis. Faustina started to keep a diary; about 600 pages recording the revelations she received about God’s mercy, titled ‘Divine Mercy in my Soul’.",
+  },
+  {
+    date: "October 5, 1938",
+    year: "1938",
+    title: "Her Earthly Mission Ends",
+    description: "Sis. Faustina died at the age of 33 from tuberculosis.",
+    quote:
+      "“I feel certain that my mission will not come to an end upon my death but will begin… I will draw aside for you the veils of heaven to convince you of God’s goodness.” Diary 281.",
+  },
+  {
+    date: "1934-1941",
+    year: "1934",
+    title: "God’s Enormous Love for Poland",
+    description:
+      "Divine Mercy message spreads first among the victims of World War II. Under attack then, all of Poland suffered destruction except in Vilnius and Krakow where the Divine Mercy was first made known.",
+  },
+  {
+    date: "March 6, 1959",
+    year: "1959",
+    title: "The Vatican Ban",
+    description: "Vatican issued a notification banning Divine Mercy devotion.",
+  },
+  {
+    date: "1965-1967",
+    year: "1965",
+    title: "The Informative Process",
+    description:
+      "Karol Wojtyla, an Archbishop of Krakow, led the informative process to validate revelations of the Divine Mercy, and the virtues and life of Sis. Faustina.",
+  },
+  {
+    date: "April 15, 1978",
+    year: "1978",
+    title: "The Ban Lifted",
+    description:
+      "Based on the results of the informative process, the Vatican lifted the ban on Divine Mercy.",
+  },
+  {
+    date: "October 16, 1978",
+    year: "1978",
+    title: "Pope John Paul II",
+    description: "Cardinal Karol Wojtyla became Pope John Paul II.",
   },
 ];
