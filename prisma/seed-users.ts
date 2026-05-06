@@ -67,7 +67,7 @@ async function main() {
     const email = isQrOnly
       ? null
       : dbUser.email ||
-        `${dbUser.first_name.toLowerCase()}.${dbUser.last_name.toLowerCase()}.${crypto.randomInt(1000, 9999)}@fdm.org`;
+        `${(dbUser.first_name ?? "user").toLowerCase()}.${(dbUser.last_name ?? "anon").toLowerCase()}.${crypto.randomInt(1000, 9999)}@fdm.org`;
 
     // For normal members, contact is optional but let's make it 80% present
     const contact_number = isQrOnly

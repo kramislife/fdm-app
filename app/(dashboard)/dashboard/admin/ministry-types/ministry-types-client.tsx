@@ -34,8 +34,8 @@ export type MinistryTypeRow = {
   is_active: boolean;
   created_at: string;
   updated_at: string;
-  creator: { first_name: string; last_name: string } | null;
-  updated_by: { first_name: string; last_name: string } | null;
+  creator: { first_name: string | null; last_name: string | null } | null;
+  updated_by: { first_name: string | null; last_name: string | null } | null;
 };
 
 export type MinistryTypeForm = {

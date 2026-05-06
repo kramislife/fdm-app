@@ -55,7 +55,10 @@ export function UserStatusBadge({ status }: UserStatusBadgeProps) {
 
 // ------------------------------- User Cell --------------------------------------------
 interface UserCellProps {
-  user: { first_name: string; last_name: string } | null | undefined;
+  user:
+    | { first_name: string | null; last_name: string | null }
+    | null
+    | undefined;
   fallback?: string;
 }
 

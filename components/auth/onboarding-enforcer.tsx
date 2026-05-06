@@ -18,7 +18,7 @@ export async function OnboardingEnforcer() {
   // The modal manages its own open state via defaultOpen.
   return (
     <OnboardingModal
-      firstName={dbUser.first_name}
+      firstName={dbUser.first_name ?? "User"}
       defaultOpen={dbUser.is_temp_password}
     />
   );

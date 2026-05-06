@@ -27,17 +27,17 @@ export type ChapterMinistryRow = {
   member_count: number;
   head: {
     id: number;
-    first_name: string;
-    last_name: string;
+    first_name: string | null;
+    last_name: string | null;
   } | null;
   updated_at: string;
-  updated_by: { first_name: string; last_name: string } | null;
+  updated_by: { first_name: string | null; last_name: string | null } | null;
 };
 
 type UserWithMinistry = {
   id: number;
-  first_name: string;
-  last_name: string;
+  first_name: string | null;
+  last_name: string | null;
   chapter_ministry_id: number | null;
   ministry_name: string | null;
 };

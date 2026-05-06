@@ -53,8 +53,8 @@ interface DetailMetaProps {
   id: number;
   createdAt?: string | null;
   updatedAt?: string | null;
-  createdBy?: { first_name: string; last_name: string } | null;
-  updatedBy?: { first_name: string; last_name: string } | null;
+  createdBy?: { first_name: string | null; last_name: string | null } | null;
+  updatedBy?: { first_name: string | null; last_name: string | null } | null;
   children?: ReactNode;
 }
 

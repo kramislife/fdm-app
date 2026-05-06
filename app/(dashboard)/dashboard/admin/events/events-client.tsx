@@ -46,8 +46,8 @@ export type EventRow = {
   qr_expires_at: string | null;
   event_type: { id: number; key: string; name: string } | null;
   chapter: { id: number; name: string } | null;
-  creator: { first_name: string; last_name: string } | null;
-  updated_by: { first_name: string; last_name: string } | null;
+  creator: { first_name: string | null; last_name: string | null } | null;
+  updated_by: { first_name: string | null; last_name: string | null } | null;
   attendance_count: number;
   created_at: string;
   updated_at: string;

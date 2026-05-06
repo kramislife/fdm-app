@@ -93,8 +93,8 @@ model EventType {
 model User {
   id                   Int       @id @default(autoincrement())
   auth_id              String?   @unique @db.VarChar(255)
-  first_name           String    @db.VarChar(100)
-  last_name            String    @db.VarChar(100)
+  first_name           String?   @db.VarChar(100)
+  last_name            String?   @db.VarChar(100)
   email                String?   @unique @db.VarChar(255)
   contact_number       String?   @db.VarChar(20)
   account_status       String    @default("pending") @db.VarChar(20)
@@ -142,7 +142,10 @@ model User {
   enthronements_recorded  EnthronementRecord[] @relation("RecordedBy")
 
   finance_records FinanceRecord[]
-  announcements   Announcement[]
+
+  announcements_created Announcement[] @relation("AnnouncementCreator")
+  announcements_updated Announcement[] @relation("AnnouncementUpdater")
+  announcements_deleted Announcement[] @relation("AnnouncementDeleter")
 
   ministry_types_created MinistryType[] @relation("MinistryTypeCreator")
   ministry_types_updated MinistryType[] @relation("MinistryTypeUpdatedBy")
@@ -209,7 +212,6 @@ model Chapter {
   events             Event[]
   guest_logs         GuestLog[]
   finance_records    FinanceRecord[]
-  announcements      Announcement[]
   activity_logs      ActivityLog[]     @relation("ActivityLogChapter")
 
   @@index([region])
@@ -484,21 +486,26 @@ model FinanceRecord {
 }
 
 model Announcement {
-  id           Int       @id @default(autoincrement())
-  title        String    @db.VarChar(255)
-  content      String
-  posted_by    Int
-  chapter_id   Int?
-  type         String    @db.VarChar(20)
-  is_published Boolean   @default(false)
-  published_at DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
+  id          Int       @id @default(autoincrement())
+  desktop_url String    @db.VarChar(500)
+  mobile_url  String    @db.VarChar(500)
+  label       String?   @db.VarChar(255)
+  media_type  String    @db.VarChar(10)
+  expires_at  DateTime?
+  is_active   Boolean   @default(true)
 
-  poster  User     @relation(fields: [posted_by], references: [id])
-  chapter Chapter? @relation(fields: [chapter_id], references: [id])
+  created_at DateTime  @default(now())
+  created_by Int
+  updated_at DateTime  @updatedAt
+  updated_by Int?
+  deleted_at DateTime?
+  deleted_by Int?
 
-  @@index([chapter_id])
+  creator         User  @relation("AnnouncementCreator", fields: [created_by], references: [id])
+  updated_by_user User? @relation("AnnouncementUpdater", fields: [updated_by], references: [id])
+  deleted_by_user User? @relation("AnnouncementDeleter", fields: [deleted_by], references: [id])
+
+  @@index([is_active, expires_at])
   @@index([created_at])
   @@map("announcements")
 }

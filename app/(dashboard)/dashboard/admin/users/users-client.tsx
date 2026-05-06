@@ -27,6 +27,7 @@ import {
   isValidEmailFormat,
   normalizePhoneNumber,
   formatToISODate,
+  formatName,
 } from "@/lib/utils/format";
 import {
   createUser,
@@ -56,8 +57,8 @@ import {
 export type UserRow = {
   id: number;
   name: string;
-  first_name: string;
-  last_name: string;
+  first_name: string | null;
+  last_name: string | null;
   email: string | null;
   contact_number: string | null;
   birthday: string | null;
@@ -185,7 +186,10 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
     if (result.success && result.member_qr) {
       setQrTarget({
         member_qr: result.member_qr,
-        name: `${data.first_name} ${data.last_name}`,
+        name: formatName({
+          first_name: data.first_name,
+          last_name: data.last_name,
+        }),
       });
     }
     return result;
@@ -335,8 +339,8 @@ export function UsersClient({ users, pagination, chapters, roles }: Props) {
         )}
         initialForm={EMPTY_FORM}
         getFormFromRow={(row) => ({
-          first_name: row.first_name,
-          last_name: row.last_name,
+          first_name: row.first_name ?? "",
+          last_name: row.last_name ?? "",
           contact_number: row.contact_number ?? "",
           email: row.email ?? "",
           birthday: formatToISODate(row.birthday),

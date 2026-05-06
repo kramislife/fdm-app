@@ -220,7 +220,10 @@ export type SchemaName = {
 export type NameDisplay = "full" | "first" | "last";
 
 function cleanNamePart(value: string | null | undefined) {
-  return capitalizeWords((value ?? "").trim().replace(/\s+/g, " "));
+  const trimmed = (value ?? "").trim().replace(/\s+/g, " ");
+  // Treat lone "—" placeholder as empty so legacy rows don't render "Jasper —"
+  if (trimmed === "—" || trimmed === "-") return "";
+  return capitalizeWords(trimmed);
 }
 
 function resolveNameParts(source: SchemaName) {
@@ -230,23 +233,20 @@ function resolveNameParts(source: SchemaName) {
   };
 }
 
-export function splitName(
-  fullName: string | null | undefined,
-  fallbackFirst = "Unknown",
-  fallbackLast = "—",
-) {
+export function splitName(fullName: string | null | undefined): {
+  first_name: string | null;
+  last_name: string | null;
+} {
   const normalized = cleanNamePart(fullName);
   if (!normalized) {
-    return {
-      first_name: fallbackFirst,
-      last_name: fallbackLast,
-    };
+    return { first_name: null, last_name: null };
   }
 
   const [firstName, ...rest] = normalized.split(" ");
+  const last = rest.join(" ");
   return {
-    first_name: firstName,
-    last_name: rest.join(" ") || fallbackLast,
+    first_name: firstName || null,
+    last_name: last || null,
   };
 }
 

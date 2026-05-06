@@ -14,7 +14,7 @@ import {
   FormInput,
   FormSelect,
   FormSwitch,
-  FormImage,
+  FormMedia,
 } from "@/components/shared/form-fields";
 import {
   DetailField,
@@ -48,8 +48,8 @@ export type ChapterRow = {
   member_count: number;
   created_at: string;
   updated_at: string;
-  creator: { first_name: string; last_name: string } | null;
-  updated_by: { first_name: string; last_name: string } | null;
+  creator: { first_name: string | null; last_name: string | null } | null;
+  updated_by: { first_name: string | null; last_name: string | null } | null;
 };
 
 type ChapterForm = {
@@ -308,11 +308,13 @@ export function ChaptersClient({ chapters, pagination }: Props) {
             activeDescription="This chapter is visible and operational"
             inactiveDescription="This chapter is currently inactive"
           />
-          <FormImage
+          <FormMedia
             label={FIELD_LABELS.image}
             id="ch-image"
             value={form.image}
+            mediaType={null}
             onChange={(v) => setForm((f) => ({ ...f, image: v }))}
+            imageOnly
           />
         </div>
       )}
