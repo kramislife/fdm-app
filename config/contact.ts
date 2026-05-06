@@ -53,7 +53,7 @@ export const contactSection: ContactSection = {
       Icon: MapPin,
       label: "Address",
       value: "1839 Leogardo St., Corner Sandejas St. Pasay City, Philippines",
-      href: "https://maps.app.goo.gl/Fy9jNc2RL9Ad7YdU9",
+      href: "https://maps.app.goo.gl/Moso5kYr7AVe1w8D6",
     },
     {
       Icon: Mail,
@@ -115,7 +115,7 @@ export const socialLinks: SocialLink[] = [
 export const mapContent: MapContent = {
   title: "Our Location",
   address: "1839 Leogardo St., Corner Sandejas St., Pasay City",
-  src: "https://maps.google.com/maps?q=1839+Leogardo+Street+Corner+Sandejas+Street+Pasay+City+Philippines&t=&z=17&ie=UTF8&iwloc=&output=embed",
+  src: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3861.7219355131297!2d120.99510767468269!3d14.557887385923445!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397c97a9540ef3b%3A0x31236da4b0bf1d1d!2sFriends%20of%20the%20Divine%20Mercy!5e0!3m2!1sen!2sph!4v1778036895287!5m2!1sen!2sph",
 };
 
 // ----------------------------------- Form ------------------------------------

@@ -86,7 +86,7 @@ export const communityStats: Stat[] = [
   { value: "50+", label: "Chapters" },
   { value: "5,000+", label: "Members" },
   { value: "30+", label: "Years of Service" },
-  { value: "50,000+", label: "Enthronement" },
+  { value: "100,000+", label: "Enthronement" },
 ];
 
 // ---------------------------- Mission Section ----------------------------
