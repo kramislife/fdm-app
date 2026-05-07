@@ -3,6 +3,10 @@
 import { ReactNode, useRef, useState } from "react";
 import Image from "next/image";
 import { ImagePlus, X } from "lucide-react";
+import {
+  detectMediaTypeFromMime,
+  type AnnouncementMediaType,
+} from "@/lib/constants/announcements";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -291,17 +295,26 @@ export function FormSwitch({
   );
 }
 
-// ------------------------------- Image -----------------------------------------
+// ------------------------------- Media (image / gif / video) -------------------
 
-interface FormImageProps extends Omit<BaseFormFieldProps, "required"> {
+interface FormMediaProps extends Omit<BaseFormFieldProps, "required"> {
   value: string | null;
-  onChange: (value: string | null) => void;
+  mediaType: AnnouncementMediaType | null;
+  onChange: (
+    value: string | null,
+    mediaType: AnnouncementMediaType | null,
+  ) => void;
   aspectRatio?: string;
   maxSizeMb?: number;
-  accept?: string;
+  /** Hint shown in the empty dropzone. Falls back to a sensible default per mode. */
+  hint?: string;
+  /** Restrict to static images only (PNG / JPG / WEBP). */
+  imageOnly?: boolean;
 }
 
-const DEFAULT_ACCEPT = "image/png,image/jpeg,image/jpg,image/webp";
+const IMAGE_ACCEPT = "image/png,image/jpeg,image/jpg,image/webp";
+const MEDIA_ACCEPT =
+  "image/png,image/jpeg,image/jpg,image/webp,image/gif,video/mp4,video/webm,video/quicktime";
 
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -312,7 +325,7 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-export function FormImage({
+export function FormMedia({
   label,
   id,
   description,
@@ -320,51 +333,100 @@ export function FormImage({
   wrapperClassName,
   labelClassName,
   value,
+  mediaType,
   onChange,
-  aspectRatio = "aspect-4/3",
+  aspectRatio = "aspect-[16/9]",
   maxSizeMb = 4,
-  accept = DEFAULT_ACCEPT,
-}: FormImageProps) {
+  hint,
+  imageOnly = false,
+}: FormMediaProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [localError, setLocalError] = useState<string | null>(null);
+
+  const accept = imageOnly ? IMAGE_ACCEPT : MEDIA_ACCEPT;
+  const defaultHint = imageOnly
+    ? "PNG, JPG, WEBP (Recommended ratio 4:3)"
+    : "Image, GIF, or video";
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setLocalError(null);
 
-    if (!file.type.startsWith("image/")) {
-      setLocalError("Please select an image file.");
+    if (imageOnly) {
+      if (!file.type.startsWith("image/") || file.type === "image/gif") {
+        setLocalError("Please select a PNG, JPG, or WEBP image.");
+        return;
+      }
+      const maxBytes = maxSizeMb * 1024 * 1024;
+      if (file.size > maxBytes) {
+        setLocalError(`Image must be smaller than ${maxSizeMb}MB.`);
+        return;
+      }
+      try {
+        onChange(await fileToBase64(file), "image");
+      } catch {
+        setLocalError("Failed to read the image. Please try again.");
+      }
       return;
     }
 
+    const detected = detectMediaTypeFromMime(file.type);
+    if (!detected) {
+      setLocalError("Unsupported file type. Use image, GIF, or video.");
+      return;
+    }
     const maxBytes = maxSizeMb * 1024 * 1024;
     if (file.size > maxBytes) {
-      setLocalError(`Image must be smaller than ${maxSizeMb}MB.`);
+      setLocalError(`File must be smaller than ${maxSizeMb}MB.`);
       return;
     }
-
     try {
-      const base64 = await fileToBase64(file);
-      onChange(base64);
+      onChange(await fileToBase64(file), detected);
     } catch {
-      setLocalError("Failed to read the image. Please try again.");
+      setLocalError("Failed to read the file. Please try again.");
     }
   }
 
   function handleRemove() {
-    onChange(null);
+    onChange(null, null);
     setLocalError(null);
     if (inputRef.current) inputRef.current.value = "";
   }
 
-  function handlePickClick() {
-    inputRef.current?.click();
-  }
-
   const displayError = error ?? localError ?? undefined;
-  const hasImage = !!value;
+  const isVideo = mediaType === "video";
+  const isGif = mediaType === "gif";
+
+  const preview = value ? (
+    isVideo ? (
+      <video
+        src={value}
+        className="absolute inset-0 size-full object-cover"
+        autoPlay
+        muted
+        loop
+        playsInline
+      />
+    ) : isGif ? (
+      // Use plain img for GIFs to preserve animation
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={value}
+        alt={label}
+        className="absolute inset-0 size-full object-cover"
+      />
+    ) : (
+      <Image
+        src={value}
+        alt={label}
+        fill
+        sizes="(max-width: 768px) 100vw, 600px"
+        className="object-cover"
+        unoptimized={value.startsWith("data:")}
+      />
+    )
+  ) : null;
 
   return (
     <FieldWrapper
@@ -383,49 +445,84 @@ export function FormImage({
         className="hidden"
         onChange={handleFileChange}
       />
-
-      {hasImage ? (
-        <div
-          className={cn(
-            "relative w-full overflow-hidden rounded-md border bg-muted",
-            aspectRatio,
-          )}
-        >
-          <Image
-            src={value}
-            alt={label}
-            fill
-            sizes="(max-width: 768px) 100vw, 400px"
-            className="object-cover"
-            unoptimized={value.startsWith("data:")}
-          />
-          <Button
-            type="button"
-            size="icon"
-            onClick={handleRemove}
-            className="absolute right-2 top-2 size-7"
-            aria-label="Remove image"
-          >
-            <X className="size-4" />
-          </Button>
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={handlePickClick}
-          className={cn(
-            "flex w-full flex-col items-center justify-center gap-2 rounded-md border border-primary/50 border-dashed text-muted-foreground transition-colors hover:bg-muted/50 cursor-pointer",
-            aspectRatio,
-            displayError && ERROR_CLASSES,
-          )}
-        >
-          <ImagePlus className="size-6" />
-          <span className="text-sm font-medium">Click to upload image</span>
-          <span className="text-xs">
-            PNG, JPG, WEBP (Recommended ratio 4:3)
-          </span>
-        </button>
-      )}
+      <FilePickerShell
+        hasMedia={!!value}
+        aspectRatio={aspectRatio}
+        displayError={displayError}
+        onRemove={handleRemove}
+        onPickClick={() => inputRef.current?.click()}
+        dropzoneIcon={<ImagePlus className="size-6" />}
+        dropzonePrimary={
+          imageOnly ? "Click to upload image" : "Click to upload"
+        }
+        dropzoneSecondary={hint ?? defaultHint}
+        preview={preview}
+      />
     </FieldWrapper>
+  );
+}
+
+// ------------------------------- Shared file-picker shell -----------------------
+// Private — not exported. Used only by FormMedia above.
+
+interface FilePickerShellProps {
+  hasMedia: boolean;
+  aspectRatio: string;
+  displayError?: string;
+  onRemove: () => void;
+  onPickClick: () => void;
+  dropzoneIcon: ReactNode;
+  dropzonePrimary: string;
+  dropzoneSecondary: string;
+  preview: ReactNode;
+}
+
+function FilePickerShell({
+  hasMedia,
+  aspectRatio,
+  displayError,
+  onRemove,
+  onPickClick,
+  dropzoneIcon,
+  dropzonePrimary,
+  dropzoneSecondary,
+  preview,
+}: FilePickerShellProps) {
+  if (hasMedia) {
+    return (
+      <div
+        className={cn(
+          "relative w-full overflow-hidden rounded-md border bg-muted",
+          aspectRatio,
+        )}
+      >
+        {preview}
+        <Button
+          type="button"
+          size="icon"
+          onClick={onRemove}
+          className="absolute right-2 top-2 size-7"
+          aria-label="Remove"
+        >
+          <X className="size-4" />
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onPickClick}
+      className={cn(
+        "flex w-full flex-col items-center justify-center gap-2 rounded-md border border-primary/50 border-dashed text-muted-foreground transition-colors hover:bg-muted/50 cursor-pointer",
+        aspectRatio,
+        displayError && ERROR_CLASSES,
+      )}
+    >
+      {dropzoneIcon}
+      <span className="text-sm font-medium">{dropzonePrimary}</span>
+      <span className="text-xs">{dropzoneSecondary}</span>
+    </button>
   );
 }
